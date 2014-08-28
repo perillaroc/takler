@@ -1,0 +1,5 @@
+# for python
+*.pyc
+
+# for pycharm IDE
+.idea
