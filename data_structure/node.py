@@ -1,69 +1,5 @@
-class NodeState(object):
-    Unknown = 1
-    Queued = 2
-    Submitted = 3
-    Active = 4
-    Complete = 5
-    Aborted = 6
-
-    state_mapper = {
-        "unknown": Unknown,
-        "queued":  Queued,
-        "submitted": Submitted,
-        "active": Active,
-        "complete": Complete,
-        "aborted": Aborted
-    }
-
-    def __init__(self):
-        self.node_state = self.Unknown
-
-    def __getattr__(self, name):
-        if name in self:
-            return name
-        raise AttributeError
-
-    @staticmethod
-    def to_state(state_str):
-        return NodeState.state_mapper[state_str.lower()]
-
-
-class NodeTrigger(object):
-
-    def __init__(self, trigger_str, parent):
-        self.exp_str = trigger_str
-        self.node = None
-        self.state = None
-        self.operator = None
-        self._parent_node = parent
-        self.parse()
-
-    @property
-    def parent_node(self):
-        return self._parent_node
-
-    @parent_node.setter
-    def parent_node(self, value):
-        self._parent_node = value
-
-    def parse(self):
-        tokens = self.exp_str.split()
-        if len(tokens) == 3:
-            left_part = tokens[0]
-            trigger_operator = tokens[1]
-            right_part = tokens[2]
-
-            self.node = self.parent_node.find_node(left_part)
-            if self.node is None:
-                raise Exception("trigger %s is not supported" % self.exp_str)
-            self.operator = trigger_operator
-            self.state = NodeState.to_state(right_part)
-        else:
-            raise Exception("trigger %s is not supported" % self.exp_str)
-
-    def evaluate(self):
-        if self.operator == "==":
-            return self.node.state == self.state
+from node_state import NodeState
+from node_trigger import NodeTrigger
 
 
 class Node(object):
@@ -81,6 +17,38 @@ class Node(object):
     def __str__(self):
         return "[Node] {node_name}".format(node_name=self.name)
 
+    def set_state(self, some_state):
+        """Set node state to some state, and handle the state change.
+        """
+        self.state = some_state
+        # swim stats
+        self.swim_state_change()
+        # resolve dependency from root.
+        self.get_root().resolve_dependency()
+
+    def swim_state_change(self):
+        """Apply current node's state to all its ancestors without doing anything.
+
+        Swim current state up. This method can only be called in set_state and itself.
+        """
+        node_state = NodeState.compute_node_state(self)
+
+        if node_state is not self.state:
+            self.state = node_state
+
+        if self.parent is not None:
+            self.parent.swim_state_change()
+        return
+
+    def sink_state_change(self, state):
+        """Apply the state change to all its descendants without doing anything.
+
+        Sink current state down. This method can only be called in set_state and itself.
+        """
+        self.state = state
+        for a_node in self.children:
+            a_node.sink_state_change(state)
+
     def append_child(self, child_name):
         child_node = Node(child_name)
         child_node.parent = self
@@ -96,7 +64,68 @@ class Node(object):
         return self.trigger.evaluate()
 
     def resolve_dependency(self):
-        pass
+        """Resolve node dependency for this node and all its children. Submit those satisfy conditions.
+        """
+        if not self.__resolve_node_dependency():
+            return False
+        for a_child in self.children:
+            a_child.resolve_dependency()
+        return True
+
+    def __resolve_node_dependency(self):
+        """Resolve dependency of this node only and submit it when true.
+        """
+        if self.state == NodeState.Complete or self.state >= NodeState.Submitted:
+            return False
+
+        if not self.evaluate_trigger():
+            return False
+
+        if len(self.children) == 0:
+            self.run()
+
+        return True
+
+    def queue(self):
+        """Re-queue this node and all its children nodes.
+
+        Change stats of this nodes to Queued, and resolve dependency once.
+        """
+        print "{node} queue".format(node=self)
+        self.sink_state_change(NodeState.Queued)
+        self.set_state(NodeState.Submitted)
+
+    def run(self):
+        """Execute the script of the node. Change state to Submitted.
+
+        This method is usually called by resolve_dependency.
+        """
+        print "{node} submitted".format(node=self)
+        self.set_state(NodeState.Submitted)
+
+    def init(self):
+        """Change state to Active. This is usually called form running script via a client command.
+        """
+        print "{node} init".format(node=self)
+        self.set_state(NodeState.Active)
+
+    def complete(self):
+        print "{node} complete".format(node=self)
+        self.set_state(NodeState.Complete)
+
+    def abort(self):
+        print "{node} abort".format(node=self)
+        self.set_state(NodeState.Aborted)
+
+    def kill(self):
+        print "{node} kill".format(node=self)
+
+    # node access methods
+    def is_leaf_node(self):
+        if len(self.children) == 0:
+            return True
+        else:
+            return False
 
     def find_node(self, node_str):
         # Currently, we just use a node name
@@ -111,6 +140,12 @@ class Node(object):
                 break
         return result_node
 
+    def get_root(self):
+        root = self
+        while root.parent is not None:
+            root = root.parent
+        return root
+
 
 def pre_order_travel(root_node, visitor):
     visitor.visit(root_node)
@@ -119,23 +154,23 @@ def pre_order_travel(root_node, visitor):
         pre_order_travel(child_node, visitor)
         visitor.after_visit_child()
 
+
 if __name__ == "__main__":
-    root = Node("suite")
+    suite1 = Node("suite1")
 
-    family1 = root.append_child("family1")
+    family1 = suite1.append_child("family1")
     task1 = family1.append_child("task1")
-    family1.append_child("task2").add_trigger("task1 == complete")
+    task2 = family1.append_child("task2")
+    task2.add_trigger("task1 == complete")
 
-    family2 = root.append_child("family2")
+    family2 = suite1.append_child("family2")
     family2.add_trigger("family1 == complete")
 
-    family2.append_child("task3")
+    task3 = family2.append_child("task3")
 
     family3 = family2.append_child("family3")
     family3.add_trigger("task3 == complete")
-    family3.append_child("task4")
-
-    level = 0
+    task4 = family3.append_child("task4")
 
     class SimplePrintVisitor(object):
         def __init__(self):
@@ -158,10 +193,10 @@ if __name__ == "__main__":
                 state = "Invalid"
 
             print "{place_holder}|- {node_name} [{node_state}] {trigger}".format(
-                place_holder="  "*self.level,
+                place_holder="  " * self.level,
                 node_name=node.name,
                 node_state=state,
-                trigger=("[" + node.trigger.exp_str+"] " if node.trigger is not None else "") +
+                trigger=("Trigger: [" + node.trigger.exp_str + "] " if node.trigger is not None else "Trigger: ") +
                         str(node.evaluate_trigger()))
 
         def before_visit_child(self):
@@ -170,4 +205,43 @@ if __name__ == "__main__":
         def after_visit_child(self):
             self.level -= 1
 
-    pre_order_travel(root, SimplePrintVisitor())
+    pre_order_travel(suite1, SimplePrintVisitor())
+
+    suite1.queue()
+    pre_order_travel(suite1, SimplePrintVisitor())
+
+    task1.init()
+    pre_order_travel(suite1, SimplePrintVisitor())
+
+    task1.complete()
+    pre_order_travel(suite1, SimplePrintVisitor())
+
+    task2.init()
+    pre_order_travel(suite1, SimplePrintVisitor())
+
+    task2.complete()
+    pre_order_travel(suite1, SimplePrintVisitor())
+
+    task3.init()
+    pre_order_travel(suite1, SimplePrintVisitor())
+
+    task3.complete()
+    pre_order_travel(suite1, SimplePrintVisitor())
+
+    task4.init()
+    pre_order_travel(suite1, SimplePrintVisitor())
+
+    task4.complete()
+    pre_order_travel(suite1, SimplePrintVisitor())
+
+    task2.run()
+    pre_order_travel(suite1, SimplePrintVisitor())
+
+    family2.queue()
+    pre_order_travel(suite1, SimplePrintVisitor())
+
+    family1.queue()
+    pre_order_travel(suite1, SimplePrintVisitor())
+
+    task1.abort()
+    pre_order_travel(suite1, SimplePrintVisitor())
