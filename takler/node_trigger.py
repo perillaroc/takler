@@ -1,4 +1,4 @@
-from node_state import NodeState
+from takler.node_state import NodeState
 
 
 class NodeTrigger(object):

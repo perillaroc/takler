@@ -1,5 +1,5 @@
-from node_state import NodeState
-from node_trigger import NodeTrigger
+from takler.node_state import NodeState
+from takler.node_trigger import NodeTrigger
 
 
 class Node(object):
@@ -155,7 +155,7 @@ def pre_order_travel(root_node, visitor):
         visitor.after_visit_child()
 
 
-if __name__ == "__main__":
+def main():
     suite1 = Node("suite1")
 
     family1 = suite1.append_child("family1")
@@ -245,3 +245,6 @@ if __name__ == "__main__":
 
     task1.abort()
     pre_order_travel(suite1, SimplePrintVisitor())
+
+if __name__ == "__main__":
+    main()
