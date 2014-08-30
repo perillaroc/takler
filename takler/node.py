@@ -91,7 +91,7 @@ class Node(object):
 
         Change stats of this nodes to Queued, and resolve dependency once.
         """
-        print "{node} queue".format(node=self)
+        print "{node} queue".format(node=self.get_node_path())
         self.sink_state_change(NodeState.Queued)
         self.set_state(NodeState.Submitted)
 
@@ -100,25 +100,25 @@ class Node(object):
 
         This method is usually called by resolve_dependency.
         """
-        print "{node} submitted".format(node=self)
+        print "{node} submitted".format(node=self.get_node_path())
         self.set_state(NodeState.Submitted)
 
     def init(self):
         """Change state to Active. This is usually called form running script via a client command.
         """
-        print "{node} init".format(node=self)
+        print "{node} init".format(node=self.get_node_path())
         self.set_state(NodeState.Active)
 
     def complete(self):
-        print "{node} complete".format(node=self)
+        print "{node} complete".format(node=self.get_node_path())
         self.set_state(NodeState.Complete)
 
     def abort(self):
-        print "{node} abort".format(node=self)
+        print "{node} abort".format(node=self.get_node_path())
         self.set_state(NodeState.Aborted)
 
     def kill(self):
-        print "{node} kill".format(node=self)
+        print "{node} kill".format(node=self.get_node_path())
 
     # node access methods
     def is_leaf_node(self):
@@ -126,6 +126,15 @@ class Node(object):
             return True
         else:
             return False
+
+    def get_node_path(self):
+        cur_node = self
+        node_list = []
+        while cur_node is not None:
+            node_list.insert(0, cur_node.name)
+            cur_node = cur_node.parent
+        node_list.insert(0, "")
+        return "/".join(node_list)
 
     def find_node(self, a_node_path):
         """use node path to find a node.
@@ -147,6 +156,9 @@ class Node(object):
             cur_node = root
         else:
             cur_node = self.parent
+
+        if len(node_path) == 0:
+            return cur_node
 
         tokens = node_path.split("/")
         for a_token in tokens:

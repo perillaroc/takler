@@ -47,6 +47,17 @@ def pre_order_travel(root_node, visitor):
 
 class TestNode(unittest.TestCase):
     def setUp(self):
+        """Build a node tree for test:
+
+        |- suite1 [Unknown] Trigger: True
+            |- family1 [Unknown] Trigger: True
+                |- task1 [Unknown] Trigger: True
+                |- task2 [Unknown] Trigger: [task1 == complete] False
+            |- family2 [Unknown] Trigger: [family1 == complete] False
+                |- task3 [Unknown] Trigger: True
+                |- family3 [Unknown] Trigger: [task3 == complete] False
+                    |- task4 [Unknown] Trigger: True
+        """
         self.suite1 = Node("suite1")
 
         self.family1 = self.suite1.append_child("family1")
@@ -66,7 +77,15 @@ class TestNode(unittest.TestCase):
     def test_create_node_tree(self):
         pre_order_travel(self.suite1, SimplePrintVisitor())
 
+    def test_get_node_path(self):
+        self.assertEqual(self.suite1.get_node_path(), "/suite1")
+        self.assertEqual(self.family1.get_node_path(), "/suite1/family1")
+        self.assertEqual(self.task1.get_node_path(), "/suite1/family1/task1")
+        self.assertEqual(self.task4.get_node_path(), "/suite1/family2/family3/task4")
+
     def test_find_node(self):
+        self.assertEqual(self.task1.find_node("/suite1"), self.suite1)
+
         self.assertEqual(self.task1.find_node("task2"), self.task2)
         self.assertEqual(self.task2.find_node("task1"), self.task1)
 
@@ -85,13 +104,35 @@ class TestNode(unittest.TestCase):
         self.assertIsNone(self.task1.find_node("task3"))
 
     def test_node_operation(self):
+        def check_node_state(root, state_mapper):
+            for a_state_exp in state_mapper:
+                self.assertEqual(root.find_node(a_state_exp).state, NodeState.to_state(state_mapper[a_state_exp]))
+
         self.suite1.queue()
+        state_mapper = {
+            "/suite1": "submitted",
+            "/suite1/family1": "submitted",
+            "/suite1/family1/task1": "submitted",
+            "/suite1/family1/task2": "queued",
+            "/suite1/family2/task3": "queued",
+            "/suite1/family2/family3": "queued",
+            "/suite1/family2/family3/task4": "queued",
+        }
+        check_node_state(self.suite1, state_mapper)
         pre_order_travel(self.suite1, SimplePrintVisitor())
 
         self.task1.init()
+        state_mapper["/suite1"] = "active"
+        state_mapper["/suite1/family1"] = "active"
+        state_mapper["/suite1/family1/task1"] = "active"
+        check_node_state(self.suite1, state_mapper)
         pre_order_travel(self.suite1, SimplePrintVisitor())
 
         self.task1.complete()
+        state_mapper["/suite1"] = "submitted"
+        state_mapper["/suite1/family1"] = "submitted"
+        state_mapper["/suite1/family1/task1"] = "complete"
+        state_mapper["/suite1/family1/task2"] = "submitted"
         pre_order_travel(self.suite1, SimplePrintVisitor())
 
         self.task2.init()
