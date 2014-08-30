@@ -127,24 +127,42 @@ class Node(object):
         else:
             return False
 
-    def find_node(self, node_str):
+    def find_node(self, a_node_path):
         """use node path to find a node.
 
         Type of node path:
-            1. node1
+            1. node1    relative to currently directory
             2. ../node1/node2
             3. /node1/node2
         """
-        result_node = None
-        if self.parent is None:
-            return None
-        if len(self.parent.children) == 0:
-            return result_node
-        for a_node in self.parent.children:
-            if a_node.name == node_str:
-                result_node = a_node
-                break
-        return result_node
+        cur_node = self
+        node_path = a_node_path
+        root = cur_node.get_root()
+        if node_path.startswith("/"):
+            node_path = node_path[1:]
+
+        # TODO: support multi roots
+        if node_path.startswith(root.name):
+            node_path = node_path[len(root.name)+1:]
+            cur_node = root
+        else:
+            cur_node = self.parent
+
+        tokens = node_path.split("/")
+        for a_token in tokens:
+            if a_token == "..":
+                cur_node = cur_node.parent
+            else:
+                t_node = None
+                for a_child in cur_node.children:
+                    if a_child.name == a_token:
+                        t_node = a_child
+                        break
+                if t_node is None:
+                    return None
+                cur_node = t_node
+
+        return cur_node
 
     def get_root(self):
         root = self

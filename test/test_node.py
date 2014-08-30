@@ -76,12 +76,13 @@ class TestNode(unittest.TestCase):
         self.assertEqual(self.task3.find_node("family3"), self.family3)
 
         self.assertEqual(self.task1.find_node("../family2"), self.family2)
-        self.assertEqual(self.family1.find_node("../family2/task3"), self.task3)
-        self.assertEqual(self.task1.find_node("../../family2/task3"), self.task3)
+        self.assertEqual(self.family1.find_node("family2/task3"), self.task3)
+        self.assertEqual(self.task1.find_node("../family2/task3"), self.task3)
 
         self.assertEqual(self.task1.find_node("/suite1/family2/task3"), self.task3)
 
-
+        self.assertIsNone(self.task1.find_node("/suite1/family3"))
+        self.assertIsNone(self.task1.find_node("task3"))
 
     def test_node_operation(self):
         self.suite1.queue()
