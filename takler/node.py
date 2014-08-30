@@ -81,7 +81,7 @@ class Node(object):
         if not self.evaluate_trigger():
             return False
 
-        if len(self.children) == 0:
+        if self.is_leaf_node():
             self.run()
 
         return True
@@ -128,7 +128,13 @@ class Node(object):
             return False
 
     def find_node(self, node_str):
-        # Currently, we just use a node name
+        """use node path to find a node.
+
+        Type of node path:
+            1. node1
+            2. ../node1/node2
+            3. /node1/node2
+        """
         result_node = None
         if self.parent is None:
             return None

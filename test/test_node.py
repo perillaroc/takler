@@ -66,6 +66,23 @@ class TestNode(unittest.TestCase):
     def test_create_node_tree(self):
         pre_order_travel(self.suite1, SimplePrintVisitor())
 
+    def test_find_node(self):
+        self.assertEqual(self.task1.find_node("task2"), self.task2)
+        self.assertEqual(self.task2.find_node("task1"), self.task1)
+
+        self.assertEqual(self.family1.find_node("family2"), self.family2)
+        self.assertEqual(self.family2.find_node("family1"), self.family1)
+
+        self.assertEqual(self.task3.find_node("family3"), self.family3)
+
+        self.assertEqual(self.task1.find_node("../family2"), self.family2)
+        self.assertEqual(self.family1.find_node("../family2/task3"), self.task3)
+        self.assertEqual(self.task1.find_node("../../family2/task3"), self.task3)
+
+        self.assertEqual(self.task1.find_node("/suite1/family2/task3"), self.task3)
+
+
+
     def test_node_operation(self):
         self.suite1.queue()
         pre_order_travel(self.suite1, SimplePrintVisitor())
