@@ -1,3 +1,4 @@
+import os
 from takler.node_state import NodeState
 from takler.node_trigger import NodeTrigger
 
@@ -13,6 +14,8 @@ class Node(object):
         self.path = ""
 
         self.trigger = None
+
+        self.var_map = dict()
 
     def __str__(self):
         return "[Node] {node_name}".format(node_name=self.name)
@@ -181,3 +184,12 @@ class Node(object):
         while root.parent is not None:
             root = root.parent
         return root
+
+    ##############################
+    # section for task script
+    ##############################
+
+    def get_script_path(self):
+        root = self.get_root()
+        if root.var_map.has_key("suite_home"):
+            return root.var_map["suite_home"] + self.get_node_path() + ".takler"
