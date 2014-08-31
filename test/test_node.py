@@ -1,7 +1,7 @@
 from takler.node import Node
 from takler.node_state import NodeState
 
-from helper import SimplePrintVisitor, pre_order_travel
+from takler.visitor import SimplePrintVisitor, pre_order_travel
 
 import unittest
 

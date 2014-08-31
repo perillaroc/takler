@@ -1,6 +1,7 @@
 import os
 
 from takler.node import Node
+from takler.visitor import SimplePrintVisitor, pre_order_travel
 
 
 class Suite(Node):
@@ -9,3 +10,10 @@ class Suite(Node):
         self.root = Node(node_name)
         self.suite_home = os.getcwd()
         self.var_map["suite_home"] = os.getcwd()
+        self.var_map["suite_run_home"] = os.getcwd()
+
+    def set_value(self, value_name, value):
+        self.var_map[value_name] = value
+
+    def print_suite(self):
+        pre_order_travel(self, SimplePrintVisitor())

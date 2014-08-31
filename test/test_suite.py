@@ -2,11 +2,8 @@ import unittest
 import os
 import shutil
 
-from takler.node import Node
-from takler.node_state import NodeState
 from takler.suite import Suite
-
-from helper import SimplePrintVisitor, pre_order_travel, NodeVisitor
+from takler.visitor import pre_order_travel, NodeVisitor
 
 
 class MakeDirectoryVisitor(NodeVisitor):
@@ -58,13 +55,45 @@ class TestSuite(unittest.TestCase):
 
         pre_order_travel(self.suite1, MakeDirectoryVisitor())
 
+        task1_content = """print "this is task1"
+print "task1 begin"
+print "task1 init"
+print "task1 end"
+"""
+        with open(self.task1.get_script_path(), 'w') as f:
+            f.write(task1_content)
+
+        task2_content = """print "this is task2"
+print "task2 begin"
+print "task2 init"
+print "task2 end"
+"""
+        with open(self.task2.get_script_path(), 'w') as f:
+            f.write(task2_content)
+
+        task3_content = """print "this is task1"
+print "task3 begin"
+print "task3 init"
+print "task3 end"
+"""
+        with open(self.task3.get_script_path(), 'w') as f:
+            f.write(task3_content)
+
+        task4_content = """print "this is task4"
+print "task4 begin"
+print "task4 init"
+print "task4 end"
+"""
+        with open(self.task4.get_script_path(), 'w') as f:
+            f.write(task4_content)
+
     def tearDown(self):
         os.chdir(self.old_cwd)
         shutil.rmtree(self.suite_home)
 
     def test_suite_create(self):
         self.assertEqual(self.suite1.suite_home, os.getcwd())
-        pre_order_travel(self.suite1, SimplePrintVisitor())
+        self.suite1.print_suite()
 
     def test_task_script_path(self):
         def check_task_script_path(path_mapper):
