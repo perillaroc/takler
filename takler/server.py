@@ -1,6 +1,9 @@
-from takler.constant import DEFAULT_PORT
+import argparse
+
+from takler.constant import DEFAULT_HOST, DEFAULT_PORT
 from takler.takler_service import TaklerService
 from takler.takler_service.ttypes import *
+from takler.service_handler import TaklerServiceHandler
 
 from thrift.transport import TSocket
 from thrift.transport import TTransport
@@ -8,50 +11,57 @@ from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
 
 
-class TaklerServiceHandler:
+class Server(object):
     def __init__(self):
-        pass
+        # server
+        self.host = DEFAULT_HOST
+        self.port = DEFAULT_PORT
+        self.takler_service_handler = TaklerServiceHandler()
+        self.thrift_processor = None
+        self.thrift_transport = None
+        self.thrift_transport_factory = None
+        self.thrift_protocol_factory = None
+        self.thrift_server = None
 
-    def init(self, node_path, node_rid):
-        """
-        Parameters:
-         - node_path
-         - node_rid
-        """
-        print "init {node_path} with pid {node_rid}".format(
-            node_path=node_path,
-            node_rid=node_rid
+    def run_server(self):
+        self.takler_service_handler = TaklerServiceHandler()
+        self.thrift_processor = TaklerService.Processor(self.takler_service_handler)
+        self.thrift_transport = TSocket.TServerSocket(port=self.port)
+        self.thrift_transport_factory = TTransport.TBufferedTransportFactory()
+        self.thrift_protocol_factory = TBinaryProtocol.TBinaryProtocolFactory()
+        self.thrift_server = TServer.TSimpleServer(self.thrift_processor,
+                                                   self.thrift_transport,
+                                                   self.thrift_transport_factory,
+                                                   self.thrift_protocol_factory)
+        # You could do one of these for a multithreaded server
+        #server = TServer.TThreadedServer(processor, transport, tfactory, pfactory)
+        #server = TServer.TThreadPoolServer(processor, transport, tfactory, pfactory)
+        print "Starting server at {server_host}:{server_port}".format(
+            server_host=self.host,
+            server_port=self.port
         )
-        return ServiceResponse(0, "ok")
+        self.thrift_server.serve()
+        print "Stop server..."
 
-    def complete(self, node_path):
-        """
-        Parameters:
-         - node_path
-        """
-        print "complete"
-        return ServiceResponse(0, "ok")
 
-    def abort(self, node_path):
-        """
-        Parameters:
-         - node_path
-        """
-        print "abort"
-        return ServiceResponse(0, "ok")
+def main():
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description="""\
+DESCRIPTION
+    Run takler server.""")
+    parser.add_argument(
+        "-p", "--port",
+        help="port number")
+    args = parser.parse_args()
 
-handler = TaklerServiceHandler()
-processor = TaklerService.Processor(handler)
-transport = TSocket.TServerSocket(port=DEFAULT_PORT)
-tfactory = TTransport.TBufferedTransportFactory()
-pfactory = TBinaryProtocol.TBinaryProtocolFactory()
+    server = Server()
+    if args.port:
+        server.port = args.port
+    else:
+        print "Using default port: {default_port}".format(default_port=DEFAULT_PORT)
+    server.run_server()
 
-server = TServer.TSimpleServer(processor, transport, tfactory, pfactory)
 
-# You could do one of these for a multithreaded server
-#server = TServer.TThreadedServer(processor, transport, tfactory, pfactory)
-#server = TServer.TThreadPoolServer(processor, transport, tfactory, pfactory)
-
-print 'Starting the server...'
-server.serve()
-print 'done.'
+if __name__ == "__main__":
+    main()
