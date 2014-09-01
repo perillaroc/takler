@@ -1,4 +1,4 @@
-import os
+from takler.constant import SCRIPT_EXTENSION
 from takler.node_state import NodeState
 from takler.node_trigger import NodeTrigger
 
@@ -36,6 +36,7 @@ class Node(object):
         """
         node_state = NodeState.compute_node_state(self)
 
+        assert isinstance(self.state, NodeState)
         if node_state is not self.state:
             self.state = node_state
 
@@ -191,5 +192,5 @@ class Node(object):
 
     def get_script_path(self):
         root = self.get_root()
-        if root.var_map.has_key("suite_home"):
-            return root.var_map["suite_home"] + self.get_node_path() + ".takler"
+        if "suite_home" in root.var_map:
+            return root.var_map["suite_home"] + self.get_node_path() + SCRIPT_EXTENSION

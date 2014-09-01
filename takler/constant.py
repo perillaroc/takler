@@ -1,0 +1,4 @@
+
+SCRIPT_EXTENSION = "takler"
+DEFAULT_HOST = "localhost"
+DEFAULT_PORT = "58705"

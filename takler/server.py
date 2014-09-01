@@ -1,3 +1,4 @@
+from takler.constant import DEFAULT_PORT
 from takler.takler_service import TaklerService
 from takler.takler_service.ttypes import *
 
@@ -41,7 +42,7 @@ class TaklerServiceHandler:
 
 handler = TaklerServiceHandler()
 processor = TaklerService.Processor(handler)
-transport = TSocket.TServerSocket(port=88705)
+transport = TSocket.TServerSocket(port=DEFAULT_PORT)
 tfactory = TTransport.TBufferedTransportFactory()
 pfactory = TBinaryProtocol.TBinaryProtocolFactory()
 

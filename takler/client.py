@@ -1,3 +1,4 @@
+from takler.constant import DEFAULT_HOST, DEFAULT_PORT
 from takler.takler_service import TaklerService
 from takler.takler_service.ttypes import *
 
@@ -9,8 +10,8 @@ from thrift.protocol import TBinaryProtocol
 
 class Client(object):
     def __init__(self):
-        self.host = "localhost"
-        self.port = 88705
+        self.host = DEFAULT_HOST
+        self.port = DEFAULT_PORT
         self.path = "/"
         self.pid = ""
 
