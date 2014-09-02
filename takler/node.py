@@ -10,7 +10,7 @@ class Node(object):
 
         self.state = NodeState.Unknown
         self.name = node_name
-        self.rid = ""
+        self.task_id = ""
         self.path = ""
 
         self.trigger = None
@@ -36,8 +36,7 @@ class Node(object):
         """
         node_state = NodeState.compute_node_state(self)
 
-        assert isinstance(self.state, NodeState)
-        if node_state is not self.state:
+        if node_state != self.state:
             self.state = node_state
 
         if self.parent is not None:
@@ -97,7 +96,7 @@ class Node(object):
         """
         print "{node} queue".format(node=self.get_node_path())
         self.sink_state_change(NodeState.Queued)
-        self.set_state(NodeState.Submitted)
+        self.set_state(NodeState.Queued)
 
     def run(self):
         """Execute the script of the node. Change state to Submitted.
@@ -107,10 +106,11 @@ class Node(object):
         print "{node} submitted".format(node=self.get_node_path())
         self.set_state(NodeState.Submitted)
 
-    def init(self):
+    def init(self, task_id):
         """Change state to Active. This is usually called form running script via a client command.
         """
-        print "{node} init".format(node=self.get_node_path())
+        self.task_id = task_id
+        print "{node} init with {task_id}".format(node=self.get_node_path(), task_id=task_id)
         self.set_state(NodeState.Active)
 
     def complete(self):
@@ -123,6 +123,7 @@ class Node(object):
 
     def kill(self):
         print "{node} kill".format(node=self.get_node_path())
+        self.set_state(NodeState.Aborted)
 
     # node access methods
     def is_leaf_node(self):
