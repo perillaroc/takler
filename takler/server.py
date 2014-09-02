@@ -1,22 +1,25 @@
 import argparse
-
-from takler.constant import DEFAULT_HOST, DEFAULT_PORT
-from takler.takler_service import TaklerService
-from takler.takler_service.ttypes import *
-from takler.service_handler import TaklerServiceHandler
-
 from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
 
+from takler.constant import DEFAULT_HOST, DEFAULT_PORT
+from takler.takler_service import TaklerService
+from takler.takler_service.ttypes import *
+from takler.service_handler import TaklerServiceHandler
+from takler.bunch import Bunch
+
 
 class Server(object):
     def __init__(self):
+        # bunch
+        self.bunch = Bunch()
+
         # server
+        self.takler_service_handler = TaklerServiceHandler(self.bunch)
         self.host = DEFAULT_HOST
         self.port = DEFAULT_PORT
-        self.takler_service_handler = TaklerServiceHandler()
         self.thrift_processor = None
         self.thrift_transport = None
         self.thrift_transport_factory = None
@@ -24,7 +27,6 @@ class Server(object):
         self.thrift_server = None
 
     def run_server(self):
-        self.takler_service_handler = TaklerServiceHandler()
         self.thrift_processor = TaklerService.Processor(self.takler_service_handler)
         self.thrift_transport = TSocket.TServerSocket(port=self.port)
         self.thrift_transport_factory = TTransport.TBufferedTransportFactory()

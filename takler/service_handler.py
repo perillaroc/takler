@@ -2,8 +2,8 @@ from takler.takler_service.ttypes import *
 
 
 class TaklerServiceHandler:
-    def __init__(self):
-        pass
+    def __init__(self, bunch):
+        self.bunch = bunch
 
     def init(self, node_path, node_id):
         """

@@ -154,7 +154,7 @@ class Node(object):
         if node_path.startswith("/"):
             node_path = node_path[1:]
 
-        # TODO: support multi roots
+        # TODO: support multi roots, affect bunch.find_node_by_absolute_path
         if node_path.startswith(root.name):
             node_path = node_path[len(root.name)+1:]
             cur_node = root
