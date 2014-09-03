@@ -3,18 +3,7 @@ import os
 import shutil
 
 from takler.suite import Suite
-from takler.visitor import pre_order_travel, NodeVisitor
-
-
-class MakeDirectoryVisitor(NodeVisitor):
-    def __init__(self):
-        NodeVisitor.__init__(self)
-        pass
-
-    def visit(self, node):
-        base_name = os.path.dirname(node.get_script_path())
-        if not os.path.isdir(base_name):
-            os.makedirs(base_name)
+from takler.visitor import pre_order_travel, NodeVisitor, MakeDirectoryVisitor
 
 
 class TestSuite(unittest.TestCase):

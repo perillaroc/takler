@@ -1,3 +1,4 @@
+import os
 from takler.node_state import NodeState
 
 
@@ -48,6 +49,17 @@ class SimplePrintVisitor(NodeVisitor):
 
     def after_visit_child(self):
         self.level -= 1
+
+
+class MakeDirectoryVisitor(NodeVisitor):
+    def __init__(self):
+        NodeVisitor.__init__(self)
+        pass
+
+    def visit(self, node):
+        base_name = os.path.dirname(node.get_script_path())
+        if not os.path.isdir(base_name):
+            os.makedirs(base_name)
 
 
 def pre_order_travel(root_node, visitor):
