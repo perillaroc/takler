@@ -103,7 +103,10 @@ class Node(object):
 
         This method is usually called by resolve_dependency.
         """
-        print "{node} submitted".format(node=self.get_node_path())
+        node_path = self.get_node_path()
+        print "{node} submitted".format(node=node_path)
+        script_path = self.get_node_path()
+        print "{node} script is {script_path}".format(node=node_path, script_path=script_path)
         self.set_state(NodeState.Submitted)
 
     def init(self, task_id):

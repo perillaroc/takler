@@ -1,0 +1,14 @@
+node_path = "/suite1/family1/family3/task4"
+
+import glob
+import os
+import sys
+sys.path.insert(0, glob.glob(os.path.join(os.path.dirname(__file__), '../../../../..'))[0])
+import takler
+client = takler.Client()
+
+print "task4 begin"
+print "task4 init"
+client.init(node_path, str(os.getpid()))
+print "task4 end"
+client.complete(node_path)
