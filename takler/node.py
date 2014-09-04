@@ -1,6 +1,6 @@
 import os
 import sys
-from takler.constant import SCRIPT_EXTENSION
+import takler.constant
 from takler.node_state import NodeState
 from takler.node_trigger import NodeTrigger
 
@@ -110,7 +110,8 @@ class Node(object):
         This method is usually called by resolve_dependency.
         """
         node_path = self.get_node_path()
-        script_path = self.get_root().var_map["suite_home"] + self.get_node_path() + '.' + SCRIPT_EXTENSION
+        script_path = self.get_root().var_map["suite_home"] + self.get_node_path() + '.' \
+            + takler.constant.SCRIPT_EXTENSION
         print "[Node]{node} submitted. script is {script_path}".format(node=node_path, script_path=script_path)
         if len(script_path) > 0:
             if os.path.exists(script_path):
@@ -129,6 +130,7 @@ class Node(object):
                     print "[Node]{node} submitted failed: can't fork.".format(node=node_path)
                     return
                 else:
+                    os.waitpid(child_pid, 0)
                     self.set_state(NodeState.Submitted)
                     return
             else:
@@ -139,7 +141,6 @@ class Node(object):
             print "[Node]{node} submitted failed: no script path.".format(node=node_path)
             return
 
-
     def init(self, task_id):
         """Change state to Active. This is usually called form running script via a client command.
         """
@@ -148,7 +149,8 @@ class Node(object):
         self.set_state(NodeState.Active)
 
     def complete(self):
-        print "[Node]{node} complete".format(node=self.get_node_path())
+        print "[Node]{node} complete with task_id {task_id}".format(node=self.get_node_path(),
+                                                                    task_id=self.task_id)
         self.set_state(NodeState.Complete)
 
     def abort(self):
@@ -159,7 +161,10 @@ class Node(object):
         print "[Node]{node} kill".format(node=self.get_node_path())
         self.set_state(NodeState.Aborted)
 
-    # node access methods
+    ##############################
+    # section for node accessing
+    ##############################
+
     def is_leaf_node(self):
         if len(self.children) == 0:
             return True
@@ -228,6 +233,6 @@ class Node(object):
     def get_script_path(self):
         root = self.get_root()
         if "suite_home" in root.var_map:
-            return root.var_map["suite_home"] + self.get_node_path() + '.' +SCRIPT_EXTENSION
+            return root.var_map["suite_home"] + self.get_node_path() + '.' + takler.constant.SCRIPT_EXTENSION
         else:
             return ""

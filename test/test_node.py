@@ -1,3 +1,4 @@
+import os
 from takler.node import Node
 from takler.node_state import NodeState
 
@@ -62,116 +63,7 @@ class TestNode(unittest.TestCase):
         self.assertIsNone(self.task1.find_node("task3"))
         self.assertIsNone(self.task4.find_node("../family1/task1"))
 
-    def test_node_operation(self):
-        def check_node_state(root, a_state_mapper):
-            for a_state_exp in a_state_mapper:
-                self.assertEqual(root.find_node(a_state_exp).state, NodeState.to_state(a_state_mapper[a_state_exp]))
 
-        self.suite1.queue()
-        state_mapper = {
-            "/suite1": "submitted",
-            "/suite1/family1": "submitted",
-            "/suite1/family1/task1": "submitted",
-            "/suite1/family1/task2": "queued",
-            "/suite1/family2/task3": "queued",
-            "/suite1/family2/family3": "queued",
-            "/suite1/family2/family3/task4": "queued",
-        }
-        check_node_state(self.suite1, state_mapper)
-        #pre_order_travel(self.suite1, SimplePrintVisitor())
-
-        self.task1.init("123456")
-        state_mapper["/suite1"] = "active"
-        state_mapper["/suite1/family1"] = "active"
-        state_mapper["/suite1/family1/task1"] = "active"
-        check_node_state(self.suite1, state_mapper)
-        #pre_order_travel(self.suite1, SimplePrintVisitor())
-
-        self.task1.complete()
-        state_mapper["/suite1"] = "submitted"
-        state_mapper["/suite1/family1"] = "submitted"
-        state_mapper["/suite1/family1/task1"] = "complete"
-        state_mapper["/suite1/family1/task2"] = "submitted"
-        check_node_state(self.suite1, state_mapper)
-        #pre_order_travel(self.suite1, SimplePrintVisitor())
-
-        self.task2.init("123456")
-        state_mapper["/suite1"] = "active"
-        state_mapper["/suite1/family1"] = "active"
-        state_mapper["/suite1/family1/task2"] = "active"
-        check_node_state(self.suite1, state_mapper)
-        #pre_order_travel(self.suite1, SimplePrintVisitor())
-
-        self.task2.complete()
-        state_mapper["/suite1"] = "submitted"
-        state_mapper["/suite1/family1"] = "complete"
-        state_mapper["/suite1/family1/task2"] = "complete"
-        state_mapper["/suite1/family2"] = "submitted"
-        state_mapper["/suite1/family2/task3"] = "submitted"
-        check_node_state(self.suite1, state_mapper)
-        #pre_order_travel(self.suite1, SimplePrintVisitor())
-
-        self.task3.init("123456")
-        state_mapper["/suite1"] = "active"
-        state_mapper["/suite1/family2"] = "active"
-        state_mapper["/suite1/family2/task3"] = "active"
-        check_node_state(self.suite1, state_mapper)
-        #pre_order_travel(self.suite1, SimplePrintVisitor())
-
-        self.task3.complete()
-        state_mapper["/suite1"] = "submitted"
-        state_mapper["/suite1/family2"] = "submitted"
-        state_mapper["/suite1/family2/task3"] = "complete"
-        state_mapper["/suite1/family2/family3"] = "submitted"
-        state_mapper["/suite1/family2/family3/task4"] = "submitted"
-        check_node_state(self.suite1, state_mapper)
-        #pre_order_travel(self.suite1, SimplePrintVisitor())
-
-        self.task4.init("123456")
-        state_mapper["/suite1"] = "active"
-        state_mapper["/suite1/family2"] = "active"
-        state_mapper["/suite1/family2/family3"] = "active"
-        state_mapper["/suite1/family2/family3/task4"] = "active"
-        check_node_state(self.suite1, state_mapper)
-        #pre_order_travel(self.suite1, SimplePrintVisitor())
-
-        self.task4.complete()
-        state_mapper["/suite1"] = "complete"
-        state_mapper["/suite1/family2"] = "complete"
-        state_mapper["/suite1/family2/family3"] = "complete"
-        state_mapper["/suite1/family2/family3/task4"] = "complete"
-        check_node_state(self.suite1, state_mapper)
-        #pre_order_travel(self.suite1, SimplePrintVisitor())
-
-        self.task2.run()
-        state_mapper["/suite1"] = "submitted"
-        state_mapper["/suite1/family1"] = "submitted"
-        state_mapper["/suite1/family1/task2"] = "submitted"
-        check_node_state(self.suite1, state_mapper)
-        #pre_order_travel(self.suite1, SimplePrintVisitor())
-
-        self.family2.queue()
-        state_mapper["/suite1/family2"] = "queued"
-        state_mapper["/suite1/family2/task3"] = "queued"
-        state_mapper["/suite1/family2/family3"] = "queued"
-        state_mapper["/suite1/family2/family3/task4"] = "queued"
-        check_node_state(self.suite1, state_mapper)
-        #pre_order_travel(self.suite1, SimplePrintVisitor())
-
-        # force queue
-        self.family1.queue()
-        state_mapper["/suite1/family1"] = "submitted"
-        state_mapper["/suite1/family1/task1"] = "submitted"
-        state_mapper["/suite1/family1/task2"] = "queued"
-        check_node_state(self.suite1, state_mapper)
-        #pre_order_travel(self.suite1, SimplePrintVisitor())
-
-        self.task1.abort()
-        state_mapper["/suite1"] = "aborted"
-        state_mapper["/suite1/family1"] = "aborted"
-        state_mapper["/suite1/family1/task1"] = "aborted"
-        check_node_state(self.suite1, state_mapper)
-        #pre_order_travel(self.suite1, SimplePrintVisitor())
 
 if __name__ == "__main__":
     unittest.main()

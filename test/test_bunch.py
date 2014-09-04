@@ -1,6 +1,5 @@
 import unittest
 from takler.bunch import Bunch
-from takler.visitor import pre_order_travel, NodeVisitor
 
 
 class TestBunchCase(unittest.TestCase):
@@ -25,7 +24,7 @@ class TestBunchCase(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def test_create(self):
+    def test_add_suite(self):
         self.suite1.print_suite()
 
     def test_find_suite_by_name(self):
