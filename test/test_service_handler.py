@@ -7,6 +7,14 @@ from helper import check_node_state
 
 class TaklerServiceHandlerTestCase(unittest.TestCase):
     def setUp(self):
+        import os
+
+        def my_fork():
+            return 1
+        def my_wait_pid(x,y):
+            pass
+        os.fork = my_fork
+        os.waitpid = my_wait_pid
         self.bunch = Bunch()
         self.service_handler = TaklerServiceHandler(self.bunch)
 
@@ -27,7 +35,7 @@ class TaklerServiceHandlerTestCase(unittest.TestCase):
         self.task4 = self.family3.append_child("task4")
 
     def test_handler_create(self):
-        pass
+        reload(os)
 
     def test_handler_queue(self):
         self.service_handler.queue("/empty_suite")
