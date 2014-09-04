@@ -33,6 +33,7 @@ class Client(object):
         transport.open()
 
         command_mapper = {
+            "queue": takler_client.queue,
             "init": takler_client.init,
             "complete": takler_client.complete,
             "abort": takler_client.abort
@@ -40,7 +41,8 @@ class Client(object):
 
         if command in command_mapper:
             server_response = command_mapper[command](*args)
-            print server_response
+            print "[{name}]{server_response}".format(name="Client",
+                                                     server_response=server_response)
         else:
             print "command is not right: {command}".format(command=command)
 
@@ -48,7 +50,7 @@ class Client(object):
         transport.close()
 
     def queue(self, node_path):
-        pass
+        self.run_command("queue", node_path)
 
     def run(self, node_path):
         print "Client run %s" % node_path

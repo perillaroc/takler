@@ -1,4 +1,6 @@
-node_path = "/suite1/family1/family3/task4"
+#!/bin/env python
+
+node_path = "/suite1/family2/family3/task4"
 
 import glob
 import os

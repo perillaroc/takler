@@ -10,7 +10,7 @@ class TaklerServiceHandler:
         Parameters:
          - node_path
         """
-        print "[Queue] {node_path}".format(node_path=node_path)
+        print "[Server] [Queue] {node_path}".format(node_path=node_path)
         some_node = self.bunch.find_node_by_absolute_path(node_path)
         some_node.queue()
         return ServiceResponse(0, "ok")
@@ -20,7 +20,7 @@ class TaklerServiceHandler:
         Parameters:
          - node_path
         """
-        print "[Submit] {node_path}".format(node_path=node_path)
+        print "[Server] [Submit] {node_path}".format(node_path=node_path)
         some_node = self.bunch.find_node_by_absolute_path(node_path)
         some_node.run()
         return ServiceResponse(0, "ok")
@@ -31,7 +31,7 @@ class TaklerServiceHandler:
          - node_path
          - node_rid
         """
-        print "[Submit] {node_path} with node id {task_id}".format(node_path=node_path,task_id=task_id)
+        print "[Server] [Submit] {node_path} with node id {task_id}".format(node_path=node_path,task_id=task_id)
         some_node = self.bunch.find_node_by_absolute_path(node_path)
         some_node.init(task_id)
         return ServiceResponse(0, "ok")
@@ -41,7 +41,7 @@ class TaklerServiceHandler:
         Parameters:
          - node_path
         """
-        print "[Complete] {node_path}".format(node_path=node_path)
+        print "[Server] [Complete] {node_path}".format(node_path=node_path)
         some_node = self.bunch.find_node_by_absolute_path(node_path)
         some_node.complete()
         return ServiceResponse(0, "ok")
@@ -51,7 +51,7 @@ class TaklerServiceHandler:
         Parameters:
          - node_path
         """
-        print "[Abort] {node_path}".format(node_path=node_path)
+        print "[Server] [Abort] {node_path}".format(node_path=node_path)
         some_node = self.bunch.find_node_by_absolute_path(node_path)
         some_node.abort()
         return ServiceResponse(0, "ok")
@@ -61,7 +61,7 @@ class TaklerServiceHandler:
         Parameters:
          - node_path
         """
-        print "[Kill] {node_path}".format(node_path=node_path)
+        print "[Server] [Kill] {node_path}".format(node_path=node_path)
         some_node = self.bunch.find_node_by_absolute_path(node_path)
         some_node.kill()
         return ServiceResponse(0, "ok")

@@ -80,7 +80,7 @@ class TestNode(unittest.TestCase):
         check_node_state(self.suite1, state_mapper)
         #pre_order_travel(self.suite1, SimplePrintVisitor())
 
-        self.task1.init()
+        self.task1.init("123456")
         state_mapper["/suite1"] = "active"
         state_mapper["/suite1/family1"] = "active"
         state_mapper["/suite1/family1/task1"] = "active"
@@ -95,7 +95,7 @@ class TestNode(unittest.TestCase):
         check_node_state(self.suite1, state_mapper)
         #pre_order_travel(self.suite1, SimplePrintVisitor())
 
-        self.task2.init()
+        self.task2.init("123456")
         state_mapper["/suite1"] = "active"
         state_mapper["/suite1/family1"] = "active"
         state_mapper["/suite1/family1/task2"] = "active"
@@ -111,7 +111,7 @@ class TestNode(unittest.TestCase):
         check_node_state(self.suite1, state_mapper)
         #pre_order_travel(self.suite1, SimplePrintVisitor())
 
-        self.task3.init()
+        self.task3.init("123456")
         state_mapper["/suite1"] = "active"
         state_mapper["/suite1/family2"] = "active"
         state_mapper["/suite1/family2/task3"] = "active"
@@ -127,7 +127,7 @@ class TestNode(unittest.TestCase):
         check_node_state(self.suite1, state_mapper)
         #pre_order_travel(self.suite1, SimplePrintVisitor())
 
-        self.task4.init()
+        self.task4.init("123456")
         state_mapper["/suite1"] = "active"
         state_mapper["/suite1/family2"] = "active"
         state_mapper["/suite1/family2/family3"] = "active"

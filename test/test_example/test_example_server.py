@@ -8,7 +8,7 @@ class TestServer(object):
         self.bunch = self.server.bunch
 
         self.suite1 = self.bunch.add_suite("suite1")
-        self.suite1.suite_home = os.path.join(os.path.dirname(__file__), '../test_data/py')
+        self.suite1.var_map["suite_home"] = os.path.join(os.path.dirname(__file__), '../test_data/py')
         self.family1 = self.suite1.append_child("family1")
         self.task1 = self.family1.append_child("task1")
         self.task2 = self.family1.append_child("task2")

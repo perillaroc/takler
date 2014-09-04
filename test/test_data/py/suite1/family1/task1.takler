@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 
 node_path = "/suite1/family1/task1"
 

@@ -1,3 +1,5 @@
+import os
+import sys
 from takler.constant import SCRIPT_EXTENSION
 from takler.node_state import NodeState
 from takler.node_trigger import NodeTrigger
@@ -18,7 +20,11 @@ class Node(object):
         self.var_map = dict()
 
     def __str__(self):
-        return "[Node] {node_name}".format(node_name=self.name)
+        return "[{class_name}] {node_name}".format(class_name=self.__class__.__name__,
+                                                   node_name=self.name)
+
+    def set_value(self, value_name, value):
+        self.var_map[value_name] = value
 
     def set_state(self, some_state):
         """Set node state to some state, and handle the state change.
@@ -94,7 +100,7 @@ class Node(object):
 
         Change stats of this nodes to Queued, and resolve dependency once.
         """
-        print "{node} queue".format(node=self.get_node_path())
+        print "[Node]{node} queue".format(node=self.get_node_path())
         self.sink_state_change(NodeState.Queued)
         self.set_state(NodeState.Queued)
 
@@ -104,28 +110,53 @@ class Node(object):
         This method is usually called by resolve_dependency.
         """
         node_path = self.get_node_path()
-        print "{node} submitted".format(node=node_path)
-        script_path = self.get_node_path()
-        print "{node} script is {script_path}".format(node=node_path, script_path=script_path)
-        self.set_state(NodeState.Submitted)
+        script_path = self.get_root().var_map["suite_home"] + self.get_node_path() + '.' + SCRIPT_EXTENSION
+        print "[Node]{node} submitted. script is {script_path}".format(node=node_path, script_path=script_path)
+        if len(script_path) > 0:
+            if os.path.exists(script_path):
+                child_pid = os.fork()
+                if child_pid == 0:
+                    child_pid = os.fork()
+                    if child_pid == 0:
+                        os.execl("/bin/sh", "sh", "-c", "python {script_path}".format(script_path=script_path))
+                        os._exit(127)
+                    elif child_pid == -1:
+                        print "[Node]{node} submitted failed: can't fork.".format(node=node_path)
+                        sys.exit()
+                    else:
+                        sys.exit()
+                elif child_pid == -1:
+                    print "[Node]{node} submitted failed: can't fork.".format(node=node_path)
+                    return
+                else:
+                    self.set_state(NodeState.Submitted)
+                    return
+            else:
+                print "[Node]{node} submitted failed: no script ({script_path}).".format(node=node_path,
+                                                                                   script_path=script_path)
+                return
+        else:
+            print "[Node]{node} submitted failed: no script path.".format(node=node_path)
+            return
+
 
     def init(self, task_id):
         """Change state to Active. This is usually called form running script via a client command.
         """
         self.task_id = task_id
-        print "{node} init with {task_id}".format(node=self.get_node_path(), task_id=task_id)
+        print "[Node]{node} init with {task_id}".format(node=self.get_node_path(), task_id=task_id)
         self.set_state(NodeState.Active)
 
     def complete(self):
-        print "{node} complete".format(node=self.get_node_path())
+        print "[Node]{node} complete".format(node=self.get_node_path())
         self.set_state(NodeState.Complete)
 
     def abort(self):
-        print "{node} abort".format(node=self.get_node_path())
+        print "[Node]{node} abort".format(node=self.get_node_path())
         self.set_state(NodeState.Aborted)
 
     def kill(self):
-        print "{node} kill".format(node=self.get_node_path())
+        print "[Node]{node} kill".format(node=self.get_node_path())
         self.set_state(NodeState.Aborted)
 
     # node access methods
@@ -197,4 +228,6 @@ class Node(object):
     def get_script_path(self):
         root = self.get_root()
         if "suite_home" in root.var_map:
-            return root.var_map["suite_home"] + self.get_node_path() + SCRIPT_EXTENSION
+            return root.var_map["suite_home"] + self.get_node_path() + '.' +SCRIPT_EXTENSION
+        else:
+            return ""

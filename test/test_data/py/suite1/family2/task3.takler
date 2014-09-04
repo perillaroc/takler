@@ -1,3 +1,5 @@
+#!/bin/env python
+
 node_path = "/suite1/family2/task3"
 
 import glob
