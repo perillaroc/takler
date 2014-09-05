@@ -34,6 +34,7 @@ class Client(object):
 
         command_mapper = {
             "queue": takler_client.queue,
+            "run": takler_client.run,
             "init": takler_client.init,
             "complete": takler_client.complete,
             "abort": takler_client.abort
@@ -53,7 +54,7 @@ class Client(object):
         self.run_command("queue", node_path)
 
     def run(self, node_path):
-        print "Client run %s" % node_path
+        self.run_command("run", node_path)
 
     def init(self, node_path, node_id):
         self.node_id = node_id
