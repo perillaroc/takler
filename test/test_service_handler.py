@@ -2,19 +2,15 @@ import unittest
 import os
 from takler.bunch import Bunch
 from takler.service_handler import TaklerServiceHandler
-from helper import check_node_state
+from helper import check_node_state, empty_fork_for_parent, empty_wait_pid
 
 
 class TaklerServiceHandlerTestCase(unittest.TestCase):
     def setUp(self):
         import os
 
-        def my_fork():
-            return 1
-        def my_wait_pid(x,y):
-            pass
-        os.fork = my_fork
-        os.waitpid = my_wait_pid
+        os.fork = empty_fork_for_parent
+        os.waitpid = empty_wait_pid
         self.bunch = Bunch()
         self.service_handler = TaklerServiceHandler(self.bunch)
 

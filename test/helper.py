@@ -1,5 +1,6 @@
 from takler.node_state import NodeState
 
+
 def check_node_state(test_case, bunch, a_state_mapper):
     """Check node state given in a mapper.
 
@@ -18,3 +19,11 @@ def check_node_state(test_case, bunch, a_state_mapper):
                                   state=a_state,
                                   required_state=required_state
                               ))
+
+
+def empty_fork_for_parent():
+    return 1
+
+
+def empty_wait_pid(x, y):
+    pass

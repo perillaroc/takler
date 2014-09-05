@@ -2,10 +2,16 @@ import unittest
 import os
 import takler.suite
 import takler.node_state
+import helper
 
 
 class NodeOperationTestCase(unittest.TestCase):
     def setUp(self):
+        import os
+
+        os.fork = helper.empty_fork_for_parent
+        os.waitpid = helper.empty_wait_pid
+
         self.empty_suite = takler.suite.Suite("empty_suite")
         self.empty_suite.var_map["suite_home"] = os.path.join(os.path.dirname(__file__), 'test_data/py')
         self.family1 = self.empty_suite.append_child("family1")
@@ -21,6 +27,9 @@ class NodeOperationTestCase(unittest.TestCase):
         self.family3 = self.family2.append_child("family3")
         self.family3.add_trigger("task3 == complete")
         self.task4 = self.family3.append_child("task4")
+
+    def tearDown(self):
+        reload(os)
 
     def test_node_operation(self):
         def check_node_state(root, a_state_mapper):
