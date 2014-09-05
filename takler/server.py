@@ -42,8 +42,11 @@ class Server(object):
             server_host=self.host,
             server_port=self.port
         )
-        self.thrift_server.serve()
-        print "Stop server..."
+        try:
+            self.thrift_server.serve()
+        except KeyboardInterrupt:
+            print "[Server] Get a KeyboardInterrupt to stop server"
+        print "[Server] Server stopped"
 
 
 def main():
