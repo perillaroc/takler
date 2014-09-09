@@ -64,5 +64,8 @@ class TestSuite(unittest.TestCase):
         }
         check_task_script_path(task_script_path_mapper)
 
+    def test_to_json(self):
+        print self.suite1.to_json()
+
 if __name__ == "__main__":
     unittest.main()

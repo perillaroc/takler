@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 import takler.constant
@@ -7,11 +8,12 @@ from takler.node_trigger import NodeTrigger
 
 class Node(object):
     def __init__(self, node_name=""):
+        self.name = node_name
+        self.state = NodeState.Unknown
+
         self.parent = None
         self.children = list()
 
-        self.state = NodeState.Unknown
-        self.name = node_name
         self.task_id = ""
         self.path = ""
 
@@ -22,6 +24,25 @@ class Node(object):
     def __str__(self):
         return "[{class_name}] {node_name}".format(class_name=self.__class__.__name__,
                                                    node_name=self.name)
+
+    def to_dict(self):
+        ret = dict()
+        ret['name'] = self.name
+        ret['state'] = self.state
+        if self.task_id is not None and len(self.task_id) > 0:
+            ret['task_id'] = self.task_id
+        if self.path is not None and len(self.path) > 0:
+            ret['path'] = self.path
+        if self.trigger is not None:
+            ret['trigger'] = self.trigger.to_str()
+        ret['var_map'] = self.var_map
+        ret['children'] = list()
+        for a_child in self.children:
+            ret['children'].append(a_child.to_dict())
+        return ret
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
 
     def set_value(self, value_name, value):
         self.var_map[value_name] = value

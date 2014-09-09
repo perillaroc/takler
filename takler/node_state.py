@@ -8,10 +8,10 @@ class NodeState(object):
 
     state_mapper = {
         "unknown": Unknown,
+        "complete": Complete,
         "queued": Queued,
         "submitted": Submitted,
         "active": Active,
-        "complete": Complete,
         "aborted": Aborted
     }
 

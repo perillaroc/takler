@@ -63,6 +63,11 @@ class TestNode(unittest.TestCase):
         self.assertIsNone(self.task1.find_node("task3"))
         self.assertIsNone(self.task4.find_node("../family1/task1"))
 
+    def test_to_dict(self):
+        print self.suite1.to_dict()
+
+    def test_to_json(self):
+        print self.suite1.to_json()
 
 
 if __name__ == "__main__":

@@ -10,6 +10,9 @@ class NodeTrigger(object):
         self._parent_node = parent
         self.parse()
 
+    def to_str(self):
+        return self.exp_str
+
     @property
     def parent_node(self):
         return self._parent_node
