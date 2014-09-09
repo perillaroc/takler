@@ -1,5 +1,6 @@
 import json
 from takler.suite import Suite
+from takler.node import Node
 
 
 class Bunch(object):
@@ -16,7 +17,8 @@ class Bunch(object):
         return json.dumps(self.to_dict())
 
     def add_suite(self, a_suite):
-        if isinstance(a_suite, Suite):
+        # TODO (windroc, 2014.09.09): Suite or Node
+        if isinstance(a_suite, Suite) or isinstance(a_suite, Node):
             self.suites.append(a_suite)
             return a_suite
         elif isinstance(a_suite, basestring):

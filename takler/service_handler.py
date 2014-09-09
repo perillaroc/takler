@@ -1,4 +1,5 @@
 from takler.takler_service.ttypes import *
+from takler.node import Node
 
 
 class TaklerServiceHandler:
@@ -70,3 +71,12 @@ class TaklerServiceHandler:
         print "[TaklerServiceHandler] Get bunch tree"
         ret = self.bunch.to_json()
         return ServiceResponse(0, ret)
+
+    def add_suite(self, suite_json_str):
+        """
+        Parameters:
+         - suite_json_str
+        """
+        a_new_suite = Node.create_from_json(suite_json_str)
+        self.bunch.add_suite(a_new_suite)
+        return ServiceResponse(0, "ok")

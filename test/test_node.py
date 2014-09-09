@@ -64,10 +64,17 @@ class TestNode(unittest.TestCase):
         self.assertIsNone(self.task4.find_node("../family1/task1"))
 
     def test_to_dict(self):
-        print self.suite1.to_dict()
+        suite_dict = self.suite1.to_dict()
+        print suite_dict
+        suite2 = Node.create_from_dict(suite_dict)
+        pre_order_travel(suite2, SimplePrintVisitor())
+
 
     def test_to_json(self):
-        print self.suite1.to_json()
+        suite_json = self.suite1.to_json()
+        print suite_json
+        suite2 = Node.create_from_json(suite_json)
+        pre_order_travel(suite2, SimplePrintVisitor())
 
 
 if __name__ == "__main__":

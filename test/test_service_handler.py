@@ -3,6 +3,7 @@ import unittest
 import os
 from takler.bunch import Bunch
 from takler.service_handler import TaklerServiceHandler
+from takler.suite import Suite
 from helper import check_node_state, empty_fork_for_parent, empty_wait_pid
 
 
@@ -130,6 +131,28 @@ class TaklerServiceHandlerTestCase(unittest.TestCase):
         tree_str = self.service_handler.bunch_tree().str
         bunch_tree = json.loads(tree_str)
         print json.dumps(bunch_tree, indent=2, separators=(',', ';'))
+
+    def test_handler_add_suite(self):
+        test_suite2 = Suite("test_suite2")
+        test_suite2.var_map["suite_home"] = os.path.join(os.path.dirname(__file__), 'test_data/py')
+        family1 = test_suite2.append_child("family1")
+        task1 = family1.append_child("task1")
+        task2 = family1.append_child("task2")
+        task2.add_trigger("task1 == complete")
+
+        family2 = test_suite2.append_child("family2")
+        family2.add_trigger("family1 == complete")
+
+        task3 = family2.append_child("task3")
+
+        family3 = family2.append_child("family3")
+        family3.add_trigger("task3 == complete")
+        task4 = family3.append_child("task4")
+
+        self.service_handler.add_suite(test_suite2.to_json())
+        print "[test_handler_add_suite]"
+        print json.dumps(self.service_handler.bunch.to_dict(),
+                   indent=4, separators=(',', ';'))
 
 
 if __name__ == '__main__':

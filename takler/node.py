@@ -41,8 +41,32 @@ class Node(object):
             ret['children'].append(a_child.to_dict())
         return ret
 
+    @staticmethod
+    def create_from_dict(node_dict, parent=None):
+        # use parent is evil.
+        node = Node()
+        node.parent = parent
+        node.name = node_dict['name']
+        node.state = node_dict['state']
+        if 'task_id' in node_dict:
+            node.task_id = node_dict['task_id']
+        if 'path' in node_dict:
+            node.path = node_dict['path']
+        if 'trigger' in node_dict:
+            node.trigger = NodeTrigger(node_dict['trigger'], parent=node)
+        node.var_map = node_dict['var_map']
+        for a_child_item in node_dict['children']:
+            a_child_node = Node.create_from_dict(a_child_item, parent=node)
+            node.children.append(a_child_node)
+        return node
+
     def to_json(self):
         return json.dumps(self.to_dict())
+
+    @staticmethod
+    def create_from_json(node_json, parent=None):
+        node_dict = json.loads(node_json)
+        return Node.create_from_dict(node_dict, parent)
 
     def set_value(self, value_name, value):
         self.var_map[value_name] = value
