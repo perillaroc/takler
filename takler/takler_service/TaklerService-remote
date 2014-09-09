@@ -29,6 +29,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print '  ServiceResponse complete(string node_path)'
   print '  ServiceResponse abort(string node_path)'
   print '  ServiceResponse kill(string node_path)'
+  print '  ServiceResponse bunch_tree()'
   print ''
   sys.exit(0)
 
@@ -115,6 +116,12 @@ elif cmd == 'kill':
     print 'kill requires 1 args'
     sys.exit(1)
   pp.pprint(client.kill(args[0],))
+
+elif cmd == 'bunch_tree':
+  if len(args) != 0:
+    print 'bunch_tree requires 0 args'
+    sys.exit(1)
+  pp.pprint(client.bunch_tree())
 
 else:
   print 'Unrecognized method %s' % cmd

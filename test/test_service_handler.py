@@ -1,3 +1,4 @@
+import json
 import unittest
 import os
 from takler.bunch import Bunch
@@ -124,6 +125,11 @@ class TaklerServiceHandlerTestCase(unittest.TestCase):
             "/empty_suite/family2/family3/task4": "queued",
         }
         check_node_state(self, self.bunch, state_mapper)
+
+    def test_handler_get_bunch_tree(self):
+        tree_str = self.service_handler.bunch_tree().str
+        bunch_tree = json.loads(tree_str)
+        print json.dumps(bunch_tree, indent=2, separators=(',', ';'))
 
 
 if __name__ == '__main__':

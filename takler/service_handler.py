@@ -65,3 +65,8 @@ class TaklerServiceHandler:
         some_node = self.bunch.find_node_by_absolute_path(node_path)
         some_node.kill()
         return ServiceResponse(0, "ok")
+
+    def bunch_tree(self):
+        print "[TaklerServiceHandler] Get bunch tree"
+        ret = self.bunch.to_json()
+        return ServiceResponse(0, ret)

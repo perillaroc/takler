@@ -12,4 +12,5 @@ service TaklerService{
     ServiceResponse complete(1:string node_path)
     ServiceResponse abort(1:string node_path)
     ServiceResponse kill(1:string node_path)
+    ServiceResponse bunch_tree()
 }

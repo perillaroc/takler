@@ -35,6 +35,9 @@ class TestBunchCase(unittest.TestCase):
         self.assertEqual(self.bunch.find_node_by_absolute_path("/suite1/family1/task1"), self.task1)
         self.assertEqual(self.bunch.find_node_by_absolute_path("/suite1/family2"), self.family2)
 
+    def test_to_json(self):
+        print self.bunch.to_json()
+
 
 if __name__ == '__main__':
     unittest.main()

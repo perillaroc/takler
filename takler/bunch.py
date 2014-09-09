@@ -1,9 +1,19 @@
+import json
 from takler.suite import Suite
 
 
 class Bunch(object):
     def __init__(self):
         self.suites = []
+
+    def to_dict(self):
+        ret = []
+        for a_suite in self.suites:
+            ret.append(a_suite.to_dict())
+        return ret
+
+    def to_json(self):
+        return json.dumps(self.to_dict())
 
     def add_suite(self, a_suite):
         if isinstance(a_suite, Suite):

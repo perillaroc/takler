@@ -37,9 +37,10 @@ class Client(object):
             "run": takler_client.run,
             "init": takler_client.init,
             "complete": takler_client.complete,
-            "abort": takler_client.abort
+            "abort": takler_client.abort,
+            "bunch_tree": takler_client.banch_tree
         }
-
+        server_response = None
         if command in command_mapper:
             server_response = command_mapper[command](*args)
             print "[{name}]{server_response}".format(name="Client",
@@ -49,6 +50,7 @@ class Client(object):
 
         # Close!
         transport.close()
+        return server_response
 
     def queue(self, node_path):
         self.run_command("queue", node_path)
@@ -65,6 +67,9 @@ class Client(object):
 
     def abort(self, node_path):
         self.run_command("abort", node_path)
+
+    def bunch_tree(self):
+        self.run_command("bunch_tree")
 
 
 def main():
