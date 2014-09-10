@@ -19,14 +19,15 @@ class Bunch(object):
     def add_suite(self, a_suite):
         # TODO (windroc, 2014.09.09): Suite or Node
         if isinstance(a_suite, Suite) or isinstance(a_suite, Node):
-            self.suites.append(a_suite)
-            return a_suite
+            pass
         elif isinstance(a_suite, basestring):
-            new_suite = Suite(a_suite)
-            self.suites.append(new_suite)
-            return new_suite
+            a_suite = Suite(a_suite)
         else:
             raise Exception("{a_suite} is not a suite".format(a_suite=a_suite))
+        if self.find_suite_by_name(a_suite.name):
+            raise Exception("Suite {a_suite} is already exist".format(a_suite=a_suite.name))
+        self.suites.append(a_suite)
+        return a_suite
 
     def find_suite_by_name(self, suite_name):
         for a_suite in self.suites:

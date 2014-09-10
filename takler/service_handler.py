@@ -77,6 +77,7 @@ class TaklerServiceHandler:
         Parameters:
          - suite_json_str
         """
+        print "[TaklerServiceHandler] add suite"
         a_new_suite = Node.create_from_json(suite_json_str)
         self.bunch.add_suite(a_new_suite)
         return ServiceResponse(0, "ok")
