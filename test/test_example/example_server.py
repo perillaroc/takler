@@ -1,5 +1,5 @@
 import os
-from takler.server import Server
+from takler import Server
 
 
 class TestServer(object):

@@ -38,7 +38,7 @@ class Client(object):
             "init": takler_client.init,
             "complete": takler_client.complete,
             "abort": takler_client.abort,
-            "bunch_tree": takler_client.banch_tree
+            "bunch_tree": takler_client.bunch_tree
         }
         server_response = None
         if command in command_mapper:
