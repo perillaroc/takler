@@ -38,7 +38,8 @@ class Client(object):
             "init": takler_client.init,
             "complete": takler_client.complete,
             "abort": takler_client.abort,
-            "bunch_tree": takler_client.bunch_tree
+            "bunch_tree": takler_client.bunch_tree,
+            "add_suite": takler_client.add_suite
         }
         server_response = None
         if command in command_mapper:
@@ -53,23 +54,27 @@ class Client(object):
         return server_response
 
     def queue(self, node_path):
-        self.run_command("queue", node_path)
+        return self.run_command("queue", node_path)
 
     def run(self, node_path):
-        self.run_command("run", node_path)
+        return self.run_command("run", node_path)
 
     def init(self, node_path, node_id):
         self.node_id = node_id
-        self.run_command("init", node_path, node_id)
+        return self.run_command("init", node_path, node_id)
 
     def complete(self, node_path):
-        self.run_command("complete", node_path)
+        return self.run_command("complete", node_path)
 
     def abort(self, node_path):
-        self.run_command("abort", node_path)
+        return self.run_command("abort", node_path)
 
     def bunch_tree(self):
-        self.run_command("bunch_tree")
+        return self.run_command("bunch_tree")
+
+    def add_suite(self, suite):
+        return self.run_command("add_suite", suite.to_json())
+
 
 
 def main():
