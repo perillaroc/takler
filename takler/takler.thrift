@@ -1,9 +1,17 @@
 namespace py takler_service
 
+# data structure
+
 struct ServiceResponse{
-1: i64 flag,
-2: string str
+    1: i64 flag,
+    2: string str
 }
+
+exception InvalidRequestException{
+    1:string why
+}
+
+# service api
 
 service TaklerService{
     ServiceResponse queue(1:string node_path)
@@ -16,4 +24,5 @@ service TaklerService{
     ServiceResponse bunch_tree()
 
     ServiceResponse add_suite(1:string suite_json_str)
+        throws (1:InvalidRequestException ire)
 }

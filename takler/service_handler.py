@@ -79,5 +79,9 @@ class TaklerServiceHandler:
         """
         print "[TaklerServiceHandler] add suite"
         a_new_suite = Node.create_from_json(suite_json_str)
-        self.bunch.add_suite(a_new_suite)
+        if self.bunch.find_suite_by_name(a_new_suite.name) is None:
+            self.bunch.add_suite(a_new_suite)
+        else:
+            raise InvalidRequestException(
+                why="Suite is already exists.")
         return ServiceResponse(0, "ok")

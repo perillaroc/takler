@@ -43,9 +43,13 @@ class Client(object):
         }
         server_response = None
         if command in command_mapper:
-            server_response = command_mapper[command](*args)
-            print "[{name}]{server_response}".format(name="Client",
-                                                     server_response=server_response)
+            try:
+                server_response = command_mapper[command](*args)
+                print "[{name}]{server_response}".format(name="Client", server_response=server_response)
+            except InvalidRequestException, e:
+                print "[Client]got exception: {why}".format(why=e.why)
+                transport.close()
+                raise
         else:
             print "command is not right: {command}".format(command=command)
 
@@ -74,7 +78,6 @@ class Client(object):
 
     def add_suite(self, suite):
         return self.run_command("add_suite", suite.to_json())
-
 
 
 def main():
