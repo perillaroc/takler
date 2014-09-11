@@ -9,6 +9,7 @@ from takler.takler_service import TaklerService
 from takler.takler_service.ttypes import *
 from takler.service_handler import TaklerServiceHandler
 from takler.bunch import Bunch
+from takler.logger import logger
 
 
 class Server(object):
@@ -38,15 +39,16 @@ class Server(object):
         # You could do one of these for a multithreaded server
         #server = TServer.TThreadedServer(processor, transport, tfactory, pfactory)
         #server = TServer.TThreadPoolServer(processor, transport, tfactory, pfactory)
-        print "Starting server at {server_host}:{server_port}".format(
+        logger.info("Starting server at {server_host}:{server_port}".format(
             server_host=self.host,
             server_port=self.port
-        )
+        ))
+        print
         try:
             self.thrift_server.serve()
         except KeyboardInterrupt:
-            print "[Server] Get a KeyboardInterrupt to stop server"
-        print "[Server] Server stopped"
+            logger.info("[Server] Get a KeyboardInterrupt to stop server")
+        logger.info("[Server] Server stopped")
 
 
 def main():

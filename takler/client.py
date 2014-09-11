@@ -2,6 +2,7 @@ import argparse
 from takler.constant import DEFAULT_HOST, DEFAULT_PORT
 from takler.takler_service import TaklerService
 from takler.takler_service.ttypes import *
+from takler.logger import logger
 
 from thrift import Thrift
 from thrift.transport import TSocket
@@ -45,13 +46,13 @@ class Client(object):
         if command in command_mapper:
             try:
                 server_response = command_mapper[command](*args)
-                print "[{name}]{server_response}".format(name="Client", server_response=server_response)
+                logger.info("[{name}]{server_response}".format(name="Client", server_response=server_response))
             except InvalidRequestException, e:
-                print "[Client]got exception: {why}".format(why=e.why)
+                logger.exception("[Client]got exception: {why}".format(why=e.why))
                 transport.close()
                 raise
         else:
-            print "command is not right: {command}".format(command=command)
+            logger.info("command is not right: {command}".format(command=command))
 
         # Close!
         transport.close()

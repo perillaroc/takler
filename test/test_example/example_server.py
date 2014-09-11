@@ -1,10 +1,10 @@
 import os
-from takler import Server
+import takler
 
 
 class TestServer(object):
     def __init__(self):
-        self.server = Server()
+        self.server = takler.Server()
         self.bunch = self.server.bunch
 
         self.suite1 = self.bunch.add_suite("suite1")

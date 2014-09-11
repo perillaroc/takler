@@ -1,14 +1,13 @@
 import json
 import os
 import takler
-from takler.suite import Suite
 
 
 def main():
     client = takler.Client()
     client.queue("/suite1")
 
-    test_suite2 = Suite("test_suite2")
+    test_suite2 = takler.Suite("test_suite2")
     test_suite2.var_map["suite_home"] = os.path.join(os.path.dirname(__file__), '../test_data/py')
     family1 = test_suite2.append_child("family1")
     task1 = family1.append_child("task1")
@@ -24,7 +23,10 @@ def main():
     family3.add_trigger("task3 == complete")
     task4 = family3.append_child("task4")
 
-    client.add_suite(test_suite2)
+    try:
+        client.add_suite(test_suite2)
+    except takler.InvalidRequestException, ire:
+        print "[example_client]got InvalidRequestException: {why}".format(why=ire.why)
 
     server_response = client.bunch_tree()
     bunch_tree = json.loads(server_response.str)
