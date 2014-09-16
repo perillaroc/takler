@@ -25,6 +25,14 @@ class Node(object):
         return "[{class_name}] {node_name}".format(class_name=self.__class__.__name__,
                                                    node_name=self.name)
 
+    def __del__(self):
+        self.parent = None
+        for a_child in self.children:
+            del a_child
+        del self.children
+        del self.trigger
+        del self.var_map
+
     def to_dict(self):
         ret = dict()
         ret['name'] = self.name

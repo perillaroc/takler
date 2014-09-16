@@ -69,13 +69,16 @@ class TestNode(unittest.TestCase):
         suite2 = Node.create_from_dict(suite_dict)
         pre_order_travel(suite2, SimplePrintVisitor())
 
-
     def test_to_json(self):
         suite_json = self.suite1.to_json()
         print suite_json
         suite2 = Node.create_from_json(suite_json)
         pre_order_travel(suite2, SimplePrintVisitor())
 
+    def test_node_deletion(self):
+        print self.suite1
+        del self.suite1
+        print "delete done"
 
 if __name__ == "__main__":
     unittest.main()
