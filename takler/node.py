@@ -33,6 +33,22 @@ class Node(object):
         del self.trigger
         del self.var_map
 
+    def delete_children(self):
+        while len(self.children)>0:
+            self.children[0].delete_children()
+            self.children[0].parent = None
+            self.children[0].trigger = None
+            self.children[0].var_map = dict()
+            self.children.remove(self.children[0])
+        self.children = list()
+
+    def delete_child(self, child):
+        if child in self.children:
+            child.delete_children()
+            return self.children.pop(self.children.index(child))
+        else:
+            raise Exception("{child} does not exist".format(child=child))
+
     def to_dict(self):
         ret = dict()
         ret['name'] = self.name

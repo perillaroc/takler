@@ -76,9 +76,13 @@ class TestNode(unittest.TestCase):
         pre_order_travel(suite2, SimplePrintVisitor())
 
     def test_node_deletion(self):
-        print self.suite1
-        del self.suite1
-        print "delete done"
+        print "before node delete"
+        pre_order_travel(self.suite1, SimplePrintVisitor())
+        self.family1.delete_children()
+        print "after node delete"
+        self.assertEqual(self.family1.children, list())
+        pre_order_travel(self.suite1, SimplePrintVisitor())
+
 
 if __name__ == "__main__":
     unittest.main()
