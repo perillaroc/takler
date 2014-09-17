@@ -17,9 +17,9 @@ class Bunch(object):
         return json.dumps(self.to_dict())
 
     def add_suite(self, a_suite):
-        # TODO (windroc, 2014.09.09): Suite or Node
-        if isinstance(a_suite, Suite) or isinstance(a_suite, Node):
-            pass
+        if isinstance(a_suite, Node):
+            # change to suite
+            a_suite.__class__ = Suite
         elif isinstance(a_suite, basestring):
             a_suite = Suite(a_suite)
         else:
@@ -28,6 +28,18 @@ class Bunch(object):
             raise Exception("Suite {a_suite} is already exist".format(a_suite=a_suite.name))
         self.suites.append(a_suite)
         return a_suite
+
+    def update_suite(self, a_suite):
+        pass
+
+    def update_node_by_absolute_path(self, a_path, node):
+        pass
+
+    def delete_suite(self, a_suite):
+        pass
+
+    def delete_node_by_absolute_path(self, a_path, node):
+        pass
 
     def find_suite_by_name(self, suite_name):
         for a_suite in self.suites:
