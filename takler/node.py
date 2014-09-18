@@ -78,6 +78,9 @@ class Node(object):
 
     def append_child(self, child_name):
         child_node = Node(child_name)
+        return self.append_child_node(child_node)
+
+    def append_child_node(self, child_node):
         child_node.parent = self
         self.children.append(child_node)
         return child_node

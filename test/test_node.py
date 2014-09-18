@@ -75,6 +75,15 @@ class TestNode(unittest.TestCase):
         suite2 = Node.create_from_json(suite_json)
         pre_order_travel(suite2, SimplePrintVisitor())
 
+    def test_node_append(self):
+        print "[test_node_append] start"
+        new_node = Node("task2-1")
+        self.family2.append_child_node(new_node)
+        self.family2.append_child("task2-2")
+        self.assertIsNotNone(self.suite1.find_node("/suite1/family2/task2-1"))
+        self.assertIsNotNone(self.suite1.find_node("/suite1/family2/task2-2"))
+        print "[test_node_append] end"
+
     def test_node_deletion(self):
         print "before node delete"
         pre_order_travel(self.suite1, SimplePrintVisitor())

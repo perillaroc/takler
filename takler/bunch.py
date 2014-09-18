@@ -26,11 +26,12 @@ class Bunch(object):
             raise Exception("{a_suite} is not a suite".format(a_suite=suite))
         if self.find_suite(suite.name):
             raise Exception("Suite {a_suite} is already exist".format(a_suite=suite.name))
-        self.suites[suite.name] = (suite)
+        self.suites[suite.name] = suite
         return suite
 
     def add_node(self, parent, node):
-        pass
+        parent = self.find_node(parent)
+        return parent.append_child_node(node)
 
     def find_suite(self, name):
         if name in self.suites:
@@ -73,7 +74,7 @@ class Bunch(object):
         elif isinstance(suite, basestring):
             suite_name = suite
         else:
-            raise Exception("param suite must be a Node or string.")
+            raise TypeError("param suite must be a Node or string.")
         if suite_name not in self.suites:
             raise Exception("suite {suite} doesn't exist.".format(suite=suite_name))
         return self.suites.pop(suite_name)

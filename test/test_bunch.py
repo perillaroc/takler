@@ -29,6 +29,12 @@ class TestBunchCase(unittest.TestCase):
     def test_add_suite(self):
         self.suite1.print_suite()
 
+    def test_add_node(self):
+        new_node = Node("task1-1")
+        self.bunch.add_node("/suite1/family1", new_node)
+        self.assertIsNotNone(self.bunch.find_node("/suite1/family1/task1-1"))
+        self.assertIsNotNone(self.bunch.find_node("/suite1/family1/task1"))
+
     def test_find_suite_by_name(self):
         self.assertEqual(self.bunch.find_suite("suite1"), self.suite1)
 
