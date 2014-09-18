@@ -88,3 +88,30 @@ class TaklerServiceHandler:
             raise InvalidRequestException(
                 why="Suite is already exists.")
         return ServiceResponse(0, "ok")
+
+    def update_suite(self, suite_json_str):
+        """
+        Parameters:
+         - suite_json_str
+        """
+        a_suite = Node.create_from_json(suite_json_str)
+        self.logger.info("[TaklerServiceHandler] update suite {suite_name}".format(suite_name=a_suite.name))
+        if self.bunch.find_suite(a_suite.name) is None:
+            raise InvalidRequestException(
+                why="Suite doesn't exists.")
+        self.bunch.update_suite(a_suite)
+        return ServiceResponse(0, "ok")
+
+    def update_node(self, node_path, node_json_str):
+        """
+        :param node_path:
+        :param node_json_str:
+        :return: ServiceResponse
+        """
+        self.logger.info("[TaklerServiceHandler] update node {node_path}".format(node_path=node_path))
+        node = Node.create_from_json(node_json_str)
+        try:
+            self.bunch.update_node(node_path, node)
+        except Exception, exp:
+            raise InvalidRequestException(why=exp.message)
+        return ServiceResponse(0, "ok")

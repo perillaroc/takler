@@ -31,6 +31,8 @@ class Bunch(object):
 
     def add_node(self, parent, node):
         parent = self.find_node(parent)
+        if parent is None:
+            raise Exception("Node {parent} doesn't exist".format(parent=parent))
         return parent.append_child_node(node)
 
     def find_suite(self, name):
@@ -44,6 +46,8 @@ class Bunch(object):
         assert len(tokens) > 1
         suite_name = tokens[1]
         a_suite = self.find_suite(suite_name)
+        if a_suite is None:
+            return None
         return a_suite.find_node(path)
 
     def update_suite(self, suite):

@@ -1,7 +1,7 @@
 import json
 import unittest
 import os
-from takler.bunch import Bunch
+from takler.bunch import Bunch, Node
 from takler.service_handler import TaklerServiceHandler
 from takler.suite import Suite
 from helper import check_node_state, empty_fork_for_parent, empty_wait_pid
@@ -152,7 +152,35 @@ class TaklerServiceHandlerTestCase(unittest.TestCase):
         self.service_handler.add_suite(test_suite2.to_json())
         print "[test_handler_add_suite]"
         print json.dumps(self.service_handler.bunch.to_dict(),
-                   indent=4, separators=(',', ';'))
+                         indent=4, separators=(',', ';'))
+
+    def test_handler_update_suite(self):
+        self.assertIsNotNone(self.bunch.find_node("/empty_suite/family1"))
+        self.assertIsNotNone(self.bunch.find_node("/empty_suite/family1/task1"))
+        self.assertIsNotNone(self.bunch.find_node("/empty_suite/family1/task2"))
+        new_empty_suite = Node("empty_suite")
+        new_empty_suite.append_child("task1-1")
+        new_empty_suite.append_child("task2-1")
+        self.service_handler.update_suite(new_empty_suite.to_json())
+        self.assertIsNotNone(self.bunch.find_node("/empty_suite"))
+        self.assertIsNotNone(self.bunch.find_node("/empty_suite/task1-1"))
+        self.assertIsNotNone(self.bunch.find_node("/empty_suite/task2-1"))
+        self.assertIsNone(self.bunch.find_node("/empty_suite/family1"))
+        self.assertIsNone(self.bunch.find_node("/empty_suite/family1/task1"))
+        self.assertIsNone(self.bunch.find_node("/empty_suite/family1/task2"))
+        self.assertIsNone(self.bunch.find_node("/empty_suite/family2"))
+
+    def test_handler_update_node(self):
+        new_family1 = Node("family1")
+        new_family1.append_child("task1-1")
+        new_family1.append_child("task2-1")
+        self.service_handler.update_node("/empty_suite/family1", new_family1.to_json())
+        self.assertIsNotNone(self.bunch.find_node("/empty_suite/family1"))
+        self.assertIsNotNone(self.bunch.find_node("/empty_suite/family1/task1-1"))
+        self.assertIsNotNone(self.bunch.find_node("/empty_suite/family1/task2-1"))
+        self.assertIsNone(self.bunch.find_node("/empty_suite/family1/task1"))
+        self.assertIsNone(self.bunch.find_node("/empty_suite/family1/task2"))
+
 
 
 if __name__ == '__main__':

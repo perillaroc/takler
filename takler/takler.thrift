@@ -25,4 +25,10 @@ service TaklerService{
 
     ServiceResponse add_suite(1:string suite_json_str)
         throws (1:InvalidRequestException ire)
+
+    ServiceResponse update_suite(1:string suite_json_str)
+        throws (1:InvalidRequestException ire)
+
+    ServiceResponse update_node(1:string node_path, 2:string node_json_str)
+        throws (1:InvalidRequestException ire)
 }

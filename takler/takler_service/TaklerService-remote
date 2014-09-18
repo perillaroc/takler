@@ -31,6 +31,8 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
   print '  ServiceResponse kill(string node_path)'
   print '  ServiceResponse bunch_tree()'
   print '  ServiceResponse add_suite(string suite_json_str)'
+  print '  ServiceResponse update_suite(string suite_json_str)'
+  print '  ServiceResponse update_node(string node_path, string node_json_str)'
   print ''
   sys.exit(0)
 
@@ -129,6 +131,18 @@ elif cmd == 'add_suite':
     print 'add_suite requires 1 args'
     sys.exit(1)
   pp.pprint(client.add_suite(args[0],))
+
+elif cmd == 'update_suite':
+  if len(args) != 1:
+    print 'update_suite requires 1 args'
+    sys.exit(1)
+  pp.pprint(client.update_suite(args[0],))
+
+elif cmd == 'update_node':
+  if len(args) != 2:
+    print 'update_node requires 2 args'
+    sys.exit(1)
+  pp.pprint(client.update_node(args[0],args[1],))
 
 else:
   print 'Unrecognized method %s' % cmd
