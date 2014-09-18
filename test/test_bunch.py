@@ -1,6 +1,6 @@
 import json
 import unittest
-from takler.bunch import Bunch, Suite
+from takler.bunch import Bunch, Suite, Node
 from takler.visitor import pre_order_travel, SimplePrintVisitor
 
 
@@ -78,6 +78,25 @@ class TestBunchCase(unittest.TestCase):
         self.assertIsNotNone(self.bunch.find_node("/suite2/task2-2"))
         #pre_order_travel(self.bunch.find_suite("suite2"), SimplePrintVisitor())
         print "[test_update_suite] end"
+
+    def test_update_node(self):
+        print "[test_update_node] begin"
+        suite2 = self.bunch.add_suite("suite2")
+        family1 = suite2.append_child("family1")
+        family1.append_child("task1")
+        family1.append_child("task2")
+        suite2.append_child("task3")
+        pre_order_travel(self.bunch.find_suite("suite2"), SimplePrintVisitor())
+        new_family1 = Node("family1")
+        new_family1.append_child("task1-1")
+        new_family1.append_child("task2-1")
+        self.bunch.update_node("/suite2/family1", new_family1)
+        self.assertIsNotNone(self.bunch.find_node("/suite2"))
+        self.assertIsNotNone(self.bunch.find_node("/suite2/family1"))
+        self.assertIsNotNone(self.bunch.find_node("/suite2/family1/task1-1"))
+        self.assertIsNotNone(self.bunch.find_node("/suite2/family1/task2-1"))
+        pre_order_travel(self.bunch.find_suite("suite2"), SimplePrintVisitor())
+        print "[test_update_node] end"
 
 
 if __name__ == '__main__':

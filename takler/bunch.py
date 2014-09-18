@@ -53,7 +53,19 @@ class Bunch(object):
         return old_suite
 
     def update_node(self, path, node):
-        pass
+        """
+        path and node must have the same name.
+        :param path:
+        :param node:
+        :return:
+        """
+        old_node = self.find_node(path)
+        if old_node is None:
+            raise Exception("{path} is not found.".format(path=path))
+        assert old_node.name == node.name
+        if not old_node.is_leaf_node:
+            return self.update_suite(node)
+        return old_node.parent.update_child(old_node.name, node)
 
     def delete_suite(self, suite):
         if isinstance(suite, Node):

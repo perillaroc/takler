@@ -33,22 +33,6 @@ class Node(object):
         del self.trigger
         del self.var_map
 
-    def delete_children(self):
-        while len(self.children)>0:
-            self.children[0].delete_children()
-            self.children[0].parent = None
-            self.children[0].trigger = None
-            self.children[0].var_map = dict()
-            self.children.remove(self.children[0])
-        self.children = list()
-
-    def delete_child(self, child):
-        if child in self.children:
-            child.delete_children()
-            return self.children.pop(self.children.index(child))
-        else:
-            raise Exception("{child} does not exist".format(child=child))
-
     def to_dict(self):
         ret = dict()
         ret['name'] = self.name
@@ -92,6 +76,50 @@ class Node(object):
         node_dict = json.loads(node_json)
         return Node.create_from_dict(node_dict, parent)
 
+    def append_child(self, child_name):
+        child_node = Node(child_name)
+        child_node.parent = self
+        self.children.append(child_node)
+        return child_node
+
+    def find_child_index(self, child):
+        if isinstance(child, Node):
+            child_name = child.name
+        elif isinstance(child, basestring):
+            child_name = child
+        else:
+            raise Exception("child must be a Node or a string.")
+        for child_index in range(0, len(self.children)):
+            if self.children[child_index].name == child_name:
+                return child_index
+        return -1
+
+    def update_child(self, child_name, child_node):
+        child_index = self.find_child_index(child_name)
+        if child_index == -1:
+            raise Exception("child {child_name} is not found".format(child_name=child_name))
+        old_child = self.children[child_index]
+        child_node.parent = self
+        self.children[child_index] = child_node
+        return old_child
+
+    def delete_child(self, child):
+        if child in self.children:
+            child.delete_children()
+            return self.children.pop(self.children.index(child))
+        else:
+            raise Exception("{child} does not exist".format(child=child))
+
+    def delete_children(self):
+        while len(self.children)>0:
+            self.children[0].delete_children()
+            self.children[0].parent = None
+            self.children[0].trigger = None
+            self.children[0].var_map = dict()
+            self.children.remove(self.children[0])
+        self.children = list()
+
+
     def set_value(self, value_name, value):
         self.var_map[value_name] = value
 
@@ -126,12 +154,6 @@ class Node(object):
         self.state = state
         for a_node in self.children:
             a_node.sink_state_change(state)
-
-    def append_child(self, child_name):
-        child_node = Node(child_name)
-        child_node.parent = self
-        self.children.append(child_node)
-        return child_node
 
     def add_trigger(self, trigger_str):
         self.trigger = NodeTrigger(trigger_str, self)
