@@ -42,7 +42,9 @@ class Client(object):
             "complete": takler_client.complete,
             "abort": takler_client.abort,
             "bunch_tree": takler_client.bunch_tree,
-            "add_suite": takler_client.add_suite
+            "add_suite": takler_client.add_suite,
+            "update_suite": takler_client.update_suite,
+            "update_node": takler_client.update_node
         }
         server_response = None
         if command in command_mapper:
@@ -81,6 +83,12 @@ class Client(object):
 
     def add_suite(self, suite):
         return self.run_command("add_suite", suite.to_json())
+
+    def update_suite(self, suite):
+        return self.run_command("update_suite", suite.to_json())
+
+    def update_node(self, path, node):
+        return self.run_command("update_node", path, node.to_json())
 
 
 def main():
