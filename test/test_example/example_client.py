@@ -34,9 +34,7 @@ def main():
 
     family3.append_child("task7")
     client.update_node("/test_suite2/family2/family3", family3)
-    server_response = client.bunch_tree()
-    bunch_tree = json.loads(server_response.str)
-    print json.dumps(bunch_tree, indent=4, separators=(',', ':'))
+    print client.get_bunch_tree_str()
     
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 import argparse
+import json
 from takler.constant import DEFAULT_HOST, DEFAULT_PORT
 from takler.takler_service import TaklerService
 from takler.takler_service.ttypes import *
@@ -78,8 +79,12 @@ class Client(object):
     def abort(self, node_path):
         return self.run_command("abort", node_path)
 
-    def bunch_tree(self):
-        return self.run_command("bunch_tree")
+    def get_bunch_tree(self):
+        server_response = self.run_command("bunch_tree")
+        return json.loads(server_response.str)
+
+    def get_bunch_tree_str(self):
+        return json.dumps(self.get_bunch_tree(), indent=4, separators=(',', ':'))
 
     def add_suite(self, suite):
         return self.run_command("add_suite", suite.to_json())
