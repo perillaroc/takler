@@ -8,7 +8,8 @@ class NodeTrigger(object):
         self.state = None
         self.operator = None
         self._parent_node = parent
-        self.parse()
+        # TODO: parse the trigger when create it but we don't check its validity.
+        #self.parse()
 
     def to_str(self):
         return self.exp_str
@@ -37,5 +38,6 @@ class NodeTrigger(object):
             raise Exception("trigger %s is not supported" % self.exp_str)
 
     def evaluate(self):
+        self.parse()
         if self.operator == "==":
             return self.node.state == self.state

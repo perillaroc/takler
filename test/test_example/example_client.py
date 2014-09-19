@@ -28,16 +28,9 @@ def main():
     except takler.InvalidRequestException, ire:
         print "[example_client]got InvalidRequestException: {why}".format(why=ire.why)
 
-    #server_response = client.bunch_tree()
-    #bunch_tree = json.loads(server_response.str)
-    #print json.dumps(bunch_tree, indent=4, separators=(',', ':'))
-
     family3.append_child("task5")
     family3.append_child("task6")
     client.update_suite(test_suite2)
-    #server_response = client.bunch_tree()
-    #bunch_tree = json.loads(server_response.str)
-    #print json.dumps(bunch_tree, indent=4, separators=(',', ':'))
 
     family3.append_child("task7")
     client.update_node("/test_suite2/family2/family3", family3)
