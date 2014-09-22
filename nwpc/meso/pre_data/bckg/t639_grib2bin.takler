@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/usr/bin/env python
 # @ comment = GRAPES
 # @ job_type = serial
 # @ input = /dev/null
@@ -15,11 +15,13 @@ from datetime import datetime, timedelta
 import os
 import sys
 import subprocess
+import takler
 
 print datetime.now()
 
-sys.path.append('../../include')
+sys.path.append(os.path.join(os.path.dirname(__file__), '../../include'))
 import configure
+
 
 # ##############
 # predefine param
