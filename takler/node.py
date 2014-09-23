@@ -330,3 +330,12 @@ class Node(object):
             return root.var_map["suite_home"] + self.get_node_path() + '.' + takler.constant.SCRIPT_EXTENSION
         else:
             return ""
+
+    ###########################
+    # section for variable map
+    ###########################
+    def find_variable(self, name):
+        if name in self.var_map:
+            return self.var_map[name]
+        return None
+
