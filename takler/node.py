@@ -122,7 +122,6 @@ class Node(object):
             self.children.remove(self.children[0])
         self.children = list()
 
-
     def set_value(self, value_name, value):
         self.var_map[value_name] = value
 
@@ -343,6 +342,16 @@ class Node(object):
     def find_generate_variable(self, name):
         if name == "node_path":
             return self.get_node_path()
+        elif name == "script_path":
+            return self.get_script_path()
+        elif name == "run_command":
+            return "python {script_path}".format(script_path=self.get_script_path())
+        elif name == "kill_command":
+            pass
+        elif name == "takler_marco":
+            # marco char for pre process including variable substitute
+            # currently, we only use $ for python script.
+            return "$"
         return None
 
     def find_parent_variable(self, name):
@@ -363,3 +372,29 @@ class Node(object):
             parent_node = parent_node.parent
 
         return value
+
+    def substitute_variable(self, line, micro="$"):
+        pos = 0
+        result_line = line
+
+        while True:
+            start_pos = result_line.find(micro, pos)
+            if start_pos == -1:
+                return result_line
+
+            end_pos = result_line.find(micro, start_pos+1)
+            if end_pos == -1:
+                raise Exception("variable substitution error: {line}")
+
+            var_name = result_line[start_pos+1: end_pos]
+            var_value = ''
+            if var_name == '':
+                var_value = micro
+            else:
+                var_value = self.find_parent_variable(var_name)
+                if var_value is None:
+                    raise Exception("var {var_name} is not found in string {line}".format(
+                        var_name=var_name, line=line
+                    ))
+            result_line = result_line[:start_pos] + var_value + result_line[end_pos+1:]
+            pos = start_pos + len(var_value)
