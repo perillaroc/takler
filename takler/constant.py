@@ -1,4 +1,5 @@
 
 SCRIPT_EXTENSION = "takler"
+JOB_SCRIPT_EXTENSION = "takler.job"
 DEFAULT_HOST = "localhost"
 DEFAULT_PORT = 58705

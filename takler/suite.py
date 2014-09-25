@@ -10,7 +10,7 @@ class Suite(Node):
         self.root = Node(node_name)
         self.suite_home = os.getcwd()
         self.var_map["suite_home"] = os.getcwd()
-        self.var_map["suite_run_home"] = os.getcwd()
+        self.var_map["takler_run_home"] = os.getcwd()
 
     def print_suite(self):
         pre_order_travel(self, SimplePrintVisitor())

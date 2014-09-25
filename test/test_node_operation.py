@@ -14,6 +14,8 @@ class NodeOperationTestCase(unittest.TestCase):
 
         self.empty_suite = takler.suite.Suite("empty_suite")
         self.empty_suite.var_map["suite_home"] = os.path.join(os.path.dirname(__file__), 'test_data/py')
+        self.empty_suite.var_map["takler_run_home"] = os.path.join(os.path.dirname(__file__),
+                                                                   'test_data/takler-run-dir')
         self.family1 = self.empty_suite.append_child("family1")
         self.task1 = self.family1.append_child("task1")
         self.task2 = self.family1.append_child("task2")

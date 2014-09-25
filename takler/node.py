@@ -4,6 +4,7 @@ import sys
 import takler.constant
 from takler.node_state import NodeState
 from takler.node_trigger import NodeTrigger
+from takler.takler_script_file import TaklerScriptFile
 
 
 class Node(object):
@@ -206,13 +207,18 @@ class Node(object):
         script_path = self.get_root().var_map["suite_home"] + self.get_node_path() + '.' \
             + takler.constant.SCRIPT_EXTENSION
         print "[Node]{node} submitted. script is {script_path}".format(node=node_path, script_path=script_path)
+
+        script_file = TaklerScriptFile(self, self.get_script_path())
+        script_file.create_job_script_file()
+        command = self.find_parent_variable("run_command")
+
         if len(script_path) > 0:
             if os.path.exists(script_path):
                 child_pid = os.fork()
                 if child_pid == 0:
                     child_pid = os.fork()
                     if child_pid == 0:
-                        os.execl("/bin/sh", "sh", "-c", "python {script_path}".format(script_path=script_path))
+                        os.execl("/bin/sh", "sh", "-c", command)
                         os._exit(127)
                     elif child_pid == -1:
                         print "[Node]{node} submitted failed: can't fork.".format(node=node_path)
@@ -320,17 +326,6 @@ class Node(object):
             root = root.parent
         return root
 
-    ##############################
-    # section for task script
-    ##############################
-
-    def get_script_path(self):
-        root = self.get_root()
-        if "suite_home" in root.var_map:
-            return root.var_map["suite_home"] + self.get_node_path() + '.' + takler.constant.SCRIPT_EXTENSION
-        else:
-            return ""
-
     ###########################
     # section for variable map
     ###########################
@@ -345,13 +340,15 @@ class Node(object):
         elif name == "script_path":
             return self.get_script_path()
         elif name == "run_command":
-            return "python {script_path}".format(script_path=self.get_script_path())
+            return "python {takler_job_path}".format(takler_job_path=self.get_job_path())
         elif name == "kill_command":
             pass
         elif name == "takler_marco":
             # marco char for pre process including variable substitute
             # currently, we only use $ for python script.
             return "$"
+        elif name == "takler_job_path":
+            return self.get_job_path()
         return None
 
     def find_parent_variable(self, name):
@@ -398,3 +395,22 @@ class Node(object):
                     ))
             result_line = result_line[:start_pos] + var_value + result_line[end_pos+1:]
             pos = start_pos + len(var_value)
+
+
+    ##############################
+    # section for task script
+    ##############################
+
+    def get_script_path(self):
+        root = self.get_root()
+        if "suite_home" in root.var_map:
+            return root.var_map["suite_home"] + self.get_node_path() + '.' + takler.constant.SCRIPT_EXTENSION
+        else:
+            return None
+
+    def get_job_path(self):
+        root = self.get_root()
+        if "takler_run_home" in root.var_map:
+            return root.var_map["takler_run_home"] + self.get_node_path() + '.' + takler.constant.JOB_SCRIPT_EXTENSION
+        else:
+            return None
