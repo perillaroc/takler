@@ -97,6 +97,9 @@ class TestNode(unittest.TestCase):
         self.suite1.var_map['test_string'] = test_string
         self.assertEqual(self.task1.find_parent_variable("test_string"), test_string)
         self.assertIsNone(self.task1.find_parent_variable("null_string"))
+        self.assertEqual(self.task1.find_parent_variable("node_path"), "/suite1/family1/task1")
+        self.assertEqual(self.family1.find_parent_variable("node_path"), "/suite1/family1")
+        self.assertEqual(self.suite1.find_parent_variable("node_path"), "/suite1")
 
 
 if __name__ == "__main__":

@@ -340,13 +340,24 @@ class Node(object):
             return self.var_map[name]
         return None
 
+    def find_generate_variable(self, name):
+        if name == "node_path":
+            return self.get_node_path()
+        return None
+
     def find_parent_variable(self, name):
         value = self.find_variable(name)
+        if value is not None:
+            return value
+        value = self.find_generate_variable(name)
         if value is not None:
             return value
         parent_node = self.parent
         while parent_node is not None:
             value = parent_node.find_variable(name)
+            if value is not None:
+                return value
+            value = self.find_generate_variable(name)
             if value is not None:
                 return value
             parent_node = parent_node.parent
