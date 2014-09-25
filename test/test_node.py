@@ -92,6 +92,12 @@ class TestNode(unittest.TestCase):
         self.assertEqual(self.family1.children, list())
         pre_order_travel(self.suite1, SimplePrintVisitor())
 
+    def test_find_parent_variable(self):
+        test_string = 'test_string'
+        self.suite1.var_map['test_string'] = test_string
+        self.assertEqual(self.task1.find_parent_variable("test_string"), test_string)
+        self.assertIsNone(self.task1.find_parent_variable("null_string"))
+
 
 if __name__ == "__main__":
     unittest.main()

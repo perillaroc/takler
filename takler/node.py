@@ -228,8 +228,9 @@ class Node(object):
                     self.set_state(NodeState.Submitted)
                     return
             else:
-                print "[Node]{node} submitted failed: no script ({script_path}).".format(node=node_path,
-                                                                                   script_path=script_path)
+                print "[Node]{node} submitted failed: no script ({script_path}).".format(
+                    node=node_path,
+                    script_path=script_path)
                 return
         else:
             print "[Node]{node} submitted failed: no script path.".format(node=node_path)
@@ -339,3 +340,15 @@ class Node(object):
             return self.var_map[name]
         return None
 
+    def find_parent_variable(self, name):
+        value = self.find_variable(name)
+        if value is not None:
+            return value
+        parent_node = self.parent
+        while parent_node is not None:
+            value = parent_node.find_variable(name)
+            if value is not None:
+                return value
+            parent_node = parent_node.parent
+
+        return value
