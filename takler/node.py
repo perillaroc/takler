@@ -5,6 +5,7 @@ import takler.constant
 from takler.node_state import NodeState
 from takler.node_trigger import NodeTrigger
 from takler.takler_script_file import TaklerScriptFile
+from takler.variable import VariableName
 
 
 class Node(object):
@@ -204,7 +205,7 @@ class Node(object):
         This method is usually called by resolve_dependency.
         """
         node_path = self.get_node_path()
-        script_path = self.get_root().var_map["suite_home"] + self.get_node_path() + '.' \
+        script_path = self.get_root().var_map[VariableName.SUITE_HOME] + self.get_node_path() + '.' \
             + takler.constant.SCRIPT_EXTENSION
         print "[Node]{node} submitted. script is {script_path}".format(node=node_path, script_path=script_path)
 
@@ -335,19 +336,19 @@ class Node(object):
         return None
 
     def find_generate_variable(self, name):
-        if name == "node_path":
+        if name == VariableName.NODE_PATH:
             return self.get_node_path()
-        elif name == "script_path":
+        elif name == VariableName.SCRIPT_PATH:
             return self.get_script_path()
-        elif name == "run_command":
+        elif name == VariableName.RUN_COMMAND:
             return "python {takler_job_path}".format(takler_job_path=self.get_job_path())
-        elif name == "kill_command":
+        elif name == VariableName.KILL_COMMAND:
             pass
-        elif name == "takler_marco":
+        elif name == VariableName.TAKLER_MACRO:
             # marco char for pre process including variable substitute
             # currently, we only use $ for python script.
             return "$"
-        elif name == "takler_job_path":
+        elif name == VariableName.TAKLER_JOB_PATH:
             return self.get_job_path()
         return None
 
@@ -396,21 +397,19 @@ class Node(object):
             result_line = result_line[:start_pos] + var_value + result_line[end_pos+1:]
             pos = start_pos + len(var_value)
 
-
     ##############################
     # section for task script
     ##############################
-
     def get_script_path(self):
         root = self.get_root()
         if "suite_home" in root.var_map:
-            return root.var_map["suite_home"] + self.get_node_path() + '.' + takler.constant.SCRIPT_EXTENSION
+            return root.var_map[VariableName.SUITE_HOME] + self.get_node_path() + '.' + takler.constant.SCRIPT_EXTENSION
         else:
             return None
 
     def get_job_path(self):
         root = self.get_root()
         if "takler_run_home" in root.var_map:
-            return root.var_map["takler_run_home"] + self.get_node_path() + '.' + takler.constant.JOB_SCRIPT_EXTENSION
+            return root.var_map[VariableName.TAKLER_RUN_HOME] + self.get_node_path() + '.' + takler.constant.JOB_SCRIPT_EXTENSION
         else:
             return None

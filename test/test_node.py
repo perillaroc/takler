@@ -1,8 +1,8 @@
 import os
 from takler.node import Node
 from takler.node_state import NodeState
-
 from takler.visitor import SimplePrintVisitor, pre_order_travel
+from takler.variable import VariableName
 
 import unittest
 
@@ -21,7 +21,7 @@ class TestNode(unittest.TestCase):
                     |- task4 [Unknown] Trigger: True
         """
         self.suite1 = Node("suite1")
-        self.suite1.var_map['suite_home'] = os.path.dirname(__file__)
+        self.suite1.var_map[VariableName.SUITE_HOME] = os.path.dirname(__file__)
 
         self.family1 = self.suite1.append_child("family1")
         self.task1 = self.family1.append_child("task1")
@@ -98,9 +98,9 @@ class TestNode(unittest.TestCase):
         self.suite1.var_map['test_string'] = test_string
         self.assertEqual(self.task1.find_parent_variable("test_string"), test_string)
         self.assertIsNone(self.task1.find_parent_variable("null_string"))
-        self.assertEqual(self.task1.find_parent_variable("node_path"), "/suite1/family1/task1")
-        self.assertEqual(self.family1.find_parent_variable("node_path"), "/suite1/family1")
-        self.assertEqual(self.suite1.find_parent_variable("node_path"), "/suite1")
+        self.assertEqual(self.task1.find_parent_variable(VariableName.NODE_PATH), "/suite1/family1/task1")
+        self.assertEqual(self.family1.find_parent_variable(VariableName.NODE_PATH), "/suite1/family1")
+        self.assertEqual(self.suite1.find_parent_variable(VariableName.NODE_PATH), "/suite1")
 
     def test_substitute_variable(self):
         self.assertEqual(self.task1.substitute_variable("python $script_path$"),
