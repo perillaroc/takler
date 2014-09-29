@@ -205,42 +205,18 @@ class Node(object):
         This method is usually called by resolve_dependency.
         """
         node_path = self.get_node_path()
-        script_path = self.get_root().var_map[VariableName.SUITE_HOME] + self.get_node_path() + '.' \
-            + takler.constant.SCRIPT_EXTENSION
+        script_path = self.get_script_path()
+        job_file = self.get_job_path()
         print "[Node]{node} submitted. script is {script_path}".format(node=node_path, script_path=script_path)
 
         script_file = TaklerScriptFile(self, self.get_script_path())
         script_file.create_job_script_file()
         command = self.find_parent_variable("run_command")
+        substituted_command = self.substitute_variable(command)
 
-        if len(script_path) > 0:
-            if os.path.exists(script_path):
-                child_pid = os.fork()
-                if child_pid == 0:
-                    child_pid = os.fork()
-                    if child_pid == 0:
-                        os.execl("/bin/sh", "sh", "-c", command)
-                        os._exit(127)
-                    elif child_pid == -1:
-                        print "[Node]{node} submitted failed: can't fork.".format(node=node_path)
-                        sys.exit()
-                    else:
-                        sys.exit()
-                elif child_pid == -1:
-                    print "[Node]{node} submitted failed: can't fork.".format(node=node_path)
-                    return
-                else:
-                    os.waitpid(child_pid, 0)
-                    self.set_state(NodeState.Submitted)
-                    return
-            else:
-                print "[Node]{node} submitted failed: no script ({script_path}).".format(
-                    node=node_path,
-                    script_path=script_path)
-                return
-        else:
-            print "[Node]{node} submitted failed: no script path.".format(node=node_path)
-            return
+        self.run_command(substituted_command)
+        self.set_state(NodeState.Submitted)
+        return
 
     def init(self, task_id):
         """Change state to Active. This is usually called form running script via a client command.
@@ -260,8 +236,35 @@ class Node(object):
 
     def kill(self):
         print "[Node]{node} kill".format(node=self.get_node_path())
+        command = self.substitute_variable(self.find_parent_variable("kill_command"))
+        substituted_command = self.substitute_variable(command)
+        self.run_command(substituted_command)
         self.set_state(NodeState.Aborted)
 
+    def run_command(self, command):
+        child_pid = os.fork()
+        if child_pid == 0:
+            child_pid = os.fork()
+            if child_pid == 0:
+                os.execl("/bin/sh", "sh", "-c", command)
+                os._exit(127)
+            elif child_pid == -1:
+                print "[Node]{node} run command failed for {command}:  can't fork.".format(
+                    node=self.get_node_path(),
+                    command=command
+                )
+                sys.exit()
+            else:
+                sys.exit()
+        elif child_pid == -1:
+            print "[Node]{node} run command failed for {command}:  can't fork.".format(
+                node=self.get_node_path(),
+                command=command
+            )
+            return
+        else:
+            os.waitpid(child_pid, 0)
+            return
     ##############################
     # section for node accessing
     ##############################
@@ -340,16 +343,23 @@ class Node(object):
             return self.get_node_path()
         elif name == VariableName.SCRIPT_PATH:
             return self.get_script_path()
+        elif name == VariableName.TASK_ID:
+            return self.task_id
         elif name == VariableName.RUN_COMMAND:
-            return "python {takler_job_path}".format(takler_job_path=self.get_job_path())
+            return "python $takler_job_path$ > $takler_job_output$ 2>&1 &"
+            #return "python $takler_job_path$ &"
         elif name == VariableName.KILL_COMMAND:
-            pass
+            return "kill $task_id$"
         elif name == VariableName.TAKLER_MACRO:
             # marco char for pre process including variable substitute
             # currently, we only use $ for python script.
             return "$"
         elif name == VariableName.TAKLER_JOB_PATH:
             return self.get_job_path()
+        elif name == VariableName.TAKLER_JOB_OUTPUT:
+            return self.get_job_output_path()
+        elif name == VariableName.TAKLER_JOB_OUTPUT_ERROR:
+            return self.get_job_output_error_path()
         return None
 
     def find_parent_variable(self, name):
@@ -403,13 +413,31 @@ class Node(object):
     def get_script_path(self):
         root = self.get_root()
         if "suite_home" in root.var_map:
-            return root.var_map[VariableName.SUITE_HOME] + self.get_node_path() + '.' + takler.constant.SCRIPT_EXTENSION
+            return root.var_map[VariableName.SUITE_HOME] + self.get_node_path() + '.' + \
+                   takler.constant.SCRIPT_EXTENSION
         else:
             return None
 
     def get_job_path(self):
         root = self.get_root()
         if "takler_run_home" in root.var_map:
-            return root.var_map[VariableName.TAKLER_RUN_HOME] + self.get_node_path() + '.' + takler.constant.JOB_SCRIPT_EXTENSION
+            return root.var_map[VariableName.TAKLER_RUN_HOME] + self.get_node_path() + '.' + \
+                   takler.constant.JOB_SCRIPT_EXTENSION
+        else:
+            return None
+
+    def get_job_output_path(self):
+        root = self.get_root()
+        if "takler_run_home" in root.var_map:
+            return root.var_map[VariableName.TAKLER_RUN_HOME] + self.get_node_path() + '.' + \
+                   takler.constant.JOB_OUTPUT_EXTENSION
+        else:
+            return None
+
+    def get_job_output_error_path(self):
+        root = self.get_root()
+        if "takler_run_home" in root.var_map:
+            return root.var_map[VariableName.TAKLER_RUN_HOME] + self.get_node_path() + '.' + \
+                   takler.constant.JOB_OUTPUT_ERROR_EXTENSION
         else:
             return None

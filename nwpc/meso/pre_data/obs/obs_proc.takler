@@ -11,7 +11,7 @@
 # @ restart = no
 # @ queue
 
-node_path = "/meso/pre_data/obs/obs_proc"
+node_path = "$node_path$"
 
 # ###############
 # head

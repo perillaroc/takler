@@ -11,7 +11,7 @@
 # @ restart = no
 # @ queue
 
-node_path = "/meso/pre_data/bckg/t639_grib2bin"
+node_path = "$node_path$"
 
 import atexit
 import signal
@@ -97,12 +97,12 @@ TIME = begin_date_time.strftime("%H")
 # level 17
 #levels="10 20 30 50 70 100 150 200 250 300 400 500 600 700 850 925 1000"
 # level 24
-levels = ['10', '20', '30', '50', '70', '100', '150', '200', '250', '300', '350', '400', \
-          '450', '500', '550', '600', '650', '700', '750', '800', '850', '900', '925', \
+levels = ['10', '20', '30', '50', '70', '100', '150', '200', '250', '300', '350', '400',
+          '450', '500', '550', '600', '650', '700', '750', '800', '850', '900', '925',
           '950', '975', '1000']
 #==========================#
 
-forecast_time = ["012", "015", "018", "021", "024", "027", "030", \
+forecast_time = ["012", "015", "018", "021", "024", "027", "030",
                  "033", "036", "039", "042", "045", "048", "051", "054", "057", "060"]
 
 endian = "little_endian"
@@ -141,7 +141,7 @@ SOILW_4 = ':SPFH:1-2.55 m below'
 TERRAIN = ':HGT:surface:'
 LAND = 'LAND:surface:'
 
-single_level_list = [PS, TS, TMP2M, UGRD10M, VGRD10M, RH2M, PRMSL, SOILT_1, \
+single_level_list = [PS, TS, TMP2M, UGRD10M, VGRD10M, RH2M, PRMSL, SOILT_1,
                      SOILT_2, SOILT_3, SOILT_4, SOILW_1, SOILW_2, SOILW_3, SOILW_4]
 
 ###########################
@@ -182,7 +182,8 @@ for TTT in forecast_time:
     print "multiply levels"
     for field in multiply_level_list:
         for lev in levels:
-            wgrib2_command = wgrib2_bin + ' ' + BDY + ' | grep "' + field + lev + ' mb:"     | ' + wgrib2_bin + ' ' + BDY + ' -i -order we:ns -no_header -append ' + FMT + ' ' + temp_file_name
+            wgrib2_command = wgrib2_bin + ' ' + BDY + ' | grep "' + field + lev + ' mb:"     | ' + wgrib2_bin + ' ' + \
+                BDY + ' -i -order we:ns -no_header -append ' + FMT + ' ' + temp_file_name
             print "+%s " % wgrib2_command
             subprocess.check_call(wgrib2_command, shell=True)
 
@@ -190,7 +191,7 @@ for TTT in forecast_time:
     print "single levels"
     for field in single_level_list:
         wgrib2_command = wgrib2_bin + ' ' + BDY + ' | grep "' + field + '"      | ' + \
-                         wgrib2_bin + ' ' + BDY + ' -i -order we:ns -no_header -append ' + FMT + ' ' + temp_file_name
+            wgrib2_bin + ' ' + BDY + ' -i -order we:ns -no_header -append ' + FMT + ' ' + temp_file_name
         subprocess.check_call(wgrib2_command, shell=True)
 
     ######### execute file for grapes_si #######
