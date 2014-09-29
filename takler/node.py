@@ -35,6 +35,10 @@ class Node(object):
         del self.trigger
         del self.var_map
 
+    #################################################
+    # section for node construction and description
+    #################################################
+
     def to_dict(self):
         ret = dict()
         ret['name'] = self.name
@@ -167,6 +171,10 @@ class Node(object):
             return True
         return self.trigger.evaluate()
 
+    #################################
+    # section for node operation
+    #################################
+
     def resolve_dependency(self):
         """Resolve node dependency for this node and all its children. Submit those satisfy conditions.
         """
@@ -212,9 +220,7 @@ class Node(object):
         script_file = TaklerScriptFile(self, self.get_script_path())
         script_file.create_job_script_file()
         command = self.find_parent_variable("run_command")
-        substituted_command = self.substitute_variable(command)
-
-        self.run_command(substituted_command)
+        self.run_command(command)
         self.set_state(NodeState.Submitted)
         return
 
@@ -237,21 +243,21 @@ class Node(object):
     def kill(self):
         print "[Node]{node} kill".format(node=self.get_node_path())
         command = self.substitute_variable(self.find_parent_variable("kill_command"))
-        substituted_command = self.substitute_variable(command)
-        self.run_command(substituted_command)
+        self.run_command(command)
         self.set_state(NodeState.Aborted)
 
     def run_command(self, command):
+        substituted_command = self.substitute_variable(command)
         child_pid = os.fork()
         if child_pid == 0:
             child_pid = os.fork()
             if child_pid == 0:
-                os.execl("/bin/sh", "sh", "-c", command)
+                os.execl("/bin/sh", "sh", "-c", substituted_command)
                 os._exit(127)
             elif child_pid == -1:
                 print "[Node]{node} run command failed for {command}:  can't fork.".format(
                     node=self.get_node_path(),
-                    command=command
+                    command=substituted_command
                 )
                 sys.exit()
             else:
@@ -259,7 +265,7 @@ class Node(object):
         elif child_pid == -1:
             print "[Node]{node} run command failed for {command}:  can't fork.".format(
                 node=self.get_node_path(),
-                command=command
+                command=substituted_command
             )
             return
         else:

@@ -42,6 +42,7 @@ class Client(object):
             "init": takler_client.init,
             "complete": takler_client.complete,
             "abort": takler_client.abort,
+            "kill": takler_client.kill,
             "bunch_tree": takler_client.bunch_tree,
             "add_suite": takler_client.add_suite,
             "update_suite": takler_client.update_suite,
@@ -78,6 +79,9 @@ class Client(object):
 
     def abort(self, node_path):
         return self.run_command("abort", node_path)
+
+    def kill(self, node_path):
+        return self.run_command("kill", node_path)
 
     def get_bunch_tree(self):
         server_response = self.run_command("bunch_tree")

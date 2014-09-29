@@ -145,6 +145,21 @@ class NodeOperationTestCase(unittest.TestCase):
         check_node_state(self.empty_suite, state_mapper)
         #pre_order_travel(self.empty_suite, SimplePrintVisitor())
 
+        self.family1.queue()
+        state_mapper["/empty_suite"] = "submitted"
+        state_mapper["/empty_suite/family1"] = "submitted"
+        state_mapper["/empty_suite/family1/task1"] = "submitted"
+        state_mapper["/empty_suite/family1/task2"] = "queued"
+        check_node_state(self.empty_suite, state_mapper)
+        #pre_order_travel(self.empty_suite, SimplePrintVisitor())
+
+        self.task1.kill()
+        state_mapper["/empty_suite"] = "aborted"
+        state_mapper["/empty_suite/family1"] = "aborted"
+        state_mapper["/empty_suite/family1/task1"] = "aborted"
+        check_node_state(self.empty_suite, state_mapper)
+        #pre_order_travel(self.empty_suite, SimplePrintVisitor())
+
 
 if __name__ == '__main__':
     unittest.main()
