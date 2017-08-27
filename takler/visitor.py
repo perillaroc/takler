@@ -23,27 +23,12 @@ class SimplePrintVisitor(NodeVisitor):
         self.level = 0
 
     def visit(self, node):
-        if node.state == NodeState.Unknown:
-            state = "Unknown"
-        elif node.state == NodeState.Queued:
-            state = "Queued"
-        elif node.state == NodeState.Submitted:
-            state = "Submitted"
-        elif node.state == NodeState.Active:
-            state = "Active"
-        elif node.state == NodeState.Complete:
-            state = "Complete"
-        elif node.state == NodeState.Aborted:
-            state = "Aborted"
-        else:
-            state = "Invalid"
-
-        print "{place_holder}|- {node_name} [{node_state}] {trigger}".format(
+        print("{place_holder}|- {node_name} [{node_state}] {trigger}".format(
             place_holder="  " * self.level,
             node_name=node.name,
-            node_state=state,
+            node_state=node.state.name,
             trigger=("Trigger: [" + node.trigger.exp_str + "] " if node.trigger is not None else "Trigger: ") +
-                    str(node.evaluate_trigger()))
+                    str(node.evaluate_trigger())))
 
     def before_visit_child(self):
         self.level += 1
