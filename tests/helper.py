@@ -1,4 +1,4 @@
-from takler.node_state import NodeState
+from takler.node.node_state import NodeState
 
 
 def check_node_state(test_case, bunch, a_state_mapper):

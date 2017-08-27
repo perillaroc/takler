@@ -1,7 +1,8 @@
+# coding: utf-8
+from enum import Enum
 
 
-class VariableName(object):
-
+class VariableName(Enum):
     NODE_PATH = "node_path"
     SCRIPT_PATH = "script_path"
     TASK_ID = "task_id"
@@ -14,5 +15,14 @@ class VariableName(object):
     SUITE_HOME = "suite_home"
     TAKLER_RUN_HOME = "takler_run_home"
 
-    def __init__(self):
-        pass
+
+class Variable(object):
+    def __init__(self, name='', value=''):
+        self.name = name
+        self.value = value
+
+    def to_dict(self):
+        return {
+            'name': self.name,
+            'value': self.value
+        }

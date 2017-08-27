@@ -8,7 +8,7 @@ from takler.visitor import pre_order_travel, NodeVisitor, MakeDirectoryVisitor
 
 class TestSuite(unittest.TestCase):
     def setUp(self):
-        """Build a node tree for test:
+        """Build a node tree for tests:
 
         |- suite1 [Unknown] Trigger: True
             |- family1 [Unknown] Trigger: True
@@ -20,8 +20,8 @@ class TestSuite(unittest.TestCase):
                     |- task4 [Unknown] Trigger: True
         """
         self.old_cwd = os.getcwd()
-        test_temp_dir = os.sep.join([os.path.dirname(__file__), '..', '..', 'takler-monitor-test', 'test_suite'])
-        #test_temp_dir = "/vagrant_data/takler-monitor-test/test_suite"
+        test_temp_dir = os.sep.join([os.path.dirname(__file__), '..', '..', 'takler-monitor-tests', 'test_suite'])
+        #test_temp_dir = "/vagrant_data/takler-monitor-tests/test_suite"
         if not os.path.exists(test_temp_dir):
             os.makedirs(test_temp_dir)
         print test_temp_dir

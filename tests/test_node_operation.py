@@ -1,8 +1,10 @@
-import unittest
 import os
-import takler.suite
-import takler.node_state
+import unittest
+
 import helper
+
+import takler.node.node_state
+import takler.suite
 
 
 class NodeOperationTestCase(unittest.TestCase):
@@ -37,7 +39,7 @@ class NodeOperationTestCase(unittest.TestCase):
         def check_node_state(root, a_state_mapper):
             for a_state_exp in a_state_mapper:
                 self.assertEqual(root.find_node(a_state_exp).state,
-                                 takler.node_state.NodeState.to_state(a_state_mapper[a_state_exp]))
+                                 takler.node.node_state.NodeState.to_state(a_state_mapper[a_state_exp]))
 
         self.empty_suite.queue()
         state_mapper = {

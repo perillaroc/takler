@@ -1,11 +1,12 @@
 import json
 import os
 import sys
+
 import takler.constant
-from takler.node_state import NodeState
-from takler.node_trigger import NodeTrigger
+from takler.node.node_state import NodeState
+from takler.node.node_trigger import NodeTrigger
+from takler.node.variable import VariableName
 from takler.takler_script_file import TaklerScriptFile
-from takler.variable import VariableName
 
 
 class Node(object):
@@ -24,8 +25,9 @@ class Node(object):
         self.var_map = dict()
 
     def __str__(self):
-        return "[{class_name}] {node_name}".format(class_name=self.__class__.__name__,
-                                                   node_name=self.name)
+        return "[{class_name}] {node_name}".format(
+            class_name=self.__class__.__name__,
+            node_name=self.name)
 
     def __del__(self):
         self.parent = None
@@ -42,7 +44,7 @@ class Node(object):
     def to_dict(self):
         ret = dict()
         ret['name'] = self.name
-        ret['state'] = self.state
+        ret['state'] = self.state.name
         if self.task_id is not None and len(self.task_id) > 0:
             ret['task_id'] = self.task_id
         if self.path is not None and len(self.path) > 0:

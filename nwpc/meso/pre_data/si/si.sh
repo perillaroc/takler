@@ -240,7 +240,7 @@ ${SI_BIN} #> si.log.$YYYY1$MM1$DD1$HH1
 
 sleep 60
 
-# test output
+# tests output
 if [ -e grapesinput ]; then
 	echo grapesinput created!
 	#if [ $do_3dv = .true. ]; then

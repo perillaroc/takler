@@ -1,15 +1,14 @@
 import os
-from takler.node import Node
-from takler.node_state import NodeState
-from takler.visitor import SimplePrintVisitor, pre_order_travel
-from takler.variable import VariableName
-
 import unittest
+
+from takler.node import Node
+from takler.node.variable import VariableName
+from takler.visitor import SimplePrintVisitor, pre_order_travel
 
 
 class TestNode(unittest.TestCase):
     def setUp(self):
-        """Build a node tree for test:
+        """Build a node tree for tests:
 
         |- suite1 [Unknown] Trigger: True
             |- family1 [Unknown] Trigger: True

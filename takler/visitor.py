@@ -1,5 +1,6 @@
 import os
-from takler.node_state import NodeState
+
+from takler.node.node_state import NodeState
 
 
 class NodeVisitor(object):

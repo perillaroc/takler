@@ -254,7 +254,7 @@ print "Waiting for si.exe to finish..."
 subprocess.check_call(si_bin)
 print "si.exe finished"
 
-# test output
+# tests output
 if os.path.isfile('grapesinput'):
     print "grapesinput created!"
 else:

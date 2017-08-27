@@ -1,4 +1,5 @@
-from takler.node_state import NodeState
+# coding: utf-8
+from takler.node.node_state import NodeState
 
 
 class NodeTrigger(object):
@@ -9,10 +10,12 @@ class NodeTrigger(object):
         self.operator = None
         self._parent_node = parent
         # TODO: parse the trigger when create it but we don't check its validity.
-        #self.parse()
+        # self.parse()
 
-    def to_str(self):
-        return self.exp_str
+    def to_dict(self):
+        return {
+            'expr': self.exp_str
+        }
 
     @property
     def parent_node(self):
@@ -33,7 +36,7 @@ class NodeTrigger(object):
             if self.node is None:
                 raise Exception("trigger %s is not supported" % self.exp_str)
             self.operator = trigger_operator
-            self.state = NodeState.to_state(right_part)
+            self.state = NodeState[right_part]
         else:
             raise Exception("trigger %s is not supported" % self.exp_str)
 
@@ -41,3 +44,5 @@ class NodeTrigger(object):
         self.parse()
         if self.operator == "==":
             return self.node.state == self.state
+        else:
+            return False
