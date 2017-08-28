@@ -17,6 +17,10 @@ class NodeTrigger(object):
             'expr': self.exp_str
         }
 
+    @staticmethod
+    def create_from_dict(d, parent):
+        return NodeTrigger(d['expr'], parent)
+
     @property
     def parent_node(self):
         return self._parent_node

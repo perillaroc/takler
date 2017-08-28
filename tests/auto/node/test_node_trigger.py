@@ -15,7 +15,6 @@ class SimpleNode(object):
         self.children.append(child_node)
         return child_node
 
-
     def get_root(self):
         root = self
         while root.parent is not None:
@@ -56,8 +55,22 @@ class SimpleNode(object):
 
 
 class TestNodeTrigger(object):
-    def test_equal_trigger(self):
+    def test_to_dict(self):
+        root = SimpleNode('root')
+        trigger = NodeTrigger('suite1 == complete', root)
+        d = trigger.to_dict()
+        assert 'expr' in d
+        assert d['expr'] == 'suite1 == complete'
 
+    def test_create_from_dict(self):
+        root = SimpleNode('root')
+        d = {
+            'expr': 'suite1 == complete'
+        }
+        trigger = NodeTrigger.create_from_dict(d, root)
+        assert isinstance(trigger, NodeTrigger)
+
+    def test_equal_trigger(self):
         root_node = SimpleNode("root")
         family1_node = SimpleNode("family1")
         task1_node = SimpleNode("task1")

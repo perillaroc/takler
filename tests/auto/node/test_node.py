@@ -39,6 +39,89 @@ class TestNode(object):
     def test_create_node_tree(self):
         pre_order_travel(self.suite1, SimplePrintVisitor())
 
+    def test_to_dict(self):
+        suite_dict = self.suite1.to_dict()
+        print(suite_dict)
+        suite2 = Node.create_from_dict(suite_dict)
+        pre_order_travel(suite2, SimplePrintVisitor())
+
+    def test_create_from_dict(self):
+        suite_dict = {
+            'name': 'suite1',
+            'state': 'unknown',
+            'var_map': {
+                'SUITE_HOME': {
+                    'name': 'SUITE_HOME',
+                    'value': os.path.dirname(__file__)
+                }
+            },
+            'children': [
+                {
+                    'name': 'family1',
+                    'state': 'unknown',
+                    'var_map': {
+
+                    },
+                    'children': [
+                        {
+                            'name': 'task1',
+                            'state': 'unknown',
+                            'var_map': {},
+                            'children': []
+                        },
+                        {
+                            'name': 'task2',
+                            'state': 'unknown',
+                            'trigger': {
+                                'expr': 'task1 == complete'
+                            },
+                            'var_map': {},
+                            'children': []
+                        }
+                    ]
+                },
+                {
+                    'name': 'family2',
+                    'state': 'unknown',
+                    'trigger': {
+                        'expr': 'family1 == complete'
+                    },
+                    'var_map': {},
+                    'children': [
+                        {
+                            'name': 'task3',
+                            'state': 'unknown',
+                            'var_map': {},
+                            'children': []
+                        },
+                        {
+                            'name': 'family3',
+                            'state': 'unknown',
+                            'trigger': {
+                                'expr': 'task3 == complete'
+                            },
+                            'var_map': {},
+                            'children': [
+                                {
+                                    'name': 'task4',
+                                    'state': 'unknown',
+                                    'var_map': {},
+                                    'children': []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+        suite = Node.create_from_dict(suite_dict)
+
+    def test_to_json(self):
+        suite_json = self.suite1.to_json()
+        print(suite_json)
+        suite2 = Node.create_from_json(suite_json)
+        pre_order_travel(suite2, SimplePrintVisitor())
+
     def test_get_node_path(self):
         assert self.suite1.get_node_path() == "/suite1"
         assert self.family1.get_node_path() == "/suite1/family1"
@@ -62,18 +145,6 @@ class TestNode(object):
         assert self.task1.find_node("/suite1/family3") is None
         assert self.task1.find_node("task3") is None
         assert self.task4.find_node("../family1/task1") is None
-
-    def test_to_dict(self):
-        suite_dict = self.suite1.to_dict()
-        print(suite_dict)
-        suite2 = Node.create_from_dict(suite_dict)
-        pre_order_travel(suite2, SimplePrintVisitor())
-
-    def test_to_json(self):
-        suite_json = self.suite1.to_json()
-        print(suite_json)
-        suite2 = Node.create_from_json(suite_json)
-        pre_order_travel(suite2, SimplePrintVisitor())
 
     def test_node_append(self):
         print("[test_node_append] start")
