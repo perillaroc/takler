@@ -63,7 +63,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     chown -R vagrant:vagrant /home/vagrant/app
 
     echo "Installing python packages..."
-    /usr/local/bin/pip3  install click thrift pytest
+    /usr/local/bin/pip3  install click thrift pytest pyparsing
   SHELL
 
 end

@@ -1,5 +1,6 @@
 # coding: utf-8
 from takler.node.node_state import NodeState
+from takler.node.trigger_parser import parse_trigger
 
 
 class NodeTrigger(object):
@@ -30,7 +31,7 @@ class NodeTrigger(object):
         self._parent_node = value
 
     def parse(self):
-        tokens = self.exp_str.split()
+        tokens = parse_trigger(self.exp_str)
         if len(tokens) == 3:
             left_part = tokens[0]
             trigger_operator = tokens[1]
