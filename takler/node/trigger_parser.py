@@ -1,5 +1,5 @@
 # coding: utf-8
-from pyparsing import Word, Literal, alphas, alphanums, OneOrMore
+from pyparsing import Word, Literal, alphas, alphanums, OneOrMore, ZeroOrMore, infixNotation, opAssoc, oneOf
 
 
 node_name = Word(alphanums + '_')
@@ -10,10 +10,18 @@ operator = Literal("==")
 
 status = Literal('complete') | Literal('aborted')
 
-trigger_expr = node_path.setResultsName("node_path").setParseAction(lambda t: ''.join(t)) \
+logical_operator = Literal('and') | Literal('or')
+
+single_trigger_expr = node_path.setResultsName("node_path").setParseAction(lambda t: ''.join(t)) \
                + operator.setResultsName("operator") \
                + status.setResultsName("status")
 
+trigger_expr = infixNotation(
+    single_trigger_expr.setResultsName("single_expr"),
+    [(oneOf("and", "AND"), 2, opAssoc.LEFT),
+    (oneOf("or", "OR"), 2, opAssoc.RIGHT)]
+)
+
 
 def parse_trigger(trigger):
-    return trigger_expr.parseString(trigger)
+    return single_trigger_expr.parseString(trigger)
