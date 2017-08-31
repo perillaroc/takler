@@ -37,7 +37,7 @@ class NodeState(OrderedEnum):
     def compute_node_state(node):
         if len(node.children) == 0:
             return node.state
-        state = NodeState.Unknown
+        state = NodeState.unknown
         for a_child in node.children:
             child_node_state = NodeState.compute_node_state(a_child)
             if child_node_state > state:

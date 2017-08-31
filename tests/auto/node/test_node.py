@@ -1,5 +1,8 @@
 # coding: utf-8
 import os
+import json
+
+import pytest
 
 from takler.node.variable import VariableName
 from takler.node.node import Node
@@ -7,7 +10,7 @@ from takler.visitor import SimplePrintVisitor, pre_order_travel
 
 
 class TestNode(object):
-    def setup_method(self, method):
+    def setup_method(self):
         """Build a node tree for tests:
 
         |- suite1 [Unknown] Trigger: True
@@ -36,17 +39,7 @@ class TestNode(object):
         self.family3.add_trigger("task3 == complete")
         self.task4 = self.family3.append_child("task4")
 
-    def test_create_node_tree(self):
-        pre_order_travel(self.suite1, SimplePrintVisitor())
-
-    def test_to_dict(self):
-        suite_dict = self.suite1.to_dict()
-        print(suite_dict)
-        suite2 = Node.create_from_dict(suite_dict)
-        pre_order_travel(suite2, SimplePrintVisitor())
-
-    def test_create_from_dict(self):
-        suite_dict = {
+        self.suite_dict = {
             'name': 'suite1',
             'state': 'unknown',
             'var_map': {
@@ -114,13 +107,86 @@ class TestNode(object):
                 }
             ]
         }
-        suite = Node.create_from_dict(suite_dict)
+
+    def teardown_method(self):
+        self.suite1 = None
+
+    def test_to_dict(self):
+        suite_dict = self.suite1.to_dict()
+        assert suite_dict == self.suite_dict
+
+    def test_create_from_dict(self):
+        suite = Node.create_from_dict(self.suite_dict)
+        assert suite.name == self.suite1.name
+        assert suite.state == self.suite1.state
 
     def test_to_json(self):
         suite_json = self.suite1.to_json()
-        print(suite_json)
-        suite2 = Node.create_from_json(suite_json)
-        pre_order_travel(suite2, SimplePrintVisitor())
+        assert suite_json == json.dumps(self.suite_dict)
+
+    def test_create_from_json(self):
+        pass
+
+    def test_append_child(self):
+        suite = Node('suite')
+        task = Node('task')
+        suite.append_child(task)
+        assert suite.children[0] == task
+        assert task.parent == suite
+
+        suite = Node('suite')
+        task1 = suite.append_child('task1')
+        task2 = suite.append_child('task2')
+        assert suite.children[0] == task1
+        assert suite.children[1] == task2
+        assert task1.parent == suite
+        assert task2.parent == suite
+
+        with pytest.raises(TypeError):
+            suite.append_child(1)
+
+    def test_find_child_index(self):
+        assert self.family1.find_child_index(self.task1) == 0
+        assert self.family1.find_child_index(self.task1.name) == 0
+
+        assert self.family1.find_child_index(self.task3) == -1
+        assert self.family1.find_child_index(self.task3.name) == -1
+
+        with pytest.raises(TypeError):
+            self.family1.find_child_index(1)
+
+    def test_update_child(self):
+        new_task1 = Node("new_task1")
+        old_task1 = self.family1.update_child('task1', new_task1)
+        assert old_task1 == self.task1
+        assert self.family1.children[self.family1.find_child_index('new_task1')] == new_task1
+
+        with pytest.raises(Exception):
+            self.family1.update_child('task_no', new_task1)
+
+    def test_delete_child(self):
+        pass
+
+    def test_delete_children(self):
+        pass
+
+    def test_set_variable(self):
+        pass
+
+    def test_set_state(self):
+        pass
+
+    def test_swim_state_change(self):
+        pass
+
+    def test_sink_state_change(self):
+        pass
+
+    def test_add_trigger(self):
+        pass
+
+    def test_evaluate_trigger(self):
+        pass
 
     def test_get_node_path(self):
         assert self.suite1.get_node_path() == "/suite1"
@@ -145,15 +211,6 @@ class TestNode(object):
         assert self.task1.find_node("/suite1/family3") is None
         assert self.task1.find_node("task3") is None
         assert self.task4.find_node("../family1/task1") is None
-
-    def test_node_append(self):
-        print("[test_node_append] start")
-        new_node = Node("task2-1")
-        self.family2.append_child_node(new_node)
-        self.family2.append_child("task2-2")
-        assert self.suite1.find_node("/suite1/family2/task2-1") is not None
-        assert self.suite1.find_node("/suite1/family2/task2-2") is not None
-        print("[test_node_append] end")
 
     def test_node_deletion(self):
         print("before node delete")

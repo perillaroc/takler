@@ -81,7 +81,7 @@ class Node(object):
 
         for a_child_item in node_dict['children']:
             a_child_node = Node.create_from_dict(a_child_item, parent=node)
-            node.append_child_node(a_child_node)
+            node.append_child(a_child_node)
         return node
 
     def to_json(self):
@@ -92,11 +92,13 @@ class Node(object):
         node_dict = json.loads(node_json)
         return Node.create_from_dict(node_dict, parent)
 
-    def append_child(self, child_name):
-        child_node = Node(child_name)
-        return self.append_child_node(child_node)
-
-    def append_child_node(self, child_node):
+    def append_child(self, child):
+        if isinstance(child, str):
+            child_node = Node(child)
+        elif isinstance(child, Node):
+            child_node = child
+        else:
+            raise TypeError("child muast be a Node or a string")
         child_node.parent = self
         self.children.append(child_node)
         return child_node
@@ -107,7 +109,7 @@ class Node(object):
         elif isinstance(child, str):
             child_name = child
         else:
-            raise Exception("child must be a Node or a string.")
+            raise TypeError("child must be a Node or a string.")
         for child_index in range(0, len(self.children)):
             if self.children[child_index].name == child_name:
                 return child_index
@@ -200,7 +202,7 @@ class Node(object):
     def __resolve_node_dependency(self):
         """Resolve dependency of this node only and submit it when true.
         """
-        if self.state == NodeState.Complete or self.state >= NodeState.Submitted:
+        if self.state == NodeState.complete or self.state >= NodeState.submitted:
             return False
 
         if not self.evaluate_trigger():
@@ -217,8 +219,8 @@ class Node(object):
         Change stats of this nodes to Queued, and resolve dependency once.
         """
         print("[Node]{node} queue".format(node=self.get_node_path()))
-        self.sink_state_change(NodeState.Queued)
-        self.set_state(NodeState.Queued)
+        self.sink_state_change(NodeState.queued)
+        self.set_state(NodeState.queued)
 
     def run(self):
         """Execute the script of the node. Change state to Submitted.
@@ -235,7 +237,7 @@ class Node(object):
         script_file.create_job_script_file()
         command = self.find_parent_variable("run_command")
         self.run_command(command)
-        self.set_state(NodeState.Submitted)
+        self.set_state(NodeState.submitted)
         return
 
     def init(self, task_id):
@@ -243,23 +245,23 @@ class Node(object):
         """
         self.task_id = task_id
         print("[Node]{node} init with {task_id}".format(node=self.get_node_path(), task_id=task_id))
-        self.set_state(NodeState.Active)
+        self.set_state(NodeState.active)
 
     def complete(self):
         print("[Node]{node} complete with task_id {task_id}".format(
             node=self.get_node_path(),
             task_id=self.task_id))
-        self.set_state(NodeState.Complete)
+        self.set_state(NodeState.complete)
 
     def abort(self):
         print("[Node]{node} abort".format(node=self.get_node_path()))
-        self.set_state(NodeState.Aborted)
+        self.set_state(NodeState.aborted)
 
     def kill(self):
         print("[Node]{node} kill".format(node=self.get_node_path()))
         command = self.substitute_variable(self.find_parent_variable("kill_command"))
         self.run_command(command)
-        self.set_state(NodeState.Aborted)
+        self.set_state(NodeState.aborted)
 
     def run_command(self, command):
         substituted_command = self.substitute_variable(command)

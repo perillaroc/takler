@@ -20,7 +20,7 @@ trigger_expr = infixNotation(
     single_trigger_expr.setResultsName("single_expr"),
     [(oneOf("and", "AND"), 2, opAssoc.LEFT),
     (oneOf("or", "OR"), 2, opAssoc.RIGHT)]
-)
+).setResultsName("complex_filter")
 
 
 def parse_trigger(trigger):
