@@ -6,6 +6,7 @@ import pytest
 
 from takler.node.variable import VariableName
 from takler.node.node import Node
+from takler.node.node_state import NodeState
 from takler.visitor import SimplePrintVisitor, pre_order_travel
 
 
@@ -165,28 +166,80 @@ class TestNode(object):
             self.family1.update_child('task_no', new_task1)
 
     def test_delete_child(self):
-        pass
+        self.family2.delete_child(self.family3)
+        assert len(self.family2.children) == 1
+        assert len(self.family3.children) == 0
 
     def test_delete_children(self):
-        pass
+        self.family1.delete_children()
+        assert len(self.family1.children) == 0
+        assert self.task1.parent is None
+        assert self.task1.var_map == dict()
+        assert self.task1.trigger is None
+        assert len(self.task1.children) == 0
 
     def test_set_variable(self):
-        pass
-
-    def test_set_state(self):
-        pass
+        assert len(self.task1.var_map) == 0
+        self.task1.set_variable("MODEL_DT", 30)
+        assert len(self.task1.var_map) == 1
+        assert "MODEL_DT" in self.task1.var_map
+        assert self.task1.var_map["MODEL_DT"].name == "MODEL_DT"
+        assert self.task1.var_map["MODEL_DT"].value == 30
 
     def test_swim_state_change(self):
-        pass
+        self.task1.state = NodeState.active
+        self.task2.state = NodeState.queued
+        self.task1.swim_state_change()
+        assert self.family1.state == NodeState.active
+        assert self.suite1.state == NodeState.active
+
+        self.task1.state = NodeState.complete
+        self.task2.state = NodeState.aborted
+        self.task2.swim_state_change()
+        assert self.family1.state == NodeState.aborted
+        assert self.suite1.state == NodeState.aborted
 
     def test_sink_state_change(self):
-        pass
+        self.family2.sink_state_change(NodeState.queued)
+
+        assert self.task3.state == NodeState.queued
+        assert self.family3.state == NodeState.queued
+        assert self.task4.state == NodeState.queued
+
+    def test_set_state(self, monkeypatch):
+        self.suite1.sink_state_change(NodeState.queued)
+
+        def mock_run(x):
+            def mock_run_inner():
+                x.state = NodeState.active
+            # print("run", x)
+            return mock_run_inner
+
+        monkeypatch.setattr(self.suite1, "run", mock_run(self.suite1))
+        monkeypatch.setattr(self.family1, "run", mock_run(self.family1))
+        monkeypatch.setattr(self.task1, "run", mock_run(self.task1))
+        monkeypatch.setattr(self.task2, "run", mock_run(self.task2))
+        monkeypatch.setattr(self.family2, "run", mock_run(self.family2))
+        monkeypatch.setattr(self.task3, "run", mock_run(self.task3))
+        monkeypatch.setattr(self.family3, "run", mock_run(self.family3))
+        monkeypatch.setattr(self.task4, "run", mock_run(self.task4))
+
+        self.family1.set_state(NodeState.queued)
+
+        assert self.task1.state == NodeState.active
+
 
     def test_add_trigger(self):
-        pass
+        trigger = self.task2.trigger
+        assert trigger.exp_str == "task1 == complete"
+        assert trigger.parent_node == self.task2
 
     def test_evaluate_trigger(self):
-        pass
+        assert self.task4.evaluate_trigger()
+        self.task1.state = NodeState.queued
+        assert not self.task2.evaluate_trigger()
+        self.task1.state = NodeState.complete
+        assert self.task2.evaluate_trigger()
 
     def test_get_node_path(self):
         assert self.suite1.get_node_path() == "/suite1"
