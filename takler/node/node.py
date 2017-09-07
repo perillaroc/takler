@@ -186,6 +186,71 @@ class Node(object):
             return True
         return self.trigger.evaluate()
 
+    ##############################
+    # section for node accessing
+    ##############################
+
+    def is_leaf_node(self):
+        if len(self.children) == 0:
+            return True
+        else:
+            return False
+
+    def get_node_path(self):
+        cur_node = self
+        node_list = []
+        while cur_node is not None:
+            node_list.insert(0, cur_node.name)
+            cur_node = cur_node.parent
+        node_list.insert(0, "")
+        return "/".join(node_list)
+
+    def find_node(self, a_node_path):
+        """use node path to find a node.
+
+        Type of node path:
+            1. node1    relative to currently directory
+            2. ../node1/node2
+            3. /node1/node2
+        """
+        cur_node = self
+        node_path = a_node_path
+        root = cur_node.get_root()
+        if node_path.startswith("/"):
+            node_path = node_path[1:]
+
+        # TODO: support multi roots, affect bunch.find_node_by_absolute_path
+        if node_path.startswith(root.name):
+            node_path = node_path[len(root.name)+1:]
+            cur_node = root
+        else:
+            cur_node = self.parent
+
+        if len(node_path) == 0:
+            return cur_node
+
+        tokens = node_path.split("/")
+        for a_token in tokens:
+            if a_token == "..":
+                cur_node = cur_node.parent
+            else:
+                t_node = None
+                for a_child in cur_node.children:
+                    if a_child.name == a_token:
+                        t_node = a_child
+                        break
+                if t_node is None:
+                    return None
+                cur_node = t_node
+
+        return cur_node
+
+    def get_root(self):
+        root = self
+        while root.parent is not None:
+            root = root.parent
+        return root
+
     #################################
     # section for node operation
     #################################
@@ -288,70 +353,6 @@ class Node(object):
         else:
             os.waitpid(child_pid, 0)
             return
-    ##############################
-    # section for node accessing
-    ##############################
-
-    def is_leaf_node(self):
-        if len(self.children) == 0:
-            return True
-        else:
-            return False
-
-    def get_node_path(self):
-        cur_node = self
-        node_list = []
-        while cur_node is not None:
-            node_list.insert(0, cur_node.name)
-            cur_node = cur_node.parent
-        node_list.insert(0, "")
-        return "/".join(node_list)
-
-    def find_node(self, a_node_path):
-        """use node path to find a node.
-
-        Type of node path:
-            1. node1    relative to currently directory
-            2. ../node1/node2
-            3. /node1/node2
-        """
-        cur_node = self
-        node_path = a_node_path
-        root = cur_node.get_root()
-        if node_path.startswith("/"):
-            node_path = node_path[1:]
-
-        # TODO: support multi roots, affect bunch.find_node_by_absolute_path
-        if node_path.startswith(root.name):
-            node_path = node_path[len(root.name)+1:]
-            cur_node = root
-        else:
-            cur_node = self.parent
-
-        if len(node_path) == 0:
-            return cur_node
-
-        tokens = node_path.split("/")
-        for a_token in tokens:
-            if a_token == "..":
-                cur_node = cur_node.parent
-            else:
-                t_node = None
-                for a_child in cur_node.children:
-                    if a_child.name == a_token:
-                        t_node = a_child
-                        break
-                if t_node is None:
-                    return None
-                cur_node = t_node
-
-        return cur_node
-
-    def get_root(self):
-        root = self
-        while root.parent is not None:
-            root = root.parent
-        return root
 
     ###########################
     # section for variable map

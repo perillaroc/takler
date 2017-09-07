@@ -228,7 +228,6 @@ class TestNode(object):
 
         assert self.task1.state == NodeState.active
 
-
     def test_add_trigger(self):
         trigger = self.task2.trigger
         assert trigger.exp_str == "task1 == complete"
@@ -240,6 +239,11 @@ class TestNode(object):
         assert not self.task2.evaluate_trigger()
         self.task1.state = NodeState.complete
         assert self.task2.evaluate_trigger()
+
+    def test_is_leaf_node(self):
+        assert self.task1.is_leaf_node()
+        assert not self.family1.is_leaf_node()
+        assert not self.suite1.is_leaf_node()
 
     def test_get_node_path(self):
         assert self.suite1.get_node_path() == "/suite1"
@@ -265,13 +269,13 @@ class TestNode(object):
         assert self.task1.find_node("task3") is None
         assert self.task4.find_node("../family1/task1") is None
 
-    def test_node_deletion(self):
-        print("before node delete")
-        pre_order_travel(self.suite1, SimplePrintVisitor())
-        self.family1.delete_children()
-        print("after node delete")
-        assert self.family1.children == list()
-        pre_order_travel(self.suite1, SimplePrintVisitor())
+    def test_get_root(self):
+        assert self.task1.get_root() == self.suite1
+        assert self.family1.get_root() == self.suite1
+        assert self.suite1.get_root() == self.suite1
+
+    def test_find_variable(self):
+        pass
 
     def test_find_parent_variable(self):
         test_string = 'test_string'
