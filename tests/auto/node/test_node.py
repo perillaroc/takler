@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from takler.node.variable import VariableName
+from takler.node.variable import VariableName, Variable
 from takler.node.node import Node
 from takler.node.node_state import NodeState
 from takler.visitor import SimplePrintVisitor, pre_order_travel
@@ -275,7 +275,14 @@ class TestNode(object):
         assert self.suite1.get_root() == self.suite1
 
     def test_find_variable(self):
-        pass
+        var_command = Variable('command', 'this is a command var value.')
+        self.task1.var_map['command'] = var_command
+
+        assert self.task1.find_variable('command') == var_command
+
+    def test_find_generate_variable(self):
+        assert self.task1.find_generate_variable(VariableName.NODE_PATH.name).value == "/suite1/family1/task1"
+
 
     def test_find_parent_variable(self):
         test_string = 'test_string'
