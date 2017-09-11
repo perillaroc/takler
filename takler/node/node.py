@@ -438,16 +438,18 @@ class Node(object):
     def get_script_path(self):
         root = self.get_root()
         if VariableName.SUITE_HOME.name in root.var_map:
-            return root.var_map[VariableName.SUITE_HOME.name].value + self.get_node_path() + '.' + \
-                   takler.constant.SCRIPT_EXTENSION
+            return (root.var_map[VariableName.SUITE_HOME.name].value
+                    + self.get_node_path() + '.'
+                    + takler.constant.SCRIPT_EXTENSION)
         else:
             return None
 
     def get_job_path(self):
         root = self.get_root()
         if VariableName.TAKLER_RUN_HOME.name in root.var_map:
-            return root.var_map[VariableName.TAKLER_RUN_HOME.name].value + self.get_node_path() + '.' + \
+            path = root.var_map[VariableName.TAKLER_RUN_HOME.name].value + self.get_node_path() + '.' + \
                    takler.constant.JOB_SCRIPT_EXTENSION
+            return path
         else:
             return None
 

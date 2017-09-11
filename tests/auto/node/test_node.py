@@ -1,6 +1,7 @@
 # coding: utf-8
 import os
 import json
+import pathlib
 
 import pytest
 
@@ -25,6 +26,7 @@ class TestNode(object):
         """
         self.suite1 = Node("suite1")
         self.suite1.set_variable(VariableName.SUITE_HOME.name, os.path.dirname(__file__))
+        self.suite1.set_variable(VariableName.TAKLER_RUN_HOME.name, os.path.join(os.path.dirname(__file__), "run"))
 
         self.family1 = self.suite1.append_child("family1")
         self.task1 = self.family1.append_child("task1")
@@ -47,6 +49,10 @@ class TestNode(object):
                 'SUITE_HOME': {
                     'name': 'SUITE_HOME',
                     'value': os.path.dirname(__file__)
+                },
+                'TAKLER_RUN_HOME': {
+                    'name': 'TAKLER_RUN_HOME',
+                    'value': os.path.join(os.path.dirname(__file__), "run")
                 }
             },
             'children': [
@@ -283,7 +289,6 @@ class TestNode(object):
     def test_find_generate_variable(self):
         assert self.task1.find_generate_variable(VariableName.NODE_PATH.name).value == "/suite1/family1/task1"
 
-
     def test_find_parent_variable(self):
         test_string = 'test_string'
         self.suite1.set_variable('test_string', test_string)
@@ -302,3 +307,26 @@ class TestNode(object):
                     node_path=self.task1.get_node_path()
                 ))
 
+    def test_get_script_path(self):
+        assert (pathlib.Path(self.task1.get_script_path()) ==
+                pathlib.Path(os.path.dirname(__file__), "suite1/family1/task1.takler"))
+        assert (pathlib.Path(self.task4.get_script_path()) ==
+                pathlib.Path(os.path.dirname(__file__), "suite1/family2/family3/task4.takler"))
+
+    def test_get_job_path(self):
+        assert (pathlib.Path(self.task1.get_job_path()) ==
+                pathlib.Path(os.path.dirname(__file__), "run/suite1/family1/task1.takler.job"))
+        assert (pathlib.Path(self.task4.get_job_path()) ==
+                pathlib.Path(os.path.dirname(__file__), "run/suite1/family2/family3/task4.takler.job"))
+
+    def test_get_job_output_path(self):
+        assert (pathlib.Path(self.task1.get_job_output_path()) ==
+                pathlib.Path(os.path.dirname(__file__), "run/suite1/family1/task1.takler.out"))
+        assert (pathlib.Path(self.task4.get_job_output_path()) ==
+                pathlib.Path(os.path.dirname(__file__), "run/suite1/family2/family3/task4.takler.out"))
+
+    def test_get_job_output_error_path(self):
+        assert (pathlib.Path(self.task1.get_job_output_error_path()) ==
+                pathlib.Path(os.path.dirname(__file__), "run/suite1/family1/task1.takler.out.err"))
+        assert (pathlib.Path(self.task4.get_job_output_error_path()) ==
+                pathlib.Path(os.path.dirname(__file__), "run/suite1/family2/family3/task4.takler.out.err"))
