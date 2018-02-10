@@ -1,12 +1,10 @@
 import json
-import os
-import sys
 
-import takler.constant
-from takler.node.node_state import NodeState
-from takler.node.node_trigger import NodeTrigger
-from takler.node.variable import VariableName, Variable
 from takler.takler_script_file import TaklerScriptFile
+
+from .node_state import NodeState
+from .node_trigger import NodeTrigger
+from .variable import VariableName, Variable
 
 
 class Node(object):
@@ -18,7 +16,6 @@ class Node(object):
         self.children = list()
 
         self.task_id = ""
-        self.path = ""
 
         self.trigger = None
 
@@ -47,8 +44,6 @@ class Node(object):
         ret['state'] = self.state.name
         if self.task_id is not None and len(self.task_id) > 0:
             ret['task_id'] = self.task_id
-        if self.path is not None and len(self.path) > 0:
-            ret['path'] = self.path
         if self.trigger is not None:
             ret['trigger'] = self.trigger.to_dict()
         ret['var_map'] = dict()
@@ -61,8 +56,8 @@ class Node(object):
             ret['children'].append(a_child.to_dict())
         return ret
 
-    @staticmethod
-    def create_from_dict(node_dict, parent=None):
+    @classmethod
+    def create_from_dict(cls, node_dict, parent=None):
         # use parent is evil.
         node = Node()
         node.parent = parent
@@ -70,8 +65,6 @@ class Node(object):
         node.state = NodeState[node_dict['state']]
         if 'task_id' in node_dict:
             node.task_id = node_dict['task_id']
-        if 'path' in node_dict:
-            node.path = node_dict['path']
         if 'trigger' in node_dict:
             node.trigger = NodeTrigger(node_dict['trigger']['expr'], parent=node)
 
@@ -87,10 +80,14 @@ class Node(object):
     def to_json(self):
         return json.dumps(self.to_dict())
 
-    @staticmethod
-    def create_from_json(node_json, parent=None):
+    @classmethod
+    def create_from_json(cls, node_json, parent=None):
         node_dict = json.loads(node_json)
         return Node.create_from_dict(node_dict, parent)
+
+    #####################
+    #   children operation
+    #####################
 
     def append_child(self, child):
         if isinstance(child, str):
@@ -140,43 +137,9 @@ class Node(object):
             node.var_map = dict()
         self.children = list()
 
-    def set_variable(self, var_name, value):
-        self.var_map[var_name] = Variable(var_name, value)
-
-    def set_state(self, some_state):
-        """
-        Set node state to some state, and handle the state change.
-        """
-        self.state = some_state
-        # swim stats
-        self.swim_state_change()
-        # resolve dependency from root.
-        self.get_root().resolve_dependency()
-
-    def swim_state_change(self):
-        """
-        Apply current node's state to all its ancestors without doing anything.
-
-        Swim current state up. This method can only be called in set_state and itself.
-        """
-        node_state = NodeState.compute_node_state(self)
-
-        if node_state != self.state:
-            self.state = node_state
-
-        if self.parent is not None:
-            self.parent.swim_state_change()
-        return
-
-    def sink_state_change(self, state):
-        """
-        Apply the state change to all its descendants without doing anything.
-
-        Sink current state down. This method can only be called in set_state and itself.
-        """
-        self.state = state
-        for a_node in self.children:
-            a_node.sink_state_change(state)
+    ##########################
+    #   attributes
+    ##########################
 
     def add_trigger(self, trigger_str):
         self.trigger = NodeTrigger(trigger_str, self)
@@ -251,12 +214,48 @@ class Node(object):
             root = root.parent
         return root
 
-    #################################
-    # section for node operation
-    #################################
+    ###################
+    #   state manage
+    ###################
+
+    def set_state(self, some_state):
+        """
+        Set node state to some state, and handle the state change.
+        """
+        self.state = some_state
+        # swim stats
+        self.swim_state_change()
+        # resolve dependency from root.
+        self.get_root().resolve_dependency()
+
+    def swim_state_change(self):
+        """
+        Apply current node's state to all its ancestors without doing anything.
+
+        Swim current state up. This method can only be called in set_state and itself.
+        """
+        node_state = NodeState.compute_node_state(self)
+
+        if node_state != self.state:
+            self.state = node_state
+
+        if self.parent is not None:
+            self.parent.swim_state_change()
+        return
+
+    def sink_state_change(self, state):
+        """
+        Apply the state change to all its descendants without doing anything.
+
+        Sink current state down. This method can only be called in set_state and itself.
+        """
+        self.state = state
+        for a_node in self.children:
+            a_node.sink_state_change(state)
 
     def resolve_dependency(self):
-        """Resolve node dependency for this node and all its children. Submit those satisfy conditions.
+        """
+        Resolve node dependency for this node and all its children. Submit those satisfy conditions.
         """
         if not self.__resolve_node_dependency():
             return False
@@ -265,7 +264,8 @@ class Node(object):
         return True
 
     def __resolve_node_dependency(self):
-        """Resolve dependency of this node only and submit it when true.
+        """
+        Resolve dependency of this node only and submit it when true.
         """
         if self.state == NodeState.complete or self.state >= NodeState.submitted:
             return False
@@ -278,8 +278,13 @@ class Node(object):
 
         return True
 
+    #################################
+    # section for node operation
+    #################################
+
     def queue(self):
-        """Re-queue this node and all its children nodes.
+        """
+        Re-queue this node and all its children nodes.
 
         Change stats of this nodes to Queued, and resolve dependency once.
         """
@@ -288,75 +293,21 @@ class Node(object):
         self.set_state(NodeState.queued)
 
     def run(self):
-        """Execute the script of the node. Change state to Submitted.
-
-        This method is usually called by resolve_dependency.
-        """
-        node_path = self.get_node_path()
-        script_path = self.get_script_path()
-        job_file = self.get_job_path()
-        print("[Node]{node} submitted. script is {script_path}".format(
-            node=node_path, script_path=script_path))
-
-        script_file = TaklerScriptFile(self, self.get_script_path())
-        script_file.create_job_script_file()
-        command = self.find_parent_variable("run_command")
-        self.run_command(command)
-        self.set_state(NodeState.submitted)
-        return
-
-    def init(self, task_id):
-        """Change state to Active. This is usually called form running script via a client command.
-        """
-        self.task_id = task_id
-        print("[Node]{node} init with {task_id}".format(node=self.get_node_path(), task_id=task_id))
-        self.set_state(NodeState.active)
+        pass
 
     def complete(self):
-        print("[Node]{node} complete with task_id {task_id}".format(
-            node=self.get_node_path(),
-            task_id=self.task_id))
-        self.set_state(NodeState.complete)
-
-    def abort(self):
-        print("[Node]{node} abort".format(node=self.get_node_path()))
-        self.set_state(NodeState.aborted)
+        pass
 
     def kill(self):
-        print("[Node]{node} kill".format(node=self.get_node_path()))
-        command = self.substitute_variable(self.find_parent_variable("kill_command"))
-        self.run_command(command)
-        self.set_state(NodeState.aborted)
-
-    def run_command(self, command):
-        substituted_command = self.substitute_variable(command)
-        child_pid = os.fork()
-        if child_pid == 0:
-            child_pid = os.fork()
-            if child_pid == 0:
-                os.execl("/bin/sh", "sh", "-c", substituted_command)
-                os._exit(127)
-            elif child_pid == -1:
-                print("[Node]{node} run command failed for {command}:  can't fork.".format(
-                    node=self.get_node_path(),
-                    command=substituted_command
-                ))
-                sys.exit()
-            else:
-                sys.exit()
-        elif child_pid == -1:
-            print("[Node]{node} run command failed for {command}:  can't fork.".format(
-                node=self.get_node_path(),
-                command=substituted_command
-            ))
-            return
-        else:
-            os.waitpid(child_pid, 0)
-            return
+        pass
 
     ###########################
     # section for variable map
     ###########################
+
+    def set_variable(self, var_name, value):
+        self.var_map[var_name] = Variable(var_name, value)
+
     def find_variable(self, name):
         if name in self.var_map:
             return self.var_map[name]
@@ -431,40 +382,3 @@ class Node(object):
                 var_value = var.value
             result_line = result_line[:start_pos] + var_value + result_line[end_pos+1:]
             pos = start_pos + len(var_value)
-
-    ##############################
-    # section for task script
-    ##############################
-    def get_script_path(self):
-        root = self.get_root()
-        if VariableName.SUITE_HOME.name in root.var_map:
-            return (root.var_map[VariableName.SUITE_HOME.name].value
-                    + self.get_node_path() + '.'
-                    + takler.constant.SCRIPT_EXTENSION)
-        else:
-            return None
-
-    def get_job_path(self):
-        root = self.get_root()
-        if VariableName.TAKLER_RUN_HOME.name in root.var_map:
-            path = root.var_map[VariableName.TAKLER_RUN_HOME.name].value + self.get_node_path() + '.' + \
-                   takler.constant.JOB_SCRIPT_EXTENSION
-            return path
-        else:
-            return None
-
-    def get_job_output_path(self):
-        root = self.get_root()
-        if VariableName.TAKLER_RUN_HOME.name in root.var_map:
-            return root.var_map[VariableName.TAKLER_RUN_HOME.name].value + self.get_node_path() + '.' + \
-                   takler.constant.JOB_OUTPUT_EXTENSION
-        else:
-            return None
-
-    def get_job_output_error_path(self):
-        root = self.get_root()
-        if VariableName.TAKLER_RUN_HOME.name in root.var_map:
-            return root.var_map[VariableName.TAKLER_RUN_HOME.name].value + self.get_node_path() + '.' + \
-                   takler.constant.JOB_OUTPUT_ERROR_EXTENSION
-        else:
-            return None

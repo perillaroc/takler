@@ -148,3 +148,5 @@ playground
 .vagrant
 
 takler-run-dir
+
+.pytest_cache/

@@ -2,7 +2,7 @@ import unittest
 import os
 import shutil
 
-from takler.suite import Suite
+from takler.node.suite import Suite
 from takler.visitor import pre_order_travel, NodeVisitor, MakeDirectoryVisitor
 
 

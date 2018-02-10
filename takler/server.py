@@ -1,14 +1,12 @@
 import argparse
 from thrift.transport import TSocket
-from thrift.transport import TTransport
-from thrift.protocol import TBinaryProtocol
 from thrift.server import TServer
 
-from takler.constant import DEFAULT_HOST, DEFAULT_PORT
+from takler.core.constant import DEFAULT_HOST, DEFAULT_PORT
 from takler.takler_service import TaklerService
 from takler.takler_service.ttypes import *
 from takler.service_handler import TaklerServiceHandler
-from takler.bunch import Bunch
+from takler.node.bunch import Bunch
 from takler.logger import server_logger
 
 

@@ -1,9 +1,9 @@
 import json
 import unittest
 import os
-from takler.bunch import Bunch, Node
+from takler.node.bunch import Bunch, Node
 from takler.service_handler import TaklerServiceHandler
-from takler.suite import Suite
+from takler.node.suite import Suite
 from helper import check_node_state, empty_fork_for_parent, empty_wait_pid
 
 

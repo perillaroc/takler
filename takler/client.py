@@ -1,11 +1,10 @@
 import argparse
 import json
-from takler.constant import DEFAULT_HOST, DEFAULT_PORT
+from takler.core.constant import DEFAULT_HOST, DEFAULT_PORT
 from takler.takler_service import TaklerService
 from takler.takler_service.ttypes import *
 from takler.logger import client_logger
 
-from thrift import Thrift
 from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol

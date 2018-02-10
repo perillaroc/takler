@@ -1,10 +1,11 @@
 import json
-from takler.suite import Suite
-from takler.node import Node
+from .suite import Suite
+from .node import Node
 
 
-class Bunch(object):
+class Bunch(Node):
     def __init__(self):
+        Node.__init__(self, '')
         self.suites = dict()
 
     def to_dict(self):
@@ -20,7 +21,7 @@ class Bunch(object):
         if isinstance(suite, Node):
             # change to suite
             suite.__class__ = Suite
-        elif isinstance(suite, basestring):
+        elif isinstance(suite, str):
             suite = Suite(suite)
         else:
             raise Exception("{a_suite} is not a suite".format(a_suite=suite))
@@ -75,7 +76,7 @@ class Bunch(object):
     def delete_suite(self, suite):
         if isinstance(suite, Node):
             suite_name = suite.name
-        elif isinstance(suite, basestring):
+        elif isinstance(suite, str):
             suite_name = suite
         else:
             raise TypeError("param suite must be a Node or string.")

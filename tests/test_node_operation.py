@@ -4,7 +4,7 @@ import unittest
 import helper
 
 import takler.node.node_state
-import takler.suite
+import takler.node.suite
 
 
 class NodeOperationTestCase(unittest.TestCase):
@@ -14,7 +14,7 @@ class NodeOperationTestCase(unittest.TestCase):
         os.fork = helper.empty_fork_for_parent
         os.waitpid = helper.empty_wait_pid
 
-        self.empty_suite = takler.suite.Suite("empty_suite")
+        self.empty_suite = takler.node.suite.Suite("empty_suite")
         self.empty_suite.var_map["suite_home"] = os.path.join(os.path.dirname(__file__), 'test_data/py')
         self.empty_suite.var_map["takler_run_home"] = os.path.join(os.path.dirname(__file__),
                                                                    'test_data/takler-run-dir')

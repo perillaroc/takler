@@ -1,6 +1,6 @@
 import json
 import unittest
-from takler.bunch import Bunch, Suite, Node
+from takler.node.bunch import Bunch, Suite, Node
 from takler.visitor import pre_order_travel, SimplePrintVisitor
 
 

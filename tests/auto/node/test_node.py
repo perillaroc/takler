@@ -132,7 +132,10 @@ class TestNode(object):
         assert suite_json == json.dumps(self.suite_dict)
 
     def test_create_from_json(self):
-        pass
+        suite_json_string = json.dumps(self.suite_dict)
+        suite = Node.create_from_json(suite_json_string)
+        assert suite.name == self.suite1.name
+        assert suite.state == self.suite1.state
 
     def test_append_child(self):
         suite = Node('suite')
@@ -306,27 +309,3 @@ class TestNode(object):
                     script_path=self.task1.get_script_path(),
                     node_path=self.task1.get_node_path()
                 ))
-
-    def test_get_script_path(self):
-        assert (pathlib.Path(self.task1.get_script_path()) ==
-                pathlib.Path(os.path.dirname(__file__), "suite1/family1/task1.takler"))
-        assert (pathlib.Path(self.task4.get_script_path()) ==
-                pathlib.Path(os.path.dirname(__file__), "suite1/family2/family3/task4.takler"))
-
-    def test_get_job_path(self):
-        assert (pathlib.Path(self.task1.get_job_path()) ==
-                pathlib.Path(os.path.dirname(__file__), "run/suite1/family1/task1.takler.job"))
-        assert (pathlib.Path(self.task4.get_job_path()) ==
-                pathlib.Path(os.path.dirname(__file__), "run/suite1/family2/family3/task4.takler.job"))
-
-    def test_get_job_output_path(self):
-        assert (pathlib.Path(self.task1.get_job_output_path()) ==
-                pathlib.Path(os.path.dirname(__file__), "run/suite1/family1/task1.takler.out"))
-        assert (pathlib.Path(self.task4.get_job_output_path()) ==
-                pathlib.Path(os.path.dirname(__file__), "run/suite1/family2/family3/task4.takler.out"))
-
-    def test_get_job_output_error_path(self):
-        assert (pathlib.Path(self.task1.get_job_output_error_path()) ==
-                pathlib.Path(os.path.dirname(__file__), "run/suite1/family1/task1.takler.out.err"))
-        assert (pathlib.Path(self.task4.get_job_output_error_path()) ==
-                pathlib.Path(os.path.dirname(__file__), "run/suite1/family2/family3/task4.takler.out.err"))

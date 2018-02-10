@@ -1,6 +1,6 @@
 import os
 import unittest
-import takler.suite
+import takler.node.suite
 from takler.takler_script_file import TaklerScriptFile
 
 
@@ -8,7 +8,7 @@ class TaklerScriptFileTestCase(unittest.TestCase):
     def setUp(self):
         import os
 
-        self.empty_suite = takler.suite.Suite("empty_suite")
+        self.empty_suite = takler.node.suite.Suite("empty_suite")
         self.empty_suite.var_map["suite_home"] = os.path.join(os.path.dirname(__file__), 'test_data/py')
         self.empty_suite.var_map["takler_run_home"] = os.path.join(os.path.dirname(__file__),
                                                                    'test_data/takler-run-dir')
