@@ -44,19 +44,19 @@ class TestBunchCase(unittest.TestCase):
         self.assertEqual(self.bunch.find_node("/suite1/family2"), self.family2)
 
     def test_to_json(self):
-        print self.bunch.to_json()
+        print(self.bunch.to_json())
 
     def test_delete_suite(self):
         suite2 = self.bunch.add_suite("suite2")
         suite2.append_child("task1")
         suite2.append_child("task2")
         self.assertEqual(len(self.bunch.suites), 2)
-        print json.dumps(self.bunch.to_dict(),
-                         indent=4, separators=(',', ';'))
+        print(json.dumps(self.bunch.to_dict(),
+                         indent=4, separators=(',', ';')))
         self.bunch.delete_suite(suite2)
         self.assertEqual(len(self.bunch.suites), 1)
-        print json.dumps(self.bunch.to_dict(),
-                         indent=4, separators=(',', ';'))
+        print(json.dumps(self.bunch.to_dict(),
+                         indent=4, separators=(',', ';')))
 
     def test_delete_node(self):
         suite2 = self.bunch.add_suite("suite2")
@@ -70,7 +70,7 @@ class TestBunchCase(unittest.TestCase):
         #pre_order_travel(suite2, SimplePrintVisitor())
 
     def test_update_suite(self):
-        print "[test_update_suite] begin"
+        print("[test_update_suite] begin")
         suite2 = self.bunch.add_suite("suite2")
         suite2.append_child("task1")
         suite2.append_child("task2")
@@ -83,10 +83,10 @@ class TestBunchCase(unittest.TestCase):
         self.assertIsNotNone(self.bunch.find_node("/suite2/task2-1"))
         self.assertIsNotNone(self.bunch.find_node("/suite2/task2-2"))
         #pre_order_travel(self.bunch.find_suite("suite2"), SimplePrintVisitor())
-        print "[test_update_suite] end"
+        print("[test_update_suite] end")
 
     def test_update_node(self):
-        print "[test_update_node] begin"
+        print("[test_update_node] begin")
         suite2 = self.bunch.add_suite("suite2")
         family1 = suite2.append_child("family1")
         family1.append_child("task1")
@@ -102,7 +102,7 @@ class TestBunchCase(unittest.TestCase):
         self.assertIsNotNone(self.bunch.find_node("/suite2/family1/task1-1"))
         self.assertIsNotNone(self.bunch.find_node("/suite2/family1/task2-1"))
         pre_order_travel(self.bunch.find_suite("suite2"), SimplePrintVisitor())
-        print "[test_update_node] end"
+        print("[test_update_node] end")
 
 
 if __name__ == '__main__':

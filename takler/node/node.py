@@ -380,5 +380,6 @@ class Node(object):
                         var_name=var_name, line=line
                     ))
                 var_value = var.value
+            var_value = str(var_value)
             result_line = result_line[:start_pos] + var_value + result_line[end_pos+1:]
             pos = start_pos + len(var_value)

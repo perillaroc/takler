@@ -14,6 +14,10 @@ class SubmittableNode(Node):
     def __init__(self, name):
         Node.__init__(self, name)
 
+    #######################
+    #   node operation
+    #######################
+
     def init(self, task_id):
         """
         Change state to Active. This is usually called form running script via a client command.

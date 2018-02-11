@@ -302,10 +302,14 @@ class TestNode(object):
         assert (self.suite1.find_parent_variable(VariableName.NODE_PATH.name).value == "/suite1")
 
     def test_substitute_variable(self):
-        assert (self.task1.substitute_variable("python $SCRIPT_PATH$")
-                == "python {script_path}".format(script_path=self.task1.get_script_path()))
-        assert (self.task1.substitute_variable("$SCRIPT_PATH$ hello $NODE_PATH$") ==
-                "{script_path} hello {node_path}".format(
-                    script_path=self.task1.get_script_path(),
-                    node_path=self.task1.get_node_path()
+        self.task1.set_variable("MODEL_DT", 30)
+        self.task1.set_variable("COMMAND", "sbatch")
+        self.task1.set_variable("COMMAND_SCRIPT", "run.py")
+
+        assert (self.task1.substitute_variable("MODEL_DT is $MODEL_DT$")
+                == "MODEL_DT is {MODEL_DT}".format(MODEL_DT=30))
+        assert (self.task1.substitute_variable("$COMMAND$ $COMMAND_SCRIPT$") ==
+                "{command} {command_script}".format(
+                    command="sbatch",
+                    command_script="run.py"
                 ))
