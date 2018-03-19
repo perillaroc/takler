@@ -1,3 +1,4 @@
+# coding=utf-8
 
 SCRIPT_EXTENSION = "takler"
 JOB_SCRIPT_EXTENSION = "takler.job"

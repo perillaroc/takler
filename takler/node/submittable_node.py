@@ -13,6 +13,13 @@ from takler.takler_script_file import TaklerScriptFile
 class SubmittableNode(Node):
     def __init__(self, name):
         Node.__init__(self, name)
+        self.task_id = ''
+
+    def to_dict(self):
+        node_dict = Node.to_dict(self)
+        if self.task_id is not None and len(self.task_id) > 0:
+            node_dict['task_id'] = self.task_id
+        return node_dict
 
     #######################
     #   node operation

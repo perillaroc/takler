@@ -15,8 +15,6 @@ class Node(object):
         self.parent = None
         self.children = list()
 
-        self.task_id = ""
-
         self.trigger = None
 
         self.var_map = dict()
@@ -42,8 +40,6 @@ class Node(object):
         ret = dict()
         ret['name'] = self.name
         ret['state'] = self.state.name
-        if self.task_id is not None and len(self.task_id) > 0:
-            ret['task_id'] = self.task_id
         if self.trigger is not None:
             ret['trigger'] = self.trigger.to_dict()
         ret['var_map'] = dict()

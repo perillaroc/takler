@@ -27,7 +27,7 @@ class Variable(object):
             'value': self.value
         }
 
-    @staticmethod
-    def create_from_dict(var_dict):
+    @classmethod
+    def create_from_dict(cls, var_dict):
         var = Variable(var_dict['name'], var_dict['value'])
         return var
