@@ -1,6 +1,6 @@
 import os
 
-from takler.node import Node
+from takler.node.node import Node
 from takler.visitor import SimplePrintVisitor, pre_order_travel
 
 
