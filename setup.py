@@ -44,7 +44,6 @@ setup(
 
     install_requires=[
         'click',
-        'Twisted',
         'thrift',
         'pyparsing'
     ],
