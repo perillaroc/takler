@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from typing import Union, List, Optional, Mapping
+from pathlib import PurePosixPath
 
 from .node_state import NodeState
 from .parameter import Parameter
@@ -27,7 +28,10 @@ class Node(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         pass
 
-    # children operation
+    def __repr__(self):
+        return f"Node {self.name}"
+
+    # children operation ------------------------------------------------
 
     def append_child(self, child: Union[str, Node]) -> Node:
         if isinstance(child, str):
@@ -78,3 +82,67 @@ class Node(object):
             del node
         self.children = list()
 
+    # Node access -----------------------------------------------------
+
+    def is_leaf_node(self) -> bool:
+        if len(self.children) == 0:
+            return True
+        else:
+            return False
+
+    def get_root(self) -> Node:
+        root = self
+        while root.parent is not None:
+            root = root.parent
+        return root
+
+    @property
+    def node_path(self) -> str:
+        cur_node = self
+        node_list = []
+        while cur_node is not None:
+            node_list.insert(0, cur_node.name)
+            cur_node = cur_node.parent
+        return str(PurePosixPath("/", *node_list))
+
+    def find_node(self, a_path: str) -> Optional[Node]:
+        """
+        use node path to find a node.
+
+        Parameters
+        ----------
+        a_path
+            type of node path
+
+                1. node1: relative to currently level
+                2. ../node1/node2
+                3. /node1/node2
+
+        Returns
+        -------
+        Node or None
+            node with node_path or None if not found
+        """
+        full_node_path = PurePosixPath(self.node_path).parent.joinpath(a_path)
+        cur_node = self.get_root()
+        parts = full_node_path.parts[1:]
+        if parts[0] != cur_node.name:
+            return None
+        for a_token in parts[1:]:
+            if cur_node is None:
+                break
+            if a_token == ".":
+                continue
+            if a_token == "..":
+                cur_node = cur_node.parent
+                continue
+
+            t_node = None
+            for a_child in cur_node.children:
+                if a_child.name == a_token:
+                    t_node = a_child
+                    break
+            if t_node is None:
+                return None
+            cur_node = t_node
+        return cur_node
