@@ -21,6 +21,12 @@ class Node(object):
         # 参数
         self.parameters = dict()  # type: Mapping[str, Parameter]
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        pass
+
     # children operation
 
     def append_child(self, child: Union[str, Node]) -> Node:
