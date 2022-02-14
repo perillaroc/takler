@@ -10,6 +10,8 @@ class NodeContainer(Node):
     def __init__(self, name: str):
         super(NodeContainer, self).__init__(name)
 
+    # Build tree structure -------------------------------------------
+
     def add_container(self, container: Union[str, NodeContainer]) -> NodeContainer:
         if isinstance(container, str):
             container_node = NodeContainer(name=container)
@@ -31,3 +33,11 @@ class NodeContainer(Node):
 
         t = self.append_child(task_node)
         return t
+
+    # Node operation -----------------------------------------
+
+    def requeue(self):
+        super(NodeContainer, self).requeue()
+
+        for child in self.children:
+            child.requeue()

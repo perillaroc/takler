@@ -3,8 +3,38 @@ from __future__ import annotations
 from typing import Union, List, Optional, Mapping
 from pathlib import PurePosixPath
 
-from .node_state import NodeState
+from .state import State, NodeStatus
 from .parameter import Parameter
+
+
+def compute_node_status(node: Node, immediate: bool) -> NodeStatus:
+    """
+    Compute node_status of a node from its children.
+
+    If ``immediate`` is True, use children's node_status.
+    If ``immediate`` is False, compute each child's node_status
+
+    Parameters
+    ----------
+    node
+    immediate
+
+    Returns
+    -------
+    NodeStatus
+    """
+    if len(node.children) == 0:
+        return node.state.node_status
+
+    state = NodeStatus.unknown
+    for a_child in node.children:
+        if immediate:
+            child_node_state = a_child.state.node_status
+        else:
+            child_node_state = compute_node_status(a_child, immediate)
+        if child_node_state > state:
+            state = child_node_state
+    return state
 
 
 class Node(object):
@@ -13,7 +43,7 @@ class Node(object):
         self.name = name  # type: str
 
         # 状态
-        self.state = NodeState()  # type: NodeState
+        self.state = State()  # type: State
 
         # 树形结构
         self.parent = None  # type: Optional[Node]
@@ -29,9 +59,12 @@ class Node(object):
         pass
 
     def __repr__(self):
-        return f"Node {self.name}"
+        return f"{self.__class__.__name__} {self.name}"
 
-    # children operation ------------------------------------------------
+    def __str__(self):
+        return f"{self.__class__.__name__} {self.name}"
+
+    # Children operation ------------------------------------------------
 
     def append_child(self, child: Union[str, Node]) -> Node:
         if isinstance(child, str):
@@ -146,3 +179,53 @@ class Node(object):
                 return None
             cur_node = t_node
         return cur_node
+
+    # State management
+
+    def set_node_status_only(self, node_status: NodeStatus):
+        """
+        Set node status to some status without any side effect.
+
+        Parameters
+        ----------
+        node_status
+            Node status, just an enum without any additional data.
+        """
+        old_state = self.state.node_status
+        if old_state == node_status:
+            return
+
+        self.state.node_status = node_status
+
+    def sink_status_change_only(self, node_status: NodeStatus):
+        """
+        Apply the node_status change to all its descendants without doing anything.
+
+        Sink current status down. This method can only be called in set_state and itself.
+        """
+        self.state.node_status = node_status
+        for a_node in self.children:
+            a_node.sink_status_change_only(node_status)
+
+    def swim_status_change(self):
+        """
+        Compute current node's node_status, and swim state change to all its ancestors (without doing anything?).
+
+        Swim current status up. This method can only be called in set_node_status and itself.
+        """
+        node_state = compute_node_status(self, immediate=True)
+
+        if node_state != self.state:
+            self.state = node_state
+
+        if self.parent is not None:
+            self.parent.swim_status_change()
+        return
+
+    # Node Operations ------------------------------------------------
+
+    def requeue(self):
+        """
+        Node requeue itself, don't affect children nodes.
+        """
+        self.set_node_status_only(NodeStatus.queued)

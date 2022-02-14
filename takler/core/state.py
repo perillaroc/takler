@@ -34,20 +34,9 @@ class NodeStatus(OrderedEnum):
     active = 5
     aborted = 6
 
-    @staticmethod
-    def compute_node_state(node) -> NodeStatus:
-        if len(node.children) == 0:
-            return node.state
-        state = NodeStatus.unknown
-        for a_child in node.children:
-            child_node_state = NodeStatus.compute_node_state(a_child)
-            if child_node_state > state:
-                state = child_node_state
-        return state
 
-
-class NodeState(object):
-    def __init__(self, status: Optional[NodeStatus] = None):
-        if status is None:
-            status = NodeStatus.unknown
-        self.status = status
+class State(object):
+    def __init__(self, node_status: Optional[NodeStatus] = None):
+        if node_status is None:
+            node_status = NodeStatus.unknown
+        self.node_status = node_status

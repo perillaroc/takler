@@ -23,7 +23,7 @@ class SimplePrintVisitor(NodeVisitor):
     def visit(self, node: Node):
         place_holder = "  " * self.level
         node_name = node.name
-        node_state = node.state.status.name
+        node_state = node.state.node_status.name
         print(f"{place_holder}|- {node_name} [{node_state}]")
 
     def before_visit_child(self):
