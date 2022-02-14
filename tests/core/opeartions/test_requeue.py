@@ -68,7 +68,7 @@ def flow_objects_case_2():
             |- container2 [active]
               |- task2 [active]
               |- task3 [queued]
-          |- task4 [queued]
+          |- task4 [complete]
 
     """
     flow1 = Flow("flow1")
@@ -84,7 +84,7 @@ def flow_objects_case_2():
     task3 = container2.add_task("task3")
     task3.set_node_status_only(NodeStatus.queued)
     task4 = flow1.add_task("task4")
-    task4.set_node_status_only(NodeStatus.queued)
+    task4.set_node_status_only(NodeStatus.complete)
     return dict(
         flow1=flow1,
         container1=container1,
@@ -99,4 +99,23 @@ def flow_objects_case_2():
 def test_container_requeue(flow_objects_case_2):
     container2 = flow_objects_case_2["container2"]
     container2.requeue()
+
+    """
+    Flow:
+
+        |- flow1 [active]
+          |- container1 [active]
+            |- task1 [queued]
+            |- container2 [queued]
+              |- task2 [queued]
+              |- task3 [queued]
+          |- task4 [complete]
+    """
+    assert flow_objects_case_2["flow1"].state.node_status == NodeStatus.active
+    assert flow_objects_case_2["container1"].state.node_status == NodeStatus.active
+    assert flow_objects_case_2["task1"].state.node_status == NodeStatus.queued
+    assert flow_objects_case_2["container2"].state.node_status == NodeStatus.queued
+    assert flow_objects_case_2["task2"].state.node_status == NodeStatus.queued
+    assert flow_objects_case_2["task3"].state.node_status == NodeStatus.queued
+    assert flow_objects_case_2["task4"].state.node_status == NodeStatus.complete
 

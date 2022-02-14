@@ -9,7 +9,7 @@ from .parameter import Parameter
 
 def compute_node_status(node: Node, immediate: bool) -> NodeStatus:
     """
-    Compute node_status of a node from its children.
+    Compute node_status of a node from its children. Won't change anything in ``node``.
 
     If ``immediate`` is True, use children's node_status.
     If ``immediate`` is False, compute each child's node_status
@@ -180,7 +180,7 @@ class Node(object):
             cur_node = t_node
         return cur_node
 
-    # State management
+    # State management -----------------------------------------------------
 
     def set_node_status_only(self, node_status: NodeStatus):
         """
@@ -197,6 +197,21 @@ class Node(object):
 
         self.state.node_status = node_status
 
+    def set_node_status(self, node_status: NodeStatus):
+        """
+        Set node status to some status with side effect.
+
+        Parameters
+        ----------
+        node_status
+            Node status, just an enum without any additional data.
+        """
+        if self.state.node_status == node_status:
+            return
+
+        self.set_node_status_only(node_status)
+        self.handle_status_change()
+
     def sink_status_change_only(self, node_status: NodeStatus):
         """
         Apply the node_status change to all its descendants without doing anything.
@@ -209,18 +224,21 @@ class Node(object):
 
     def swim_status_change(self):
         """
-        Compute current node's node_status, and swim state change to all its ancestors (without doing anything?).
+        Compute current node's node_status, and swim status change up the tree.
 
-        Swim current status up. This method can only be called in set_node_status and itself.
+        Swim current status up. This method can only be called in handle_status_change and itself.
         """
         node_state = compute_node_status(self, immediate=True)
 
         if node_state != self.state:
-            self.state = node_state
+            self.state.node_status = node_state
 
         if self.parent is not None:
             self.parent.swim_status_change()
         return
+
+    def handle_status_change(self):
+        self.swim_status_change()
 
     # Node Operations ------------------------------------------------
 
@@ -229,3 +247,4 @@ class Node(object):
         Node requeue itself, don't affect children nodes.
         """
         self.set_node_status_only(NodeStatus.queued)
+
