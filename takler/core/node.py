@@ -216,11 +216,21 @@ class Node(object):
         """
         Apply the node_status change to all its descendants without doing anything.
 
-        Sink current status down. This method can only be called in set_state and itself.
+        Sink status down. This method can only be called in set_state and itself.
         """
         self.state.node_status = node_status
         for a_node in self.children:
             a_node.sink_status_change_only(node_status)
+
+    def sink_status_change(self, node_status: NodeStatus):
+        """
+        Apply the node_status change to all its descendants with side effects.
+        """
+        if self.state.node_status == node_status:
+            return
+
+        self.sink_status_change_only(node_status)
+        self.handle_status_change()
 
     def swim_status_change(self):
         """

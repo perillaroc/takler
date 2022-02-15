@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Union
 
 from .node import Node
-from .task import Task
+from .task_node import Task
 
 
 class NodeContainer(Node):

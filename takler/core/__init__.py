@@ -1,4 +1,4 @@
-from .task import Task
+from .task_node import Task, task
 from .node_container import NodeContainer
 from .flow import Flow
 

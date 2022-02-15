@@ -1,4 +1,4 @@
-from .task import Task
+from .task_node import Task
 from .node_container import NodeContainer
 
 

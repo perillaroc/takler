@@ -1,3 +1,5 @@
+import functools
+
 from .node import Node
 from .state import NodeStatus
 
@@ -19,6 +21,7 @@ class Task(Node):
         return self.parent.swim_status_change()
 
     # Node Operation ----------------------------------------------
+    #   Node operation is used to control the flow.
 
     def run(self):
         # TODO: Run task.
@@ -26,6 +29,10 @@ class Task(Node):
         # change node status
         self.set_node_status(node_status=NodeStatus.submitted)
         self.handle_status_change()
+
+    # Status update operation -------------------------------------
+    #   Status update operation is used in task's running period,
+    #   in order to notify task's status change to takler server.
 
     def init(self):
         self.set_node_status(node_status=NodeStatus.active)
@@ -38,3 +45,36 @@ class Task(Node):
     def abort(self):
         self.set_node_status(node_status=NodeStatus.aborted)
         self.handle_status_change()
+
+
+def task(name: str):
+    """
+    Decorator to create inline task.
+
+    Parameters
+    ----------
+    name
+        task name
+    Returns
+    -------
+
+    """
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            class RunTask(Task):
+                def __init__(self):
+                    super(RunTask, self).__init__(name=name)
+
+                def run(self):
+                    Task.run(self)
+
+                    self.init()
+                    func(*args, **kwargs)
+                    self.complete()
+
+            return RunTask()
+        return wrapper
+    return decorator
+
+
