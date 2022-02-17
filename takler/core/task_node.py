@@ -13,6 +13,9 @@ class Task(Node):
 
     # State management --------------------------------------------
 
+    def computed_status(self, immediate: bool) -> NodeStatus:
+        return self.state.node_status
+
     def swim_status_change(self):
         """
         Task node use its own status, and needn't compute status again.

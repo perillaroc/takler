@@ -2,39 +2,71 @@ from __future__ import annotations
 
 from typing import Union, List, Optional, Mapping
 from pathlib import PurePosixPath
+from collections import defaultdict
 
 from .state import State, NodeStatus
 from .parameter import Parameter
 
 
-def compute_node_status(node: Node, immediate: bool) -> NodeStatus:
+# def compute_node_status(node: Node, immediate: bool) -> NodeStatus:
+#     """
+#     Compute node_status of a node from its children. Won't change anything in ``node``.
+#
+#     If ``immediate`` is True, use children's node_status.
+#     If ``immediate`` is False, compute each child's node_status
+#
+#     Parameters
+#     ----------
+#     node
+#     immediate
+#
+#     Returns
+#     -------
+#     NodeStatus
+#     """
+#     if len(node.children) == 0:
+#         return node.state.node_status
+#
+#     state = compute_most_significant_state(node.children, immediate)
+#
+#     return state
+
+
+def compute_most_significant_status(nodes: List[Node], immediate: bool) -> NodeStatus:
     """
-    Compute node_status of a node from its children. Won't change anything in ``node``.
+    Compute the most significant node status from node list. Won't change anything in ``node``.
 
     If ``immediate`` is True, use children's node_status.
     If ``immediate`` is False, compute each child's node_status
 
     Parameters
     ----------
-    node
+    nodes
     immediate
 
     Returns
     -------
     NodeStatus
     """
-    if len(node.children) == 0:
-        return node.state.node_status
-
-    state = NodeStatus.unknown
-    for a_child in node.children:
+    count = defaultdict(int)
+    for node in nodes:
         if immediate:
-            child_node_state = a_child.state.node_status
+            child_node_state = node.state.node_status
         else:
-            child_node_state = compute_node_status(a_child, immediate)
-        if child_node_state > state:
-            state = child_node_state
-    return state
+            child_node_state = node.computed_status(immediate)
+        count[child_node_state] += 1
+
+    for status in (
+        NodeStatus.aborted,
+        NodeStatus.active,
+        NodeStatus.submitted,
+        NodeStatus.queued,
+        NodeStatus.complete,
+    ):
+        if count[status] > 0:
+            return status
+
+    return NodeStatus.unknown
 
 
 class Node(object):
@@ -182,6 +214,23 @@ class Node(object):
 
     # State management -----------------------------------------------------
 
+    def computed_status(self, immediate: bool) -> NodeStatus:
+        """
+        Compute node_status of a node from its children. Won't change anything in ``node``.
+
+        If ``immediate`` is True, use children's node_status.
+        If ``immediate`` is False, compute each child's node_status
+
+        Parameters
+        ----------
+        immediate
+
+        Returns
+        -------
+        NodeStatus
+        """
+        raise Exception("Not implemented!")
+
     def set_node_status_only(self, node_status: NodeStatus):
         """
         Set node status to some status without any side effect.
@@ -238,7 +287,7 @@ class Node(object):
 
         Swim current status up. This method can only be called in handle_status_change and itself.
         """
-        node_state = compute_node_status(self, immediate=True)
+        node_state = self.computed_status(immediate=True)
 
         if node_state != self.state:
             self.state.node_status = node_state
@@ -254,7 +303,9 @@ class Node(object):
 
     def requeue(self):
         """
-        Node requeue itself, don't affect children nodes.
+        Requeue the node itself, don't affect children nodes.
+
+        Requeue operation sets node's status to ``NodeStatus.queued``
         """
         self.set_node_status_only(NodeStatus.queued)
 
