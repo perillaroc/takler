@@ -12,7 +12,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 
-with io.open("reki/__init__.py", "rt", encoding="utf8") as f:
+with io.open("takler/__init__.py", "rt", encoding="utf8") as f:
     version = re.search(r'__version__ = "(.*?)"', f.read()).group(1)
 
 
@@ -21,7 +21,7 @@ setup(
 
     version=version,
 
-    description='',
+    description='A workflow tool',
     long_description=long_description,
 
     url='https://github.com/perillaroc/takler',
@@ -34,18 +34,20 @@ setup(
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
-        'Programming Language :: Python :: 3.7'
+        'License :: OSI Approved :: Apache Software License',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
 
-    keywords='',
+    keywords='workflow',
 
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
     install_requires=[
-        'click',
-        'thrift',
-        'pyparsing'
+        # 'click',
+        # 'thrift',
+        # 'pyparsing'
     ],
 
     extras_require={
