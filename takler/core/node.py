@@ -149,6 +149,18 @@ class Node(object):
 
     # Node access -----------------------------------------------------
 
+    @property
+    def node_path(self) -> str:
+        """
+        str: full path from root node, starts with "/" and split each level with "/"
+        """
+        cur_node = self
+        node_list = []
+        while cur_node is not None:
+            node_list.insert(0, cur_node.name)
+            cur_node = cur_node.parent
+        return str(PurePosixPath("/", *node_list))
+
     def is_leaf_node(self) -> bool:
         if len(self.children) == 0:
             return True
@@ -156,19 +168,17 @@ class Node(object):
             return False
 
     def get_root(self) -> Node:
+        """
+        get root node
+
+        Returns
+        -------
+        Node
+        """
         root = self
         while root.parent is not None:
             root = root.parent
         return root
-
-    @property
-    def node_path(self) -> str:
-        cur_node = self
-        node_list = []
-        while cur_node is not None:
-            node_list.insert(0, cur_node.name)
-            cur_node = cur_node.parent
-        return str(PurePosixPath("/", *node_list))
 
     def find_node(self, a_path: str) -> Optional[Node]:
         """
