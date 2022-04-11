@@ -1,6 +1,6 @@
 from lark import Lark, Transformer
 
-from .expression_ast import AstNodePath, AstOpEq, AstNodeStatus, AstRoot
+from .expression_ast import AstNodePath, AstOpEq, AstOpAnd, AstNodeStatus, AstRoot
 from .state import NodeStatus
 
 
@@ -18,6 +18,9 @@ class ExpressionTransformer(Transformer):
     def op_eq(self, _):
         return AstOpEq()
 
+    def op_and(self, _):
+        return AstOpAnd()
+
     def expression(self, s):
         s[1].left = s[0]
         s[1].right = s[2]
@@ -30,7 +33,8 @@ trigger_parser = Lark(r"""
     op_eq: "==" | "eq"
     op_gt: ">"
     op_ge: ">="
-    ?operator: op_eq | op_gt | op_ge
+    op_and: "and"
+    ?operator: op_eq | op_gt | op_ge | op_and
 
     st_complete: "complete"
     st_aborted: "aborted"
@@ -38,7 +42,7 @@ trigger_parser = Lark(r"""
 
     node_name: CNAME
 
-    expression: node_path operator status 
+    expression: (node_path operator status) | (expression op_and expression) 
 
     %import common.CNAME
     %import common.WORD
