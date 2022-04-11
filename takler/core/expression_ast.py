@@ -47,6 +47,9 @@ class AstNodePath(AstBase):
 
     def set_parent_node(self, node: Node):
         self.parent_node = node
+        ref_node = self.get_reference_node()
+        if ref_node is None:
+            raise ValueError(f"node path '{self.node_path}' is not found from node '{self.parent_node.node_path}'")
 
     def value(self):
         ref_node = self.get_reference_node()
