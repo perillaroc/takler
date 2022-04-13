@@ -1,13 +1,12 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from .node import Node
 from .state import NodeStatus
 
 
 @dataclass
 class AstBase:
-    def set_parent_node(self, node: Node):
+    def set_parent_node(self, node):
         pass
 
     def value(self):
@@ -22,7 +21,7 @@ class AstRoot(AstBase):
     left: Optional[AstBase] = None
     right: Optional[AstBase] = None
 
-    def set_parent_node(self, node: Node):
+    def set_parent_node(self, node):
         self.left.set_parent_node(node)
         self.right.set_parent_node(node)
 
@@ -42,10 +41,10 @@ class AstOpAnd(AstRoot):
 @dataclass
 class AstNodePath(AstBase):
     node_path: str
-    parent_node: Optional[Node] = None
-    _reference_node: Optional[Node] = None
+    parent_node: Optional = None
+    _reference_node: Optional = None
 
-    def set_parent_node(self, node: Node):
+    def set_parent_node(self, node):
         self.parent_node = node
         ref_node = self.get_reference_node()
         if ref_node is None:
@@ -58,7 +57,7 @@ class AstNodePath(AstBase):
         else:
             return NodeStatus.unknown
 
-    def get_reference_node(self) -> Optional[Node]:
+    def get_reference_node(self) -> Optional:
         """
         Find node only once.
         """

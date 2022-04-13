@@ -5,10 +5,10 @@ from .expression_ast import AstRoot
 
 
 class Expression(object):
-    def __init__(self, expression_str):
+    def __init__(self, expression_str: str):
         self.free = False  # type: bool
         self.ast = None  # type: Optional[AstRoot]
-        self.expression_str = expression_str
+        self.expression_str = expression_str  # type: str
 
     def create_ast(self, parent_node):
         self.parse_expression()

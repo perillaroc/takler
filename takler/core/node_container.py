@@ -69,6 +69,17 @@ class NodeContainer(Node):
         t = self.append_child(task_node)
         return t
 
+    # Trigger ------------------------------------------------
+
+    def resolve_dependencies(self) -> bool:
+        if not Node.resolve_dependencies(self):
+            return False
+
+        for child in self.children:
+            child.resolve_dependencies()
+
+        return True
+
     # Node operation -----------------------------------------
 
     def requeue(self):

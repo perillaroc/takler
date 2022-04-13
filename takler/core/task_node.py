@@ -23,6 +23,27 @@ class Task(Node):
         """
         return self.parent.swim_status_change()
 
+    # Trigger -----------------------------------------------------
+
+    def resolve_dependencies(self) -> bool:
+        # check node status
+        node_status = self.state.node_status
+        if node_status in (
+            NodeStatus.complete,
+            NodeStatus.active,
+            NodeStatus.submitted,
+            NodeStatus.unknown,
+        ):
+            return False
+
+        # resolve node dependencies
+        if not Node.resolve_dependencies(self):
+            return False
+
+        # submit jobs
+        self.run()
+        return True
+
     # Node Operation ----------------------------------------------
     #   Node operation is used to control the flow.
 

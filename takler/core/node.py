@@ -6,6 +6,7 @@ from collections import defaultdict
 
 from .state import State, NodeStatus
 from .parameter import Parameter
+from .expression import Expression
 
 
 # def compute_node_status(node: Node, immediate: bool) -> NodeStatus:
@@ -83,6 +84,9 @@ class Node(object):
 
         # 参数
         self.parameters = dict()  # type: Mapping[str, Parameter]
+
+        # 触发器
+        self.trigger_expression = None  # type: Optional[Expression]
 
     def __enter__(self):
         return self
@@ -308,6 +312,30 @@ class Node(object):
 
     def handle_status_change(self):
         self.swim_status_change()
+
+    # Trigger --------------------------------------------------------
+    def add_trigger(self, trigger: Union[str, Expression]):
+        if isinstance(trigger, str):
+            self.trigger_expression = Expression(trigger)
+        elif isinstance(trigger, Expression):
+            self.trigger_expression = trigger
+        else:
+            raise TypeError("trigger only supports str or Expression.")
+
+        self.trigger_expression.create_ast(self)
+
+    def evaluate_trigger(self) -> bool:
+        if self.trigger_expression is None:
+            return True
+
+        self.trigger_expression.create_ast(self)
+        return self.trigger_expression.evaluate()
+
+    def resolve_dependencies(self) -> bool:
+        if not self.evaluate_trigger():
+            return False
+
+        return True
 
     # Node Operations ------------------------------------------------
 
