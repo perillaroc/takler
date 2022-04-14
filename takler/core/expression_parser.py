@@ -28,7 +28,7 @@ class ExpressionTransformer(Transformer):
 
 
 trigger_parser = Lark(r"""
-    !node_path: "/"node_name("/"node_name)*
+    !node_path: ("."|"..")?"/"node_name("/"node_name)*
 
     op_eq: "==" | "eq"
     op_gt: ">"
@@ -40,7 +40,7 @@ trigger_parser = Lark(r"""
     st_aborted: "aborted"
     ?status: st_complete | st_aborted
 
-    node_name: CNAME
+    node_name: CNAME | "." | ".."
 
     expression: (node_path operator status) | (expression op_and expression) 
 
