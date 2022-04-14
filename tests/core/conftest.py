@@ -4,7 +4,7 @@ from takler.core import Task, NodeContainer, Flow
 
 
 @pytest.fixture
-def flow_objects():
+def simple_flow_objects():
     """
     Flow:
 

@@ -325,6 +325,15 @@ class Node(object):
         self.trigger_expression.create_ast(self)
 
     def evaluate_trigger(self) -> bool:
+        """
+        Evaluate trigger expression of this node.
+
+        Notes
+        -----
+        该方法仅检查节点自己的触发器是否满足条件，节点是否满足运行条件还取决于父节点是否满足。
+
+        ``resolve_dependencies`` 方法会自顶向下检查各节点触发器。
+        """
         if self.trigger_expression is None:
             return True
 
