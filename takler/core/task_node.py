@@ -1,4 +1,5 @@
 import functools
+import asyncio
 
 from .node import Node
 from .state import NodeStatus
@@ -40,7 +41,7 @@ class Task(Node):
         if not Node.resolve_dependencies(self):
             return False
 
-        # submit jobs
+        # run jobs
         self.run()
         return True
 
@@ -94,6 +95,7 @@ def task(name: str):
                     Task.run(self)
 
                     self.init()
+                    kwargs.update(self=self)
                     func(*args, **kwargs)
                     self.complete()
 
@@ -101,4 +103,27 @@ def task(name: str):
         return wrapper
     return decorator
 
+
+def async_task(name: str):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            class RunTask(Task):
+                def __init__(self):
+                    super(RunTask, self).__init__(name=name)
+
+                async def run(self):
+                    Task.run(self)
+
+                    async def run_func():
+                        kwargs.update(self=self)
+                        self.init()
+                        await func(*args, **kwargs)
+                        self.complete()
+
+                    asyncio.run(run_func())
+
+            return RunTask()
+        return wrapper
+    return decorator
 
