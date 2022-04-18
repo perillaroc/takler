@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+// python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. takler/server\protocol\takler.proto
+
+package takler_protocol;
+
+message ServiceResponse{
+  int32 flag = 1;
+  string message = 2;
+}
+
+message ChildCommandOptions {
+  string node_path = 1;
+}
+
+message InitCommand {
+  ChildCommandOptions  child_options = 1;
+  string task_id = 2;
+}
+
+message CompleteCommand {
+  ChildCommandOptions child_options = 1;
+}
+
+message AbortCommand {
+  ChildCommandOptions child_options = 1;
+  string reason = 2;
+}
+
+service TaklerServer {
+  rpc RunInitCommand(InitCommand) returns (ServiceResponse){}
+  rpc RunCompleteCommand(CompleteCommand) returns (ServiceResponse){}
+  rpc RunAbortCommand(AbortCommand) returns (ServiceResponse){}
+}
