@@ -1,4 +1,7 @@
-from typing import Optional, Union
+from typing import Optional, Union, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .node import Node
 
 from .expression_parser import parse_trigger
 from .expression_ast import AstRoot
@@ -10,7 +13,7 @@ class Expression(object):
         self.ast = None  # type: Optional[AstRoot]
         self.expression_str = expression_str  # type: str
 
-    def create_ast(self, parent_node):
+    def create_ast(self, parent_node: "Node"):
         self.parse_expression()
         self.ast.set_parent_node(parent_node)
 

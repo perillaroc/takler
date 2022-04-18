@@ -1,7 +1,10 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
 
 from .state import NodeStatus
+
+if TYPE_CHECKING:
+    from .node import Node
 
 
 @dataclass
@@ -41,23 +44,23 @@ class AstOpAnd(AstRoot):
 @dataclass
 class AstNodePath(AstBase):
     node_path: str
-    parent_node: Optional = None
-    _reference_node: Optional = None
+    parent_node: "Optional[Node]" = None
+    _reference_node: "Optional[Node]" = None
 
-    def set_parent_node(self, node):
+    def set_parent_node(self, node: "Node"):
         self.parent_node = node
         ref_node = self.get_reference_node()
         if ref_node is None:
             raise ValueError(f"node path '{self.node_path}' is not found from node '{self.parent_node.node_path}'")
 
-    def value(self):
+    def value(self) -> NodeStatus:
         ref_node = self.get_reference_node()
         if ref_node is not None:
             return ref_node.state.node_status
         else:
             return NodeStatus.unknown
 
-    def get_reference_node(self) -> Optional:
+    def get_reference_node(self) -> "Optional[Node]":
         """
         Find node only once.
         """
