@@ -226,6 +226,29 @@ class Node(object):
             cur_node = t_node
         return cur_node
 
+    @classmethod
+    def check_absolute_node_path(cls, node_path: str) -> bool:
+        if not node_path.startswith("/"):
+            return False
+        if node_path == "/":
+            return False
+        return True
+
+    @classmethod
+    def check_node_path(cls, node_path: str) -> bool:
+        if node_path.startswith("/"):
+            return cls.check_absolute_node_path(node_path)
+        if node_path.startswith("../"):
+            if len(node_path) == 3:
+                return False
+            else:
+                return True
+        if node_path.startswith("./"):
+            if len(node_path) == 2:
+                return False
+            else:
+                return True
+
     # State management -----------------------------------------------------
 
     def computed_status(self, immediate: bool) -> NodeStatus:

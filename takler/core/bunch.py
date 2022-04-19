@@ -14,7 +14,6 @@ class Bunch(NodeContainer):
         if isinstance(flow, str):
             flow = Flow(name=flow)
         self.flows[flow.name] = flow
-        self.append_child(flow)
         return flow
 
     def find_flow(self, name: str) -> Optional[Flow]:
@@ -30,7 +29,6 @@ class Bunch(NodeContainer):
             raise ValueError(f"flow is not in Bunch: {flow_name}")
 
         flow = self.flows.pop(flow_name)
-        self.children.remove(flow)
 
         return flow
 
