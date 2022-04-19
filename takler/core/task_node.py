@@ -1,5 +1,6 @@
 import functools
 import asyncio
+from typing import Optional
 
 from .node import Node
 from .state import NodeStatus
@@ -8,6 +9,7 @@ from .state import NodeStatus
 class Task(Node):
     def __init__(self, name: str):
         super(Task, self).__init__(name)
+        self.task_id = None  # type: Optional[str]
 
     def __repr__(self):
         return f"Task {self.name}"
@@ -59,7 +61,8 @@ class Task(Node):
     #   Status update operation is used in task's running period,
     #   in order to notify task's status change to takler server.
 
-    def init(self):
+    def init(self, task_id: str = ""):
+        self.task_id = task_id
         self.set_node_status(node_status=NodeStatus.active)
         self.handle_status_change()
 
