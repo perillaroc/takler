@@ -15,6 +15,16 @@ logger = get_logger("server.scheduler")
 
 
 class Scheduler:
+    """
+    定时调度器，定时遍历所有 Flow，运行满足依赖条件的任务，同时还负责执行 Flow 操作。
+
+    Attributes
+    ----------
+    bunch : Bunch
+        Scheduler has only one bunch.
+    interval_main_loop : float
+        time interval to check flow dependencies, unit is seconds.
+    """
     def __init__(self, bunch: Bunch):
         self.bunch = bunch  # type: Bunch
         self.interval_main_loop = 10.0  # type: float
@@ -24,9 +34,15 @@ class Scheduler:
         pass
 
     async def run(self):
+        """
+        Start main loop.
+        """
         await self.main_loop()
 
     async def main_loop(self):
+        """
+        Main loop of scheduler.
+        """
         while True:
             logger.info("main loop...")
             start_time = time.time()
@@ -42,6 +58,11 @@ class Scheduler:
             await asyncio.sleep(duration)
 
     def travel_bunch(self):
+        """
+        Travel all flows in bunch to resolve dependencies.
+
+        This function will submit tasks which fit its dependencies.
+        """
         for name, flow in self.bunch.flows.items():
             flow.resolve_dependencies()
 

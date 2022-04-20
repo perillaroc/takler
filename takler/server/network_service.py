@@ -7,10 +7,22 @@ from takler.logging import get_logger
 from takler.server.scheduler import Scheduler
 
 
-service_logger = get_logger("server.service")
+logger = get_logger("server.service")
 
 
 class TaklerService(takler_pb2_grpc.TaklerServerServicer):
+    """
+    RPC 服务端，响应客户端命令。
+
+    Attributes
+    ----------
+    scheduler : Scheduler
+        A link to the scheduler. Service use it to run commands.
+    host : str
+        Service host
+    port : int
+        Service port
+    """
     def __init__(self, scheduler: Scheduler):
         self.scheduler = scheduler
         self.host = '[::]'  # type: str
@@ -19,23 +31,32 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
 
     @property
     def listen_address(self) -> str:
+        """
+        str: gRPC server's listen address
+        """
         return f'{self.host}:{self.port}'
 
     async def start(self):
+        """
+        Start gRPC server.
+        """
         self.grpc_server = grpc.aio.server()
         takler_pb2_grpc.add_TaklerServerServicer_to_server(self, self.grpc_server)
         self.grpc_server.add_insecure_port(self.listen_address)
         await self.grpc_server.start()
-        service_logger.info(f"service started: {self.listen_address}")
+        logger.info(f"service started: {self.listen_address}")
 
     async def run(self):
+        """
+        Run service.
+        """
         await self.grpc_server.wait_for_termination()
 
     async def RunInitCommand(self, request, context):
         node_path = request.child_options.node_path
         task_id = request.task_id
 
-        service_logger.info(f"Init: {node_path} with {task_id}")
+        logger.info(f"Init: {node_path} with {task_id}")
         await self.scheduler.run_command_init(node_path, task_id)
         return takler_pb2.ServiceResponse(
             flag=0,
@@ -44,7 +65,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
 
     async def RunCompleteCommand(self, request, context):
         node_path = request.child_options.node_path
-        service_logger.info(f"Complete: {node_path}")
+        logger.info(f"Complete: {node_path}")
         self.scheduler.run_command_complete(node_path)
 
         return takler_pb2.ServiceResponse(
@@ -54,7 +75,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
 
     async def RunAbortCommand(self, request, context):
         node_path = request.child_options.node_path
-        service_logger.info(f"Abort: {node_path}")
+        logger.info(f"Abort: {node_path}")
         self.scheduler.run_command_abort(node_path)
 
         return takler_pb2.ServiceResponse(
