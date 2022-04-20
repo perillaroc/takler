@@ -12,7 +12,7 @@ logger = get_logger("client")
 
 
 class TaklerServiceClient:
-    def __init__(self, host: str = "localhost", port: int = 50051):
+    def __init__(self, host: str = "localhost", port: int = 33083):
         self.host = host  # type: str
         self.port = port  # type: int
         self.channel = None  # type: Optional[grpc.Channel]
