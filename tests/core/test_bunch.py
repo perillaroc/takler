@@ -1,4 +1,16 @@
+import pytest
+
 from takler.core import Bunch
+
+
+@pytest.fixture
+def simple_bunch(simple_flow_objects, simple_flow_2_objects):
+    bunch = Bunch()
+    flow1 = simple_flow_objects["flow1"]
+    bunch.add_flow(flow1)
+    flow2 = simple_flow_2_objects["flow2"]
+    bunch.add_flow(flow2)
+    return bunch
 
 
 def test_add_flow(simple_flow_objects, simple_flow_2_objects):
@@ -16,12 +28,39 @@ def test_add_flow(simple_flow_objects, simple_flow_2_objects):
         "flow2": flow2,
     }
 
+
+def test_find_flow(simple_bunch, simple_flow_objects, simple_flow_2_objects):
+    bunch = simple_bunch
+    flow1 = simple_flow_objects["flow1"]
+    flow2 = simple_flow_2_objects["flow2"]
+
     f = bunch.find_flow("flow1")
     assert f == flow1
+
+    f = bunch.find_flow("flow2")
+    assert f == flow2
+
+    f = bunch.find_flow("not_exist_flow")
+    assert f is None
+
+
+def test_find_node(simple_bunch, simple_flow_objects, simple_flow_2_objects):
+    bunch = simple_bunch
+    flow1 = simple_flow_objects["flow1"]
+    flow2 = simple_flow_2_objects["flow2"]
 
     flow1_task3 = simple_flow_objects["task3"]
     node = bunch.find_node("/flow1/container1/container2/task3")
     assert node == flow1_task3
+
+    node = bunch.find_node("/flow1/not_exist_container/not_exist_task")
+    assert node is None
+
+
+def test_delete_flow(simple_bunch, simple_flow_objects, simple_flow_2_objects):
+    bunch = simple_bunch
+    flow1 = simple_flow_objects["flow1"]
+    flow2 = simple_flow_2_objects["flow2"]
 
     f = bunch.delete_flow("flow1")
     assert f == flow1
