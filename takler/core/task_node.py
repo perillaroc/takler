@@ -4,6 +4,7 @@ from typing import Optional
 
 from .node import Node
 from .state import NodeStatus
+from ._logger import logger
 
 
 class Task(Node):
@@ -55,6 +56,7 @@ class Task(Node):
 
         # change node status
         self.set_node_status(node_status=NodeStatus.submitted)
+        logger.info(f"run: {self.node_path}")
         self.handle_status_change()
 
     # Status update operation -------------------------------------
@@ -64,14 +66,17 @@ class Task(Node):
     def init(self, task_id: str = ""):
         self.task_id = task_id
         self.set_node_status(node_status=NodeStatus.active)
+        logger.info(f"init: {self.node_path}")
         self.handle_status_change()
 
     def complete(self):
         self.set_node_status(node_status=NodeStatus.complete)
+        logger.info(f"complete: {self.node_path}")
         self.handle_status_change()
 
     def abort(self):
         self.set_node_status(node_status=NodeStatus.aborted)
+        logger.info(f"complete: {self.node_path}")
         self.handle_status_change()
 
 
