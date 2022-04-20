@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='takler_protocol',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n#takler/server/protocol/takler.proto\x12\x0ftakler_protocol\"0\n\x0fServiceResponse\x12\x0c\n\x04\x66lag\x18\x01 \x01(\x05\x12\x0f\n\x07message\x18\x02 \x01(\t\"(\n\x13\x43hildCommandOptions\x12\x11\n\tnode_path\x18\x01 \x01(\t\"[\n\x0bInitCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x0f\n\x07task_id\x18\x02 \x01(\t\"N\n\x0f\x43ompleteCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\"[\n\x0c\x41\x62ortCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x0e\n\x06reason\x18\x02 \x01(\t2\x94\x02\n\x0cTaklerServer\x12R\n\x0eRunInitCommand\x12\x1c.takler_protocol.InitCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12Z\n\x12RunCompleteCommand\x12 .takler_protocol.CompleteCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12T\n\x0fRunAbortCommand\x12\x1d.takler_protocol.AbortCommand\x1a .takler_protocol.ServiceResponse\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n#takler/server/protocol/takler.proto\x12\x0ftakler_protocol\"0\n\x0fServiceResponse\x12\x0c\n\x04\x66lag\x18\x01 \x01(\x05\x12\x0f\n\x07message\x18\x02 \x01(\t\"(\n\x13\x43hildCommandOptions\x12\x11\n\tnode_path\x18\x01 \x01(\t\"[\n\x0bInitCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x0f\n\x07task_id\x18\x02 \x01(\t\"N\n\x0f\x43ompleteCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\"[\n\x0c\x41\x62ortCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x0e\n\x06reason\x18\x02 \x01(\t\"\r\n\x0bShowRequest\"\x1e\n\x0cShowResponse\x12\x0e\n\x06output\x18\x01 \x01(\t2\xe5\x02\n\x0cTaklerServer\x12R\n\x0eRunInitCommand\x12\x1c.takler_protocol.InitCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12Z\n\x12RunCompleteCommand\x12 .takler_protocol.CompleteCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12T\n\x0fRunAbortCommand\x12\x1d.takler_protocol.AbortCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12O\n\x0eRunShowRequest\x12\x1c.takler_protocol.ShowRequest\x1a\x1d.takler_protocol.ShowResponse\"\x00\x62\x06proto3')
 )
 
 
@@ -200,6 +200,61 @@ _ABORTCOMMAND = _descriptor.Descriptor(
   serialized_end=412,
 )
 
+
+_SHOWREQUEST = _descriptor.Descriptor(
+  name='ShowRequest',
+  full_name='takler_protocol.ShowRequest',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=414,
+  serialized_end=427,
+)
+
+
+_SHOWRESPONSE = _descriptor.Descriptor(
+  name='ShowResponse',
+  full_name='takler_protocol.ShowResponse',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='output', full_name='takler_protocol.ShowResponse.output', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=_b("").decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=429,
+  serialized_end=459,
+)
+
 _INITCOMMAND.fields_by_name['child_options'].message_type = _CHILDCOMMANDOPTIONS
 _COMPLETECOMMAND.fields_by_name['child_options'].message_type = _CHILDCOMMANDOPTIONS
 _ABORTCOMMAND.fields_by_name['child_options'].message_type = _CHILDCOMMANDOPTIONS
@@ -208,6 +263,8 @@ DESCRIPTOR.message_types_by_name['ChildCommandOptions'] = _CHILDCOMMANDOPTIONS
 DESCRIPTOR.message_types_by_name['InitCommand'] = _INITCOMMAND
 DESCRIPTOR.message_types_by_name['CompleteCommand'] = _COMPLETECOMMAND
 DESCRIPTOR.message_types_by_name['AbortCommand'] = _ABORTCOMMAND
+DESCRIPTOR.message_types_by_name['ShowRequest'] = _SHOWREQUEST
+DESCRIPTOR.message_types_by_name['ShowResponse'] = _SHOWRESPONSE
 _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 
 ServiceResponse = _reflection.GeneratedProtocolMessageType('ServiceResponse', (_message.Message,), dict(
@@ -245,6 +302,20 @@ AbortCommand = _reflection.GeneratedProtocolMessageType('AbortCommand', (_messag
   ))
 _sym_db.RegisterMessage(AbortCommand)
 
+ShowRequest = _reflection.GeneratedProtocolMessageType('ShowRequest', (_message.Message,), dict(
+  DESCRIPTOR = _SHOWREQUEST,
+  __module__ = 'takler.server.protocol.takler_pb2'
+  # @@protoc_insertion_point(class_scope:takler_protocol.ShowRequest)
+  ))
+_sym_db.RegisterMessage(ShowRequest)
+
+ShowResponse = _reflection.GeneratedProtocolMessageType('ShowResponse', (_message.Message,), dict(
+  DESCRIPTOR = _SHOWRESPONSE,
+  __module__ = 'takler.server.protocol.takler_pb2'
+  # @@protoc_insertion_point(class_scope:takler_protocol.ShowResponse)
+  ))
+_sym_db.RegisterMessage(ShowResponse)
+
 
 
 _TAKLERSERVER = _descriptor.ServiceDescriptor(
@@ -253,8 +324,8 @@ _TAKLERSERVER = _descriptor.ServiceDescriptor(
   file=DESCRIPTOR,
   index=0,
   serialized_options=None,
-  serialized_start=415,
-  serialized_end=691,
+  serialized_start=462,
+  serialized_end=819,
   methods=[
   _descriptor.MethodDescriptor(
     name='RunInitCommand',
@@ -281,6 +352,15 @@ _TAKLERSERVER = _descriptor.ServiceDescriptor(
     containing_service=None,
     input_type=_ABORTCOMMAND,
     output_type=_SERVICERESPONSE,
+    serialized_options=None,
+  ),
+  _descriptor.MethodDescriptor(
+    name='RunShowRequest',
+    full_name='takler_protocol.TaklerServer.RunShowRequest',
+    index=3,
+    containing_service=None,
+    input_type=_SHOWREQUEST,
+    output_type=_SHOWRESPONSE,
     serialized_options=None,
   ),
 ])

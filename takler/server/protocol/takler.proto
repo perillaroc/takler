@@ -27,8 +27,17 @@ message AbortCommand {
   string reason = 2;
 }
 
+message ShowRequest{
+}
+
+message ShowResponse{
+  string output = 1;
+}
+
 service TaklerServer {
   rpc RunInitCommand(InitCommand) returns (ServiceResponse){}
   rpc RunCompleteCommand(CompleteCommand) returns (ServiceResponse){}
   rpc RunAbortCommand(AbortCommand) returns (ServiceResponse){}
+
+  rpc RunShowRequest(ShowRequest) returns (ShowResponse){}
 }

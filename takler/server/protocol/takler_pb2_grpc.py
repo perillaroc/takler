@@ -29,6 +29,11 @@ class TaklerServerStub(object):
         request_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.AbortCommand.SerializeToString,
         response_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.ServiceResponse.FromString,
         )
+    self.RunShowRequest = channel.unary_unary(
+        '/takler_protocol.TaklerServer/RunShowRequest',
+        request_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.ShowRequest.SerializeToString,
+        response_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.ShowResponse.FromString,
+        )
 
 
 class TaklerServerServicer(object):
@@ -56,6 +61,13 @@ class TaklerServerServicer(object):
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')
 
+  def RunShowRequest(self, request, context):
+    # missing associated documentation comment in .proto file
+    pass
+    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+    context.set_details('Method not implemented!')
+    raise NotImplementedError('Method not implemented!')
+
 
 def add_TaklerServerServicer_to_server(servicer, server):
   rpc_method_handlers = {
@@ -73,6 +85,11 @@ def add_TaklerServerServicer_to_server(servicer, server):
           servicer.RunAbortCommand,
           request_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.AbortCommand.FromString,
           response_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.ServiceResponse.SerializeToString,
+      ),
+      'RunShowRequest': grpc.unary_unary_rpc_method_handler(
+          servicer.RunShowRequest,
+          request_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.ShowRequest.FromString,
+          response_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.ShowResponse.SerializeToString,
       ),
   }
   generic_handler = grpc.method_handlers_generic_handler(
