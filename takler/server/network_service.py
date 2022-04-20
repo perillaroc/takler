@@ -23,10 +23,14 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
     port : int
         Service port
     """
-    def __init__(self, scheduler: Scheduler):
+    def __init__(self, scheduler: Scheduler, host: str = None, port: int = None):
         self.scheduler = scheduler
-        self.host = '[::]'  # type: str
-        self.port = 50051  # type: int
+        if host is None:
+            host = "[::]"
+        if port is None:
+            port = 50051
+        self.host = host  # type: str
+        self.port = port  # type: int
         self.grpc_server = None  # type: Optional[grpc.aio.Server]
 
     @property
