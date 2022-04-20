@@ -61,3 +61,9 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             flag=0,
             message="",
         )
+
+    async def RunShowRequest(self, request, context):
+        output = self.scheduler.handle_show_request()
+        return takler_pb2.ShowResponse(
+            output=output
+        )

@@ -1,11 +1,14 @@
 import asyncio
 import time
+from io import StringIO
 from typing import Optional, Union
 from queue import Queue, Empty
 
 
 from takler.core import Bunch, Task
+from takler.core.node import Node
 from takler.logging import get_logger
+from takler.visitor import NodeVisitor, pre_order_travel
 
 
 logger = get_logger("server.scheduler")
@@ -71,3 +74,28 @@ class Scheduler:
             node.abort()
         else:
             raise ValueError(f"node must be Task: {node_path}")
+
+    def handle_show_request(self) -> str:
+        stream = StringIO()
+
+        class PrintVisitor(NodeVisitor):
+            def __init__(self):
+                NodeVisitor.__init__(self)
+                self.level = 0
+
+            def visit(self, node: Node):
+                place_holder = "  " * self.level
+                node_name = node.name
+                node_state = node.state.node_status.name
+                stream.write(f"{place_holder}|- {node_name} [{node_state}]\n")
+
+            def before_visit_child(self):
+                self.level += 1
+
+            def after_visit_child(self):
+                self.level -= 1
+
+        for name, flow in self.bunch.flows.items():
+            pre_order_travel(flow, PrintVisitor())
+
+        return stream.getvalue()
