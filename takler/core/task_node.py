@@ -76,7 +76,7 @@ class Task(Node):
 
     def abort(self):
         self.set_node_status(node_status=NodeStatus.aborted)
-        logger.info(f"complete: {self.node_path}")
+        logger.info(f"abort: {self.node_path}")
         self.handle_status_change()
 
 
