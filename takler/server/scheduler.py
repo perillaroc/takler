@@ -96,7 +96,14 @@ class Scheduler:
         else:
             raise ValueError(f"node must be Task: {node_path}")
 
-    def handle_show_request(self) -> str:
+    def run_command_requeue(self, node_path: str):
+        node = self.bunch.find_node(node_path)
+        if node is None:
+            raise ValueError(f"node is not found: {node_path}")
+
+        node.requeue()
+
+    def handle_request_show(self) -> str:
         stream = StringIO()
 
         class PrintVisitor(NodeVisitor):

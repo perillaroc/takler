@@ -64,6 +64,14 @@ class TaklerServiceClient:
         )
         print(f"received: {response.flag}")
 
+    def run_command_requeue(self, node_path: str):
+        response = self.stub.RunRequeueCommand(
+            takler_pb2.RequeueCommand(
+                node_path=node_path
+            )
+        )
+        print(f"received: {response.flag}")
+
     def run_request_show(self):
         response = self.stub.RunShowRequest(
             takler_pb2.ShowRequest()

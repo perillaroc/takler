@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-// python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. takler/server\protocol\takler.proto
+// python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. takler/server/protocol/takler.proto
 
 package takler_protocol;
 
@@ -9,12 +9,14 @@ message ServiceResponse{
   string message = 2;
 }
 
+// child command
+
 message ChildCommandOptions {
   string node_path = 1;
 }
 
 message InitCommand {
-  ChildCommandOptions  child_options = 1;
+  ChildCommandOptions child_options = 1;
   string task_id = 2;
 }
 
@@ -27,6 +29,14 @@ message AbortCommand {
   string reason = 2;
 }
 
+// control command
+
+message RequeueCommand {
+  string node_path = 1;
+}
+
+// query command
+
 message ShowRequest{
 }
 
@@ -35,9 +45,17 @@ message ShowResponse{
 }
 
 service TaklerServer {
+
+  // child command
   rpc RunInitCommand(InitCommand) returns (ServiceResponse){}
   rpc RunCompleteCommand(CompleteCommand) returns (ServiceResponse){}
   rpc RunAbortCommand(AbortCommand) returns (ServiceResponse){}
+
+  // control command
+
+  rpc RunRequeueCommand(RequeueCommand) returns (ServiceResponse){}
+
+  // query command
 
   rpc RunShowRequest(ShowRequest) returns (ShowResponse){}
 }

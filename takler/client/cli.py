@@ -43,6 +43,20 @@ def complete(
 
 
 @app.command()
+def requeue(
+        node_path: str = typer.Option(...),
+        host: str = typer.Option(None, help="takler service host"),
+        port: int = typer.Option(None, help="takler service port"),
+):
+    host = get_host(host)
+    port = get_port(port)
+    client = TaklerServiceClient(host=host, port=port)
+    client.start()
+    client.run_command_requeue(node_path=node_path)
+    client.shutdown()
+
+
+@app.command()
 def show(
         host: str = typer.Option(None, help="takler service host"),
         port: int = typer.Option(None, help="takler service port"),

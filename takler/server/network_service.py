@@ -87,8 +87,18 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
+    async def RunRequeueCommand(self, request, context):
+        node_path = request.node_path
+        logger.info(f"Requeue: {node_path}")
+        self.scheduler.run_command_requeue(node_path)
+
+        return takler_pb2.ServiceResponse(
+            flag=0,
+            message="",
+        )
+
     async def RunShowRequest(self, request, context):
-        output = self.scheduler.handle_show_request()
+        output = self.scheduler.handle_request_show()
         return takler_pb2.ShowResponse(
             output=output
         )
