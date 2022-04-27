@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Union, List, Optional, Mapping
+from typing import Union, List, Optional, Dict
 from pathlib import PurePosixPath
 from collections import defaultdict
 
@@ -83,7 +83,7 @@ class Node(object):
         self.children = list()  # type: List[Node]
 
         # 参数
-        self.parameters = dict()  # type: Mapping[str, Parameter]
+        self.parameters = dict()  # type: Dict[str, Parameter]
 
         # 触发器
         self.trigger_expression = None  # type: Optional[Expression]
@@ -337,6 +337,7 @@ class Node(object):
         self.swim_status_change()
 
     # Trigger --------------------------------------------------------
+
     def add_trigger(self, trigger: Union[str, Expression]):
         if isinstance(trigger, str):
             self.trigger_expression = Expression(trigger)
@@ -368,6 +369,39 @@ class Node(object):
             return False
 
         return True
+
+    # Parameter ------------------------------------------------------
+
+    def add_parameter(self, name: str, value: Union[str, float, int, bool]):
+        """
+        Add a ``Parameter`` to this node.
+        """
+        p = Parameter(name=name, value=value)
+        self.parameters[name] = p
+        return p
+
+    def find_parameter(self, name: str) -> Optional[Parameter]:
+        """
+        Find a ``parameter`` only in this node.
+        """
+        return self.parameters.get(name, None)
+
+    def find_parent_parameter(self, name: str) -> Optional[Parameter]:
+        """
+        Find a ``Parameter`` up along the node tree.
+        """
+        p = self.find_parameter(name)
+        if p is not None:
+            return p
+
+        parent_node = self.parent
+        while parent_node is not None:
+            p = parent_node.find_parameter(name)
+            if p is not None:
+                return p
+            parent_node = parent_node.parent
+
+        return None
 
     # Node Operations ------------------------------------------------
 
