@@ -5,20 +5,26 @@ from .state import NodeStatus
 
 
 class ExpressionTransformer(Transformer):
-    def node_path(self, items):
+    """
+    Transform Lark tokens into takler expression AST.
+    """
+    def node_path(self, items) -> AstNodePath:
         return AstNodePath("".join(items))
 
-    def node_name(self, s):
+    def node_name(self, s: str) -> str:
         (s, ) = s
         return s
 
-    def st_complete(self, _):
+    def st_complete(self, _) -> AstNodeStatus:
+        """Node status: complete"""
         return AstNodeStatus(NodeStatus.complete)
 
-    def op_eq(self, _):
+    def op_eq(self, _) -> AstOpEq:
+        """Operation: equal (==)"""
         return AstOpEq()
 
-    def op_and(self, _):
+    def op_and(self, _) -> AstOpAnd:
+        """Operation: and"""
         return AstOpAnd()
 
     def expression(self, s):
@@ -27,7 +33,8 @@ class ExpressionTransformer(Transformer):
         return s[1]
 
 
-trigger_parser = Lark(r"""
+# Lark version of expression trigger parser.
+trigger_parser: Lark = Lark(r"""
     !node_path: ("."|"..")?"/"node_name("/"node_name)*
 
     op_eq: "==" | "eq"
@@ -52,6 +59,18 @@ trigger_parser = Lark(r"""
 
 
 def parse_trigger(trigger_text: str) -> AstRoot:
+    """
+    Parse trigger expression string and return expression's AST.
+
+    Parameters
+    ----------
+    trigger_text
+        trigger expression string
+
+    Returns
+    -------
+    AstRoot
+    """
     tree = trigger_parser.parse(trigger_text)
     expression_ast = ExpressionTransformer().transform(tree)
     return expression_ast

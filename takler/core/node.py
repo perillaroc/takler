@@ -188,7 +188,7 @@ class Node(ABC):
             root = root.parent
         return root
 
-    def get_bunch(self) -> Optional[Bunch]:
+    def get_bunch(self) -> "Optional[Bunch]":
         if self.parent is not None:
             return self.parent.get_bunch()
         else:

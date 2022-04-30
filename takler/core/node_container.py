@@ -66,8 +66,8 @@ class NodeContainer(Node):
         else:
             raise TypeError("task must be str or Task")
 
-        t = self.append_child(task_node)
-        return t
+        self.append_child(task_node)
+        return task_node
 
     # Trigger ------------------------------------------------
 

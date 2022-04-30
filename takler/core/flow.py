@@ -15,7 +15,7 @@ class Flow(NodeContainer):
 
     # Node access --------------------------------------
 
-    def get_bunch(self):  # type: () -> Optional[Bunch]
+    def get_bunch(self) -> "Bunch":
         return self.bunch
 
     # Parameter ----------------------------------------
