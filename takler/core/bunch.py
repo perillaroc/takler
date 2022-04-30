@@ -1,19 +1,31 @@
-from typing import Optional, Dict, Union
+from typing import Optional, Dict, Union, List
+
+from pydantic import BaseModel, validator
+
+from takler import constant
 
 from .node_container import NodeContainer
 from .flow import Flow
 from .node import Node
+from .parameter import (
+    Parameter, TAKLER_HOST, TAKLER_PORT, TAKLER_HOME
+)
 
 
 class Bunch(NodeContainer):
-    def __init__(self, name: str = ""):
+    def __init__(self, name: str = "", port: str = None):
         super(Bunch, self).__init__(name=name)
         self.flows = dict()  # type: Dict[str, Flow]
+        self.server_state = ServerState(port=port)  # type: ServerState
+        self.server_state.setup()
+
+    # Flow ------------------------------------------------
 
     def add_flow(self, flow: Union[Flow, str]) -> Flow:
         if isinstance(flow, str):
             flow = Flow(name=flow)
         self.flows[flow.name] = flow
+        flow.bunch = self
         return flow
 
     def find_flow(self, name: str) -> Optional[Flow]:
@@ -32,6 +44,8 @@ class Bunch(NodeContainer):
 
         return flow
 
+    # Node access -----------------------------------------------
+
     def find_node(self, node_path: str) -> Optional[Node]:
         if not Node.check_absolute_node_path(node_path):
             raise ValueError(f"absolute node path is illegal: {node_path}")
@@ -42,3 +56,40 @@ class Bunch(NodeContainer):
         if a_flow is None:
             return None
         return a_flow.find_node(node_path)
+
+    # Parameter ------------------------------------------------
+
+    def find_generated_parameter(self, name: str) -> Optional[Parameter]:
+        p = self.server_state.find_parameter(name)
+        return p
+
+
+class ServerState(BaseModel):
+    server_parameters: List[Parameter] = []
+    host: str = constant.DEFAULT_HOST
+    port: Optional[str] = constant.DEFAULT_PORT
+
+    class Config:
+        arbitrary_types_allowed = True
+        validate_assignment = True
+
+    @validator("port")
+    def set_port(cls, p):
+        if p is None:
+            p = constant.DEFAULT_PORT
+        return p
+
+    def setup(self):
+        self.setup_default_server_parameters()
+
+    def setup_default_server_parameters(self):
+        self.server_parameters.append(Parameter(TAKLER_HOST, self.host))
+        self.server_parameters.append(Parameter(TAKLER_PORT, self.port))
+        self.server_parameters.append(Parameter(TAKLER_HOME, "."))
+
+    def find_parameter(self, name: str) -> Optional[Parameter]:
+        for p in self.server_parameters:
+            if p.name == name:
+                return p
+
+        return None

@@ -2,8 +2,14 @@ import functools
 import asyncio
 from typing import Optional
 
+from pydantic import BaseModel
+
 from .node import Node
 from .state import NodeStatus
+from .parameter import (
+    Parameter,
+    TASK, TAKLER_NAME, TAKLER_RID
+)
 from ._logger import logger
 
 
@@ -12,12 +18,17 @@ class Task(Node):
         super(Task, self).__init__(name)
         self.task_id = None  # type: Optional[str]
 
+        self.generated_parameters = TaskNodeGeneratedParameters(node=self)  # type: TaskNodeGeneratedParameters
+
     def __repr__(self):
         return f"Task {self.name}"
 
     # State management --------------------------------------------
 
     def computed_status(self, immediate: bool) -> NodeStatus:
+        """
+        The status of a task is its own status.
+        """
         return self.state.node_status
 
     def swim_status_change(self):
@@ -46,7 +57,16 @@ class Task(Node):
 
         # run jobs
         self.run()
+
         return True
+
+    # Parameter ---------------------------------------------------
+
+    def find_generated_parameter(self, name: str) -> Optional[Parameter]:
+        return self.generated_parameters.find_parameter(name)
+
+    def update_generated_parameters(self):
+        self.generated_parameters.update_parameters()
 
     # Node Operation ----------------------------------------------
     #   Node operation is used to control the flow.
@@ -78,6 +98,34 @@ class Task(Node):
         self.set_node_status(node_status=NodeStatus.aborted)
         logger.info(f"abort: {self.node_path}")
         self.handle_status_change()
+
+
+class TaskNodeGeneratedParameters(BaseModel):
+    node: Task
+    task: Parameter = Parameter(TASK, None)
+    takler_name: Parameter = Parameter(TAKLER_NAME, None)
+    takler_rid: Parameter = Parameter(TAKLER_RID, None)
+
+    class Config:
+        arbitrary_types_allowed = True
+
+    def update_parameters(self):
+        """
+        Update generated parameters from task node's attrs.
+        """
+        self.task.value = self.node.name
+        self.takler_name.value = self.node.node_path
+        self.takler_rid.value = self.node.task_id
+
+    def find_parameter(self, name: str) -> Optional[Parameter]:
+        if name == TASK:
+            return self.task
+        elif name == TAKLER_NAME:
+            return self.takler_name
+        elif name == TAKLER_RID:
+            return self.takler_rid
+        else:
+            return None
 
 
 def task(name: str):

@@ -49,6 +49,7 @@ setup(
         'lark',
         'grpcio',
         'typer',
+        'pydantic'
     ],
 
     extras_require={

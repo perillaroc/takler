@@ -13,6 +13,7 @@ TAKLER_TIME = "TAKLER_TIME"
 # Task level
 TASK = "TASK"
 TAKLER_NAME = "TAKLER_NAME"
+TAKLER_RID = "TAKLER_RID"
 
 
 class Parameter(object):

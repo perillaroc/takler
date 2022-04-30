@@ -1,12 +1,16 @@
 from __future__ import annotations
 
-from typing import Union, List, Optional, Dict
+from typing import Union, List, Optional, Dict, TYPE_CHECKING
 from pathlib import PurePosixPath
 from collections import defaultdict
+from abc import ABC, abstractmethod
 
 from .state import State, NodeStatus
 from .parameter import Parameter
 from .expression import Expression
+
+if TYPE_CHECKING:
+    from .bunch import Bunch
 
 
 # def compute_node_status(node: Node, immediate: bool) -> NodeStatus:
@@ -70,7 +74,7 @@ def compute_most_significant_status(nodes: List[Node], immediate: bool) -> NodeS
     return NodeStatus.unknown
 
 
-class Node(object):
+class Node(ABC):
     def __init__(self, name: str):
         # 树形
         self.name = name  # type: str
@@ -183,6 +187,12 @@ class Node(object):
         while root.parent is not None:
             root = root.parent
         return root
+
+    def get_bunch(self) -> Optional[Bunch]:
+        if self.parent is not None:
+            return self.parent.get_bunch()
+        else:
+            return None
 
     def find_node(self, a_path: str) -> Optional[Node]:
         """
@@ -384,7 +394,26 @@ class Node(object):
         """
         Find a ``parameter`` only in this node.
         """
+        p = self.find_user_parameter(name)
+        if p is not None:
+            return p
+
+        p = self.find_generated_parameter(name)
+        if p is not None:
+            return p
+
+    def find_user_parameter(self, name: str) -> Optional[Parameter]:
+        """
+        Find user  ``parameter`` only in this node.
+        """
         return self.parameters.get(name, None)
+
+    # @abstractmethod
+    def find_generated_parameter(self, name: str) -> Optional[Parameter]:
+        """
+        Find generated ``parameter`` only in this node.
+        """
+        return None
 
     def find_parent_parameter(self, name: str) -> Optional[Parameter]:
         """
@@ -401,7 +430,17 @@ class Node(object):
                 return p
             parent_node = parent_node.parent
 
-        return None
+        bunch = self.get_bunch()
+        if bunch is None:
+            return None
+
+        return bunch.find_parameter(name)
+
+    def update_generated_parameters(self):
+        """
+        Update generated parameters for this node.
+        """
+        pass
 
     # Node Operations ------------------------------------------------
 
