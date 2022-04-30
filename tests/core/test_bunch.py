@@ -67,3 +67,18 @@ def test_delete_flow(simple_bunch, simple_flow_objects, simple_flow_2_objects):
     assert bunch.flows == {
         "flow2": flow2
     }
+
+
+def get_bunch(simple_bunch, simple_flow_objects, simple_flow_2_objects):
+    bunch = simple_bunch
+    flow1 = simple_flow_objects["flow1"]
+    flow2 = simple_flow_2_objects["flow2"]
+
+    assert flow1.get_bunch() == bunch
+    assert flow2.get_bunch() == bunch
+
+    task1 = simple_flow_objects["task1"]
+    assert task1.get_bunch() == bunch
+
+    container2 = simple_flow_2_objects["container2"]
+    assert container2.get_bunch() == bunch
