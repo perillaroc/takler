@@ -63,6 +63,9 @@ class Bunch(NodeContainer):
         p = self.server_state.find_parameter(name)
         return p
 
+    def generated_parameters_only(self) -> Dict[str, Parameter]:
+        return self.server_state.generated_parameters()
+
 
 class ServerState(BaseModel):
     server_parameters: List[Parameter] = []
@@ -93,3 +96,9 @@ class ServerState(BaseModel):
                 return p
 
         return None
+
+    def generated_parameters(self) -> Dict[str, Parameter]:
+        params = dict()
+        for p in self.server_parameters:
+            params[p.name] = p
+        return params

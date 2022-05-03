@@ -27,17 +27,17 @@ def test_add_parameter(simple_flow_objects):
     flow1.add_parameter("NODES", 4)
     flow1.add_parameter("TIME_INTERVAL", 0.1)
 
-    assert flow1.parameters["ECF_HOME"] == Parameter(name="ECF_HOME", value="/home/johndoe")
-    assert flow1.parameters["NODES"] == Parameter(name="NODES", value=4)
-    assert flow1.parameters["TIME_INTERVAL"] == Parameter(name="TIME_INTERVAL", value=0.1)
+    assert flow1.user_parameters["ECF_HOME"] == Parameter(name="ECF_HOME", value="/home/johndoe")
+    assert flow1.user_parameters["NODES"] == Parameter(name="NODES", value=4)
+    assert flow1.user_parameters["TIME_INTERVAL"] == Parameter(name="TIME_INTERVAL", value=0.1)
 
     container1 = simple_flow_objects["container1"]
     container1.add_parameter("TASKS", 32)
-    assert container1.parameters["TASKS"] == Parameter(name="TASKS", value=32)
+    assert container1.user_parameters["TASKS"] == Parameter(name="TASKS", value=32)
 
     task1 = simple_flow_objects["task1"]
     task1.add_parameter("FLAG", True)
-    assert task1.parameters["FLAG"] == Parameter(name="FLAG", value=True)
+    assert task1.user_parameters["FLAG"] == Parameter(name="FLAG", value=True)
 
 
 def test_find_parameter(simple_flow_objects_with_parameter):

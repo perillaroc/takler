@@ -87,7 +87,7 @@ class Node(ABC):
         self.children = list()  # type: List[Node]
 
         # 参数
-        self.parameters = dict()  # type: Dict[str, Parameter]
+        self.user_parameters = dict()  # type: Dict[str, Parameter]
 
         # 触发器
         self.trigger_expression = None  # type: Optional[Expression]
@@ -387,7 +387,7 @@ class Node(ABC):
         Add a ``Parameter`` to this node.
         """
         p = Parameter(name=name, value=value)
-        self.parameters[name] = p
+        self.user_parameters[name] = p
         return p
 
     def find_parameter(self, name: str) -> Optional[Parameter]:
@@ -406,7 +406,7 @@ class Node(ABC):
         """
         Find user  ``parameter`` only in this node.
         """
-        return self.parameters.get(name, None)
+        return self.user_parameters.get(name, None)
 
     # @abstractmethod
     def find_generated_parameter(self, name: str) -> Optional[Parameter]:
@@ -441,6 +441,57 @@ class Node(ABC):
         Update generated parameters for this node.
         """
         pass
+
+    def parameters(self) -> Dict[str, Parameter]:
+        """
+        Return all parameters accessible to this Node.
+        """
+        params = self.parameters_only().copy()
+
+        parent_node = self.parent
+        while parent_node is not None:
+            parent_params = parent_node.parameters_only().copy()
+            for key, p in parent_params.items():
+                if key not in params:
+                    params[key] = p
+            parent_node = parent_node.parent
+
+        bunch = self.get_bunch()
+        if bunch is not None:
+            bunch_params = bunch.parameters_only()
+            for key, p in bunch_params.items():
+                if key not in params:
+                    params[key] = p
+
+        return params
+
+    def parameters_only(self) -> Dict[str, Parameter]:
+        """
+        Return all parameters in this Node.
+        """
+        user_params = self.user_parameters_only()
+        generated_params = self.generated_parameters_only()
+
+        params = {
+            **user_params
+        }
+        for key, p in generated_params.items():
+            if key not in params:
+                params[key] = p
+
+        return params
+
+    def user_parameters_only(self) -> Dict[str, Parameter]:
+        """
+        Return user defined parameters in this Node.
+        """
+        return self.user_parameters
+
+    def generated_parameters_only(self) -> Dict[str, Parameter]:
+        """
+        Return generated parameters
+        """
+        return dict()
 
     # Node Operations ------------------------------------------------
 

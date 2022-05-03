@@ -1,6 +1,6 @@
 import functools
 import asyncio
-from typing import Optional
+from typing import Optional, Dict
 
 from pydantic import BaseModel
 
@@ -68,6 +68,9 @@ class Task(Node):
     def update_generated_parameters(self):
         self.generated_parameters.update_parameters()
 
+    def generated_parameters_only(self) -> Dict[str, Parameter]:
+        return self.generated_parameters.generated_parameters()
+
     # Node Operation ----------------------------------------------
     #   Node operation is used to control the flow.
 
@@ -126,6 +129,13 @@ class TaskNodeGeneratedParameters(BaseModel):
             return self.takler_rid
         else:
             return None
+
+    def generated_parameters(self) -> Dict[str, Parameter]:
+        return {
+            TASK: self.task,
+            TAKLER_NAME: self.takler_name,
+            TAKLER_RID: self.takler_rid
+        }
 
 
 def task(name: str):
