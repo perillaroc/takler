@@ -53,7 +53,7 @@ class ShellRender(object):
 
     def render_job_command(self) -> str:
         # get job command, default is ``DEFAULT_TAKLER_SHELL_JOB_CMD``
-        job_command_param = self.node.find_parameter(TAKLER_SHELL_JOB_CMD)
+        job_command_param = self.node.find_parent_parameter(TAKLER_SHELL_JOB_CMD)
         if job_command_param is not None:
             job_command = job_command_param.value
         else:
@@ -82,7 +82,7 @@ class ShellRender(object):
 
         If ``TAKLER_INCLUDE`` is not set, return an empty list.
         """
-        include_param = self.node.find_parameter(TAKLER_INCLUDE)
+        include_param = self.node.find_parent_parameter(TAKLER_INCLUDE)
         if include_param is None:
             return list()
 
