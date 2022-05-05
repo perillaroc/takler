@@ -1,0 +1,7 @@
+{% include "head.takler" %}
+
+echo "this is task1"
+sleep {{SLEEP}}
+echo "task1 end"
+
+{% include "tail.takler" %}

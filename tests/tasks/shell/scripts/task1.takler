@@ -1,0 +1,8 @@
+#!/bin/bash
+date
+
+echo "this is task1"
+sleep {{SLEEP}}
+echo "task1 end"
+
+date
