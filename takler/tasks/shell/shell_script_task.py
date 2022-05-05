@@ -56,6 +56,8 @@ class ShellScriptTask(Task):
         run shell command
         """
 
+    # Task specific ------------------------------------------------------------
+
     def submit(self):
         """
         Submit shell script to background.
