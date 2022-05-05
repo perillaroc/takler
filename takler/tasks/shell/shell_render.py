@@ -1,38 +1,39 @@
 from typing import Union, List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 
-from jinja2 import FileSystemLoader, Environment
+from jinja2 import Environment, FileSystemLoader
 
-from .constant import TAKLER_JOB, TAKLER_SHELL_JOB_CMD, DEFAULT_TAKLER_SHELL_JOB_CMD
-
+from .constant import (
+    TAKLER_JOB, TAKLER_SHELL_JOB_CMD, DEFAULT_TAKLER_SHELL_JOB_CMD, TAKLER_INCLUDE
+)
 
 if TYPE_CHECKING:
     from .shell_script_task import ShellScriptTask
 
 
-class ShellScript(object):
+class ShellRender(object):
     """
-    Shell script associated with A ``ShellScriptTask``.
+    Shell render associated with a ``ShellScriptTask`` for task script and task commands.
 
     When ``ShellScriptTask`` begins to run, the shell script is rendered into a job script.
 
-    Currently, ``ShellScript`` supports Jinja2 library.
+    Currently, ``ShellRender`` supports Jinja2 library.
     """
-    def __init__(self, script_path: Union[str, Path], node: "ShellScriptTask"):
-        self.script_path = Path(script_path)  # type: Path
+    def __init__(self, node: "ShellScriptTask"):
         self.node = node  # type: "ShellScriptTask"
         self._template_params = None  # type: Optional[Dict[str, Any]]
 
-    def render(self) -> Path:
+    def render_script(self, script_path: Union[str, Path]) -> Path:
         """
         render shell script to job script, and write job script to file system.
 
         Use the following parameters:
 
         * ``TAKLER_INCLUDE``: template search directory list, split by ``:``
-        * ``TAKLER_JOB``: job script path
+        * ``TAKLER_JOB``: generated job script path
         """
-        loader_paths = [self.script_path.parent]
+        script_path = Path(script_path)
+        loader_paths = [script_path.parent]
         loader_paths.extend(self.get_include_paths())
 
         template_params = self.template_params()
@@ -40,7 +41,7 @@ class ShellScript(object):
         file_loader = FileSystemLoader(loader_paths)
         env = Environment(loader=file_loader)
 
-        template = env.get_template(self.script_path.name)
+        template = env.get_template(script_path.name)
         job_script_content = template.render(**template_params)
 
         job_script_path = Path(self.node.find_parameter(TAKLER_JOB).value)
@@ -74,7 +75,14 @@ class ShellScript(object):
         return rendered_command
 
     def get_include_paths(self) -> List[str]:
-        include_param = self.node.find_parameter("TAKLER_INCLUDE")
+        """
+        Get template include paths from parameter ``TAKLER_INCLUDE``.
+
+        Paths are split by ``:``.
+
+        If ``TAKLER_INCLUDE`` is not set, return an empty list.
+        """
+        include_param = self.node.find_parameter(TAKLER_INCLUDE)
         if include_param is None:
             return list()
 

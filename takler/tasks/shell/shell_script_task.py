@@ -15,7 +15,7 @@ from .constant import (
     JOB_SCRIPT_EXTENSION,
     JOB_OUTPUT_EXTENSION
 )
-from .shell_script import ShellScript
+from .shell_render import ShellRender
 from .shell_runner import ShellRunner
 
 
@@ -73,8 +73,8 @@ class ShellScriptTask(Task):
         self.update_generated_parameters()
 
         # render job script
-        shell_script = ShellScript(self.script_path, self)
-        job_script_path = shell_script.render()
+        shell_script = ShellRender(self)
+        job_script_path = shell_script.render_script(self.script_path)
         job_script_path.chmod(0o755)
         logger.info(f"Job generation success: {job_script_path}")
 

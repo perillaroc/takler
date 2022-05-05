@@ -4,7 +4,7 @@ import pytest
 
 from takler.core import Bunch, Flow, Task
 from takler.tasks import ShellScriptTask
-from takler.tasks.shell.shell_script import ShellScript
+from takler.tasks.shell.shell_render import ShellRender
 
 
 @pytest.fixture
@@ -29,11 +29,8 @@ def test_simple_script_render(scripts_directory, takler_home_directory):
     task1.add_parameter("SLEEP", 30)
     task1.update_generated_parameters()
 
-    shell_script = ShellScript(
-        script_path=task1_script_path,
-        node=task1
-    )
-    shell_script.render()
+    shell_script = ShellRender(node=task1)
+    shell_script.render_script(script_path=task1_script_path)
 
 
 def test_script_with_include_render(scripts_directory, takler_home_directory, takler_include_directory):
@@ -47,8 +44,5 @@ def test_script_with_include_render(scripts_directory, takler_home_directory, ta
                 task1.add_parameter("SLEEP", 30)
                 task1.update_generated_parameters()
 
-    shell_script = ShellScript(
-        script_path=task1_script_path,
-        node=task1
-    )
-    shell_script.render()
+    shell_script = ShellRender(node=task1)
+    shell_script.render_script(script_path=task1_script_path)
