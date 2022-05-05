@@ -141,12 +141,9 @@ jspm_packages
 
 .idea
 
-dist
-
-playground
-
-.vagrant
-
-takler-run-dir
 
 .pytest_cache/
+
+#
+
+*.job
