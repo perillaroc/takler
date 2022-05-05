@@ -5,21 +5,27 @@ from pydantic import BaseModel
 
 from takler.core import Task, Parameter
 from takler.core.parameter import TAKLER_HOME
+from takler.logging import get_logger
 
 
-# Task level
-TAKLER_SCRIPT = "TAKLER_SCRIPT"
-TAKLER_JOB = "TAKLER_JOB"
-TAKLER_JOBOUT = "TAKLER_JOBOUT"
+from .constant import (
+    TAKLER_SCRIPT,
+    TAKLER_JOB,
+    TAKLER_JOBOUT,
+    JOB_SCRIPT_EXTENSION,
+    JOB_OUTPUT_EXTENSION
+)
+from .shell_script import ShellScript
+from .shell_runner import ShellRunner
 
-# Script
-SCRIPT_EXTENSION = "takler"
-JOB_SCRIPT_EXTENSION = "job"
-JOB_OUTPUT_EXTENSION = "out"
-JOB_OUTPUT_ERROR_EXTENSION = "err"
+
+logger = get_logger("tasks.shell")
 
 
 class ShellScriptTask(Task):
+    """
+    A task to run shell script.
+    """
     def __init__(self, name: str, script_path: Union[str, Path]):
         super(ShellScriptTask, self).__init__(name)
 
@@ -55,14 +61,31 @@ class ShellScriptTask(Task):
         """
         run shell command
         """
+        self.submit()
+        super(ShellScriptTask, self).run()
 
     # Task specific ------------------------------------------------------------
 
-    def submit(self):
+    def submit(self) -> bool:
         """
         Submit shell script to background.
         """
-        pass
+        self.update_generated_parameters()
+
+        # render job script
+        shell_script = ShellScript(self.script_path, self)
+        job_script_path = shell_script.render()
+        job_script_path.chmod(0o755)
+        logger.info(f"Job generation success: {job_script_path}")
+
+        # get run command
+        run_command = shell_script.render_job_command()
+        logger.info(f"Render run command success: {run_command}")
+
+        # run command
+        shell_runner = ShellRunner()
+        shell_runner.spwan(command=run_command)
+        return True
 
 
 class ShellScriptTaskGeneratedParameters(BaseModel):
