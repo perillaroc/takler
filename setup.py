@@ -49,7 +49,8 @@ setup(
         'lark',
         'grpcio',
         'typer',
-        'pydantic'
+        'pydantic',
+        'jinja2'
     ],
 
     extras_require={
