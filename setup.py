@@ -50,7 +50,8 @@ setup(
         'grpcio',
         'typer',
         'pydantic',
-        'jinja2'
+        'jinja2',
+        'anyio',
     ],
 
     extras_require={
