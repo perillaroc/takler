@@ -7,6 +7,15 @@ from anyio import run_process
 
 class ShellRunner:
     def spwan(self, command: str):
+        """
+        Run command in sub progress using ``anyio.run_process``.
+
+        Progress will be created from current running loop.
+
+        The command will be run as follows:
+
+            /bin/sh -c command_string
+        """
         async def run_shell_command():
             await run_process(["/bin/sh", "-c", command])
         loop = asyncio.get_running_loop()

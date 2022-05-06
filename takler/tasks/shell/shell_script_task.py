@@ -25,8 +25,14 @@ logger = get_logger("tasks.shell")
 class ShellScriptTask(Task):
     """
     A task to run shell script.
+
+    A shell script task should have a corresponding shell script.
+    There are two methods to set the script path:
+
+    * set ``script_path`` attribute, and ``update_generated_parameters()`` method will use it to generate TAKLER_SCRIPT parameter.
+    * set ``TAKLER_SCRIPT`` parameter as a user parameter to override generated ``TAKLER_SCRIPT`` parameter.
     """
-    def __init__(self, name: str, script_path: Union[str, Path]):
+    def __init__(self, name: str, script_path: Optional[Union[str, Path]] = None):
         super(ShellScriptTask, self).__init__(name)
 
         self.script_path = script_path
@@ -68,13 +74,20 @@ class ShellScriptTask(Task):
 
     def submit(self) -> bool:
         """
-        Submit shell script to background.
+        Generate job script and run job command.
         """
         self.update_generated_parameters()
 
+        # get script path from TAKLER_SCRIPT
+        script_param = self.find_parameter(TAKLER_SCRIPT)
+        if script_param is None:
+            raise ValueError("script param is empty")
+        script_path = script_param.value
+
         # render job script
         shell_script = ShellRender(self)
-        job_script_path = shell_script.render_script(self.script_path)
+
+        job_script_path = shell_script.render_script(script_path)
         job_script_path.chmod(0o755)
         logger.info(f"Job generation success: {job_script_path}")
 

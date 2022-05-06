@@ -16,7 +16,6 @@ class ShellRender(object):
     Shell render associated with a ``ShellScriptTask`` for task script and task commands.
 
     When ``ShellScriptTask`` begins to run, the shell script is rendered into a job script.
-
     Currently, ``ShellRender`` supports Jinja2 library.
     """
     def __init__(self, node: "ShellScriptTask"):
@@ -52,6 +51,9 @@ class ShellRender(object):
         return job_script_path
 
     def render_job_command(self) -> str:
+        """
+        render job command from ``TAKLER_SHELL_JOB_CMD`` or use ``DEFAULT_TAKLER_SHELL_JOB_CMD`` if not set.
+        """
         # get job command, default is ``DEFAULT_TAKLER_SHELL_JOB_CMD``
         job_command_param = self.node.find_parent_parameter(TAKLER_SHELL_JOB_CMD)
         if job_command_param is not None:
