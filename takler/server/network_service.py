@@ -52,11 +52,14 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
 
     async def run(self):
         """
-        Run service.
+        Wait until gRPC server is terminated.
         """
         await self.grpc_server.wait_for_termination()
 
     async def stop(self):
+        """
+        Stop gRPC server with time limit.
+        """
         logger.info("service shutting down..")
         await self.grpc_server.stop(5)
         logger.info("service shutting down..done")

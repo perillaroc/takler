@@ -42,6 +42,9 @@ class Scheduler:
         await self.shutdown()
 
     async def shutdown(self):
+        """
+        Called after main loop is done, unset ``should_stop`` flag.
+        """
         self.should_stop = False
 
     async def main_loop(self):
@@ -63,6 +66,9 @@ class Scheduler:
             await asyncio.sleep(duration)
 
     async def stop(self):
+        """
+        Stop scheduler and wait until main loop unset ``should_stop`` flag
+        """
         logger.info("scheduler shutting down...")
         self.should_stop = True
 

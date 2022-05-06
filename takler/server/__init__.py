@@ -27,7 +27,7 @@ class TaklerServer:
 
     async def run(self):
         """
-        Run server:
+        Run services:
 
         * run network service
         * run scheduler
@@ -38,5 +38,11 @@ class TaklerServer:
         await self.scheduler.run()
 
     async def stop(self):
+        """
+        Stop all services:
+
+        * stop network service
+        * stop scheduler
+        """
         await self.network_service.stop()
         await self.scheduler.stop()
