@@ -1,7 +1,0 @@
-*.err
-*.out
-
-# python
-*.pyc
-
-.idea
