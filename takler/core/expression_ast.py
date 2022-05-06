@@ -13,10 +13,10 @@ class AstBase:
         pass
 
     def value(self):
-        raise NotImplemented()
+        raise NotImplementedError("Method not implemented")
 
     def evaluate(self) -> bool:
-        raise NotImplemented()
+        raise NotImplementedError("Method not implemented")
 
 
 @dataclass
