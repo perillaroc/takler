@@ -29,6 +29,7 @@ class Scheduler:
         self.bunch = bunch  # type: Bunch
         self.interval_main_loop = 10.0  # type: float
         self.command_queue = Queue()  # type: Queue
+        self.should_stop = False  # type: bool
 
     async def start(self):
         pass
@@ -38,12 +39,16 @@ class Scheduler:
         Start main loop.
         """
         await self.main_loop()
+        await self.shutdown()
+
+    async def shutdown(self):
+        self.should_stop = False
 
     async def main_loop(self):
         """
         Main loop of scheduler.
         """
-        while True:
+        while not self.should_stop:
             logger.info("main loop...")
             start_time = time.time()
 
@@ -56,6 +61,14 @@ class Scheduler:
                 duration = self.interval_main_loop - elapsed
 
             await asyncio.sleep(duration)
+
+    async def stop(self):
+        logger.info("scheduler shutting down...")
+        self.should_stop = True
+
+        while self.should_stop:
+            await asyncio.sleep(0.1)
+        logger.info("scheduler shutting down...done")
 
     def travel_bunch(self):
         """

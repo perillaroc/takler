@@ -15,7 +15,9 @@ class TaklerServer:
     def __init__(self, host: str = None, port: int = None):
         self.bunch = Bunch()  # type: Bunch
         self.scheduler = Scheduler(bunch=self.bunch)
-        self.network_service = TaklerService(scheduler=self.scheduler, host=host, port=port)
+        self.network_service = TaklerService(
+            scheduler=self.scheduler, host=host, port=port
+        )
 
     async def start(self):
         logger.info("start server...")
@@ -34,3 +36,7 @@ class TaklerServer:
         loop.create_task(self.network_service.run())
 
         await self.scheduler.run()
+
+    async def stop(self):
+        await self.network_service.stop()
+        await self.scheduler.stop()
