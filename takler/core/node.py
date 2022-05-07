@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Union, List, Optional, Dict, TYPE_CHECKING
 from pathlib import PurePosixPath
 from collections import defaultdict
-from abc import ABC, abstractmethod
+from abc import ABC
 
 from .state import State, NodeStatus
 from .parameter import Parameter

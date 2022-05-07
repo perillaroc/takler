@@ -1,9 +1,7 @@
 import asyncio
 import time
 from io import StringIO
-from typing import Optional, Union
-from queue import Queue, Empty
-
+from queue import Queue
 
 from takler.core import Bunch, Task
 from takler.core.node import Node

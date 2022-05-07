@@ -24,14 +24,14 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
         Service port
     """
     def __init__(self, scheduler: Scheduler, host: str = None, port: int = None):
-        self.scheduler = scheduler
+        self.scheduler: Scheduler = scheduler
         if host is None:
             host = "[::]"
         if port is None:
             port = 33083
-        self.host = host  # type: str
-        self.port = port  # type: int
-        self.grpc_server = None  # type: Optional[grpc.aio.Server]
+        self.host: str = host
+        self.port: int = port
+        self.grpc_server: Optional[grpc.aio.Server] = None
 
     @property
     def listen_address(self) -> str:

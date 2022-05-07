@@ -75,8 +75,11 @@ class Task(Node):
     #   Node operation is used to control the flow.
 
     def run(self):
-        # TODO: Run task.
+        """
+        Run the task, set status to ``NodeStatus.submitted`` and handle status change.
 
+        Subclasses of ``Task`` should reimplement this method to do the real run operation.
+        """
         # change node status
         self.set_node_status(node_status=NodeStatus.submitted)
         logger.info(f"run: {self.node_path}")

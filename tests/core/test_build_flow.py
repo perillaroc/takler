@@ -1,6 +1,4 @@
-import pytest
-
-from takler.core import Task, NodeContainer, Flow
+from takler.core import Flow
 from takler.visitor import pre_order_travel, SimplePrintVisitor
 
 

@@ -1,6 +1,6 @@
 import pytest
 
-from takler.core import Parameter, parameter, Bunch
+from takler.core import Parameter, Bunch
 
 
 @pytest.fixture

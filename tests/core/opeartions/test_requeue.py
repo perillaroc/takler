@@ -1,11 +1,9 @@
-from dataclasses import dataclass
-from typing import Optional, Mapping
+from typing import Mapping
 
 import pytest
 
-from takler.core import Task, NodeContainer, Flow
+from takler.core import Flow, NodeStatus
 from takler.core.node import Node
-from takler.core.state import NodeStatus
 
 
 @pytest.fixture

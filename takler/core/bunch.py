@@ -46,16 +46,16 @@ class Bunch(NodeContainer):
 
     # Node access -----------------------------------------------
 
-    def find_node(self, node_path: str) -> Optional[Node]:
-        if not Node.check_absolute_node_path(node_path):
-            raise ValueError(f"absolute node path is illegal: {node_path}")
-        tokens = node_path.split("/")
+    def find_node(self, a_path: str) -> Optional[Node]:
+        if not Node.check_absolute_node_path(a_path):
+            raise ValueError(f"absolute node path is illegal: {a_path}")
+        tokens = a_path.split("/")
         assert len(tokens) > 1
         flow_name = tokens[1]
         a_flow = self.find_flow(flow_name)
         if a_flow is None:
             return None
-        return a_flow.find_node(node_path)
+        return a_flow.find_node(a_path)
 
     # Parameter ------------------------------------------------
 

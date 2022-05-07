@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from takler.core import Bunch, Flow, Task
+from takler.core import Bunch, Flow
 from takler.tasks import ShellScriptTask
 from takler.tasks.shell.shell_render import ShellRender
 

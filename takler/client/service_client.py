@@ -1,4 +1,3 @@
-import asyncio
 from typing import Optional
 
 import grpc
@@ -13,10 +12,10 @@ logger = get_logger("client")
 
 class TaklerServiceClient:
     def __init__(self, host: str = "localhost", port: int = 33083):
-        self.host = host  # type: str
-        self.port = port  # type: int
-        self.channel = None  # type: Optional[grpc.Channel]
-        self.stub = None  # type: Optional[TaklerServerStub]
+        self.host: str = host
+        self.port: int = port
+        self.channel: Optional[grpc.Channel] = None
+        self.stub: Optional[TaklerServerStub] = None
 
     @property
     def listen_address(self) -> str:

@@ -11,7 +11,7 @@ class Flow(NodeContainer):
     def __init__(self, name: str):
         super(Flow, self).__init__(name)
 
-        self.bunch = None  # type: Optional[Bunch]
+        self.bunch: Optional[Bunch] = None
 
     # Node access --------------------------------------
 

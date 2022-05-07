@@ -6,4 +6,4 @@ if TYPE_CHECKING:
     from logging import Logger
 
 
-logger = get_logger("core")  # type: Logger
+logger: "Logger" = get_logger("core")

@@ -1,4 +1,4 @@
-from typing import Optional, Union, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .node import Node
@@ -9,9 +9,9 @@ from .expression_ast import AstRoot
 
 class Expression(object):
     def __init__(self, expression_str: str):
-        self.free = False  # type: bool
-        self.ast = None  # type: Optional[AstRoot]
-        self.expression_str = expression_str  # type: str
+        self.free: bool = False
+        self.ast: Optional[AstRoot] = None
+        self.expression_str: str = expression_str
 
     def create_ast(self, parent_node: "Node"):
         self.parse_expression()

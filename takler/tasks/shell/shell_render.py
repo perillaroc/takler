@@ -19,8 +19,8 @@ class ShellRender(object):
     Currently, ``ShellRender`` supports Jinja2 library.
     """
     def __init__(self, node: "ShellScriptTask"):
-        self.node = node  # type: "ShellScriptTask"
-        self._template_params = None  # type: Optional[Dict[str, Any]]
+        self.node: "ShellScriptTask" = node
+        self._template_params: Optional[Dict[str, Any]] = None
 
     def render_script(self, script_path: Union[str, Path]) -> Path:
         """
