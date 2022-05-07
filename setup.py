@@ -23,6 +23,7 @@ setup(
 
     description='A workflow tool',
     long_description=long_description,
+    long_description_content_type='text/markdown',
 
     url='https://github.com/perillaroc/takler',
 
@@ -46,12 +47,12 @@ setup(
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
 
     install_requires=[
+        'anyio',
         'lark',
         'grpcio',
-        'typer',
-        'pydantic',
         'jinja2',
-        'anyio',
+        'pydantic',
+        'typer',
     ],
 
     extras_require={
