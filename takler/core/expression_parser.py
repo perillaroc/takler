@@ -11,13 +11,17 @@ class ExpressionTransformer(Transformer):
     def node_path(self, items) -> AstNodePath:
         return AstNodePath("".join(items))
 
-    def node_name(self, s: str) -> str:
-        (s, ) = s
-        return s
+    # def node_name(self, s: str) -> str:
+    #     (s, ) = s
+    #     return s
 
     def st_complete(self, _) -> AstNodeStatus:
         """Node status: complete"""
         return AstNodeStatus(NodeStatus.complete)
+
+    def st_aborted(self, _) -> AstNodeStatus:
+        """Node status: complete"""
+        return AstNodeStatus(NodeStatus.aborted)
 
     def op_eq(self, _) -> AstOpEq:
         """Operation: equal (==)"""
@@ -37,17 +41,17 @@ class ExpressionTransformer(Transformer):
 trigger_parser: Lark = Lark(r"""
     !node_path: ("."|"..")?"/"node_name("/"node_name)*
 
-    op_eq: "==" | "eq"
+    op_eq: "==" | "eq"i
     op_gt: ">"
     op_ge: ">="
-    op_and: "and"
+    op_and: "and"i
     ?operator: op_eq | op_gt | op_ge | op_and
 
-    st_complete: "complete"
-    st_aborted: "aborted"
+    st_complete: "complete"i
+    st_aborted: "aborted"i
     ?status: st_complete | st_aborted
 
-    node_name: CNAME | "." | ".."
+    ?node_name: CNAME | "." | ".."
 
     expression: (node_path operator status) | (expression op_and expression) 
 
