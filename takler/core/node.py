@@ -7,6 +7,7 @@ from abc import ABC
 
 from .state import State, NodeStatus
 from .parameter import Parameter
+from .event import Event
 from .expression import Expression
 
 if TYPE_CHECKING:
@@ -77,20 +78,23 @@ def compute_most_significant_status(nodes: List[Node], immediate: bool) -> NodeS
 class Node(ABC):
     def __init__(self, name: str):
         # 树形
-        self.name = name  # type: str
+        self.name: str = name
 
         # 状态
-        self.state = State()  # type: State
+        self.state: State = State()
 
         # 树形结构
-        self.parent = None  # type: Optional[Node]
-        self.children = list()  # type: List[Node]
+        self.parent: Optional["Node"] = None
+        self.children: List["Node"] = list()
 
         # 参数
-        self.user_parameters = dict()  # type: Dict[str, Parameter]
+        self.user_parameters: Dict[str, Parameter] = dict()
 
         # 触发器
-        self.trigger_expression = None  # type: Optional[Expression]
+        self.trigger_expression: Optional[Expression] = None
+
+        # 事件
+        self.events: List[Event] = list()
 
     def __enter__(self):
         return self
@@ -380,6 +384,15 @@ class Node(ABC):
 
         return True
 
+    # Variable (Parameter, Event, Meter) -----------------------------
+
+    def find_variable(self, name: str) -> Optional[Union[Event, Parameter]]:
+        e = self.find_event(name)
+        if e is not None:
+            return e
+
+        return None
+
     # Parameter ------------------------------------------------------
 
     def add_parameter(self, name: str, value: Union[str, float, int, bool]):
@@ -492,6 +505,39 @@ class Node(ABC):
         Return generated parameters
         """
         return dict()
+
+    # Event ----------------------------------------------------------
+
+    def add_event(self, name: str, initial_value: bool = False, check: bool = True) -> Event:
+        if check:
+            if self.find_event(name):
+                raise RuntimeError(f"add event failed: event name is duplicate: {name}")
+
+        event = Event(name, initial_value=initial_value)
+        self.events.append(event)
+        return event
+
+    def set_event(self, name: str, value: bool) -> bool:
+        event = self.find_event(name)
+        if event is not None:
+            event.value = value
+            return True
+
+        return False
+
+    def find_event(self, name: str, ) -> Optional[Event]:
+        for event in self.events:
+            if event.name == name:
+                return event
+        return None
+
+    def reset_event(self, name: str) -> bool:
+        event = self.find_event(name)
+        if event is not None:
+            event.reset()
+            return True
+
+        return False
 
     # Node Operations ------------------------------------------------
 
