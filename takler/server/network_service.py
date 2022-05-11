@@ -106,6 +106,18 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
+    async def RunMeterCommand(self, request: takler_pb2.MeterCommand, context):
+        node_path = request.child_options.node_path
+        meter = request.meter_name
+        value = request.meter_value
+        logger.info(f"Meter set: {node_path}:{meter} {value}")
+        self.scheduler.run_command_meter(node_path, meter, value)
+
+        return takler_pb2.ServiceResponse(
+            flag=0,
+            message="",
+        )
+
     # -------------------------------------------------------------
 
     async def RunRequeueCommand(self, request, context):

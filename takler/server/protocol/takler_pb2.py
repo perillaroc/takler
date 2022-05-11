@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n#takler/server/protocol/takler.proto\x12\x0ftakler_protocol\"0\n\x0fServiceResponse\x12\x0c\n\x04\x66lag\x18\x01 \x01(\x05\x12\x0f\n\x07message\x18\x02 \x01(\t\"(\n\x13\x43hildCommandOptions\x12\x11\n\tnode_path\x18\x01 \x01(\t\"[\n\x0bInitCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x0f\n\x07task_id\x18\x02 \x01(\t\"N\n\x0f\x43ompleteCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\"[\n\x0c\x41\x62ortCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x0e\n\x06reason\x18\x02 \x01(\t\"_\n\x0c\x45ventCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x12\n\nevent_name\x18\x02 \x01(\t\"#\n\x0eRequeueCommand\x12\x11\n\tnode_path\x18\x01 \x01(\t\"\r\n\x0bShowRequest\"\x1e\n\x0cShowResponse\x12\x0e\n\x06output\x18\x01 \x01(\t2\x95\x04\n\x0cTaklerServer\x12R\n\x0eRunInitCommand\x12\x1c.takler_protocol.InitCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12Z\n\x12RunCompleteCommand\x12 .takler_protocol.CompleteCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12T\n\x0fRunAbortCommand\x12\x1d.takler_protocol.AbortCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12T\n\x0fRunEventCommand\x12\x1d.takler_protocol.EventCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12X\n\x11RunRequeueCommand\x12\x1f.takler_protocol.RequeueCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12O\n\x0eRunShowRequest\x12\x1c.takler_protocol.ShowRequest\x1a\x1d.takler_protocol.ShowResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n#takler/server/protocol/takler.proto\x12\x0ftakler_protocol\"0\n\x0fServiceResponse\x12\x0c\n\x04\x66lag\x18\x01 \x01(\x05\x12\x0f\n\x07message\x18\x02 \x01(\t\"(\n\x13\x43hildCommandOptions\x12\x11\n\tnode_path\x18\x01 \x01(\t\"[\n\x0bInitCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x0f\n\x07task_id\x18\x02 \x01(\t\"N\n\x0f\x43ompleteCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\"[\n\x0c\x41\x62ortCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x0e\n\x06reason\x18\x02 \x01(\t\"_\n\x0c\x45ventCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x12\n\nevent_name\x18\x02 \x01(\t\"t\n\x0cMeterCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x12\n\nmeter_name\x18\x02 \x01(\t\x12\x13\n\x0bmeter_value\x18\x03 \x01(\t\"#\n\x0eRequeueCommand\x12\x11\n\tnode_path\x18\x01 \x01(\t\"\r\n\x0bShowRequest\"\x1e\n\x0cShowResponse\x12\x0e\n\x06output\x18\x01 \x01(\t2\xeb\x04\n\x0cTaklerServer\x12R\n\x0eRunInitCommand\x12\x1c.takler_protocol.InitCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12Z\n\x12RunCompleteCommand\x12 .takler_protocol.CompleteCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12T\n\x0fRunAbortCommand\x12\x1d.takler_protocol.AbortCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12T\n\x0fRunEventCommand\x12\x1d.takler_protocol.EventCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12T\n\x0fRunMeterCommand\x12\x1d.takler_protocol.MeterCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12X\n\x11RunRequeueCommand\x12\x1f.takler_protocol.RequeueCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12O\n\x0eRunShowRequest\x12\x1c.takler_protocol.ShowRequest\x1a\x1d.takler_protocol.ShowResponse\"\x00\x62\x06proto3')
 
 
 
@@ -24,6 +24,7 @@ _INITCOMMAND = DESCRIPTOR.message_types_by_name['InitCommand']
 _COMPLETECOMMAND = DESCRIPTOR.message_types_by_name['CompleteCommand']
 _ABORTCOMMAND = DESCRIPTOR.message_types_by_name['AbortCommand']
 _EVENTCOMMAND = DESCRIPTOR.message_types_by_name['EventCommand']
+_METERCOMMAND = DESCRIPTOR.message_types_by_name['MeterCommand']
 _REQUEUECOMMAND = DESCRIPTOR.message_types_by_name['RequeueCommand']
 _SHOWREQUEST = DESCRIPTOR.message_types_by_name['ShowRequest']
 _SHOWRESPONSE = DESCRIPTOR.message_types_by_name['ShowResponse']
@@ -69,6 +70,13 @@ EventCommand = _reflection.GeneratedProtocolMessageType('EventCommand', (_messag
   })
 _sym_db.RegisterMessage(EventCommand)
 
+MeterCommand = _reflection.GeneratedProtocolMessageType('MeterCommand', (_message.Message,), {
+  'DESCRIPTOR' : _METERCOMMAND,
+  '__module__' : 'takler.server.protocol.takler_pb2'
+  # @@protoc_insertion_point(class_scope:takler_protocol.MeterCommand)
+  })
+_sym_db.RegisterMessage(MeterCommand)
+
 RequeueCommand = _reflection.GeneratedProtocolMessageType('RequeueCommand', (_message.Message,), {
   'DESCRIPTOR' : _REQUEUECOMMAND,
   '__module__' : 'takler.server.protocol.takler_pb2'
@@ -106,12 +114,14 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _ABORTCOMMAND._serialized_end=412
   _EVENTCOMMAND._serialized_start=414
   _EVENTCOMMAND._serialized_end=509
-  _REQUEUECOMMAND._serialized_start=511
-  _REQUEUECOMMAND._serialized_end=546
-  _SHOWREQUEST._serialized_start=548
-  _SHOWREQUEST._serialized_end=561
-  _SHOWRESPONSE._serialized_start=563
-  _SHOWRESPONSE._serialized_end=593
-  _TAKLERSERVER._serialized_start=596
-  _TAKLERSERVER._serialized_end=1129
+  _METERCOMMAND._serialized_start=511
+  _METERCOMMAND._serialized_end=627
+  _REQUEUECOMMAND._serialized_start=629
+  _REQUEUECOMMAND._serialized_end=664
+  _SHOWREQUEST._serialized_start=666
+  _SHOWREQUEST._serialized_end=679
+  _SHOWRESPONSE._serialized_start=681
+  _SHOWRESPONSE._serialized_end=711
+  _TAKLERSERVER._serialized_start=714
+  _TAKLERSERVER._serialized_end=1333
 # @@protoc_insertion_point(module_scope)

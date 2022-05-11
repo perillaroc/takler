@@ -127,6 +127,13 @@ class Scheduler:
 
         node.set_event(event_name, True)
 
+    def run_command_meter(self, node_path: str, meter_name: str, meter_value: str):
+        node = self.bunch.find_node(node_path)
+        if node is None:
+            raise ValueError(f"node is not found: {node_path}")
+
+        node.set_meter(meter_name, int(meter_value))
+
     # -------------------------------------------------
 
     def handle_request_show(self) -> str:

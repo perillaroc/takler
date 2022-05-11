@@ -85,6 +85,18 @@ class TaklerServiceClient:
         )
         print(f"received: {response.flag}")
 
+    def run_command_meter(self, node_path: str, meter_name: str, meter_value: str):
+        response = self.stub.RunMeterCommand(
+            takler_pb2.MeterCommand(
+                child_options=takler_pb2.ChildCommandOptions(
+                    node_path=node_path,
+                ),
+                meter_name=meter_name,
+                meter_value=meter_value,
+            )
+        )
+        print(f"received: {response.flag}")
+
     # ----------------------------------------------------
 
     def run_command_requeue(self, node_path: str):

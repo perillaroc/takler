@@ -72,6 +72,22 @@ def event(
     client.shutdown()
 
 
+@app.command()
+def meter(
+        node_path: str = typer.Option(...),
+        host: str = typer.Option(None, help="takler service host"),
+        port: int = typer.Option(None, help="takler service port"),
+        meter_name: str = typer.Option(..., help="meter name"),
+        meter_value: str = typer.Option(..., help="meter value"),
+):
+    host = get_host(host)
+    port = get_port(port)
+    client = TaklerServiceClient(host=host, port=port)
+    client.start()
+    client.run_command_meter(node_path=node_path, meter_name=meter_name, meter_value=meter_value)
+    client.shutdown()
+
+
 # --------------------------------------------------------
 
 @app.command()
