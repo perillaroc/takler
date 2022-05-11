@@ -3,6 +3,7 @@ from typing import Optional, TYPE_CHECKING
 
 from .state import NodeStatus
 from .event import Event
+from .meter import Meter
 
 if TYPE_CHECKING:
     from .node import Node
@@ -34,6 +35,18 @@ class AstRoot(AstBase):
 class AstOpEq(AstRoot):
     def evaluate(self):
         return self.left.value() == self.right.value()
+
+
+@dataclass
+class AstOpGt(AstRoot):
+    def evaluate(self):
+        return self.left.value() > self.right.value()
+
+
+@dataclass
+class AstOpGe(AstRoot):
+    def evaluate(self):
+        return self.left.value() >= self.right.value()
 
 
 @dataclass
@@ -97,6 +110,8 @@ class AstVariablePath(AstBase):
                 return 1
             else:
                 return 0
+        if isinstance(v, Meter):
+            return v.value
         else:
             raise NotImplementedError(f"{v} is not support")
 
@@ -109,11 +124,11 @@ class AstVariablePath(AstBase):
 
 
 @dataclass
-class AstEventValue(AstBase):
-    event_value: int
+class AstInteger(AstBase):
+    number: int
 
     def value(self):
-        return self.event_value
+        return self.number
 
 
 @dataclass

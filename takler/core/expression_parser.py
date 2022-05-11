@@ -1,8 +1,9 @@
 from lark import Lark, Transformer
 
 from .expression_ast import (
-    AstNodePath, AstOpEq, AstOpAnd, AstNodeStatus, AstRoot,
-    AstVariablePath, AstEventValue
+    AstNodePath, AstOpEq, AstOpAnd, AstOpGt, AstOpGe,
+    AstNodeStatus, AstRoot,
+    AstVariablePath, AstInteger,
 )
 from .state import NodeStatus
 
@@ -35,15 +36,26 @@ class ExpressionTransformer(Transformer):
         """Operation: equal (==)"""
         return AstOpEq()
 
+    def op_gt(self, _) -> AstOpGt:
+        """Operation: greater than (>)"""
+        return AstOpGt()
+
+    def op_ge(self, _) -> AstOpGe:
+        """Operation: greater equal than (>=)"""
+        return AstOpGe()
+
     def op_and(self, _) -> AstOpAnd:
         """Operation: and"""
         return AstOpAnd()
 
-    def event_set(self, _) -> AstEventValue:
-        return AstEventValue(1)
+    def event_set(self, _) -> AstInteger:
+        return AstInteger(1)
 
-    def event_unset(self, _) -> AstEventValue:
-        return AstEventValue(0)
+    def event_unset(self, _) -> AstInteger:
+        return AstInteger(0)
+
+    def meter_value(self, s):
+        return AstInteger(int(s[0]))
 
     def expression(self, s):
         s[1].left = s[0]
@@ -70,17 +82,21 @@ trigger_parser: Lark = Lark(r"""
     event_set: "set"i
     event_unset: "unset"i
     ?event_value: event_set|event_unset
+    
+    meter_value: NUMBER
 
     ?node_name: CNAME | "." | ".."
     ?variable_name: CNAME
 
     expression: (node_path operator status) 
               | (variable_path operator event_value)
+              | (variable_path operator meter_value)
               | (expression op_and expression) 
 
     %import common.CNAME
     %import common.WORD
     %import common.WS
+    %import common.NUMBER
     %ignore WS
 """, start="expression")
 

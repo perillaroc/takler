@@ -554,7 +554,7 @@ class Node(ABC):
         self.meters.append(meter)
         return meter
 
-    def set_meter(self, name: str, value: bool) -> bool:
+    def set_meter(self, name: str, value: int) -> bool:
         meter = self.find_meter(name)
         if meter is not None:
             meter.value = value
@@ -562,7 +562,7 @@ class Node(ABC):
 
         return False
 
-    def find_meter(self, name: str, ) -> Optional[Meter]:
+    def find_meter(self, name: str) -> Optional[Meter]:
         for meter in self.meters:
             if meter.name == name:
                 return meter
