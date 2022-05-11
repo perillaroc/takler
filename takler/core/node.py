@@ -8,6 +8,7 @@ from abc import ABC
 from .state import State, NodeStatus
 from .parameter import Parameter
 from .event import Event
+from .meter import Meter
 from .expression import Expression
 
 if TYPE_CHECKING:
@@ -95,6 +96,9 @@ class Node(ABC):
 
         # 事件
         self.events: List[Event] = list()
+
+        # 标尺
+        self.meters: List[Meter] = list()
 
     def __enter__(self):
         return self
@@ -386,10 +390,14 @@ class Node(ABC):
 
     # Variable (Parameter, Event, Meter) -----------------------------
 
-    def find_variable(self, name: str) -> Optional[Union[Event, Parameter]]:
+    def find_variable(self, name: str) -> Optional[Union[Event, Parameter, Meter]]:
         e = self.find_event(name)
         if e is not None:
             return e
+
+        m = self.find_meter(name)
+        if m is not None:
+            return m
 
         return None
 
@@ -535,6 +543,35 @@ class Node(ABC):
         event = self.find_event(name)
         if event is not None:
             event.reset()
+            return True
+
+        return False
+
+    # Meter ----------------------------------------------------------
+
+    def add_meter(self, name: str, min_value: int, max_value: int) -> Meter:
+        meter = Meter(name, min_value=min_value, max_value=max_value)
+        self.meters.append(meter)
+        return meter
+
+    def set_meter(self, name: str, value: bool) -> bool:
+        meter = self.find_meter(name)
+        if meter is not None:
+            meter.value = value
+            return True
+
+        return False
+
+    def find_meter(self, name: str, ) -> Optional[Meter]:
+        for meter in self.meters:
+            if meter.name == name:
+                return meter
+        return None
+
+    def reset_meter(self, name: str) -> bool:
+        meter = self.find_meter(name)
+        if meter is not None:
+            meter.reset()
             return True
 
         return False
