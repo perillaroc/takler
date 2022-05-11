@@ -29,6 +29,11 @@ class TaklerServerStub(object):
                 request_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.AbortCommand.SerializeToString,
                 response_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.ServiceResponse.FromString,
                 )
+        self.RunEventCommand = channel.unary_unary(
+                '/takler_protocol.TaklerServer/RunEventCommand',
+                request_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.EventCommand.SerializeToString,
+                response_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.ServiceResponse.FromString,
+                )
         self.RunRequeueCommand = channel.unary_unary(
                 '/takler_protocol.TaklerServer/RunRequeueCommand',
                 request_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.RequeueCommand.SerializeToString,
@@ -58,6 +63,12 @@ class TaklerServerServicer(object):
         raise NotImplementedError('Method not implemented!')
 
     def RunAbortCommand(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def RunEventCommand(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -95,6 +106,11 @@ def add_TaklerServerServicer_to_server(servicer, server):
             'RunAbortCommand': grpc.unary_unary_rpc_method_handler(
                     servicer.RunAbortCommand,
                     request_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.AbortCommand.FromString,
+                    response_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.ServiceResponse.SerializeToString,
+            ),
+            'RunEventCommand': grpc.unary_unary_rpc_method_handler(
+                    servicer.RunEventCommand,
+                    request_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.EventCommand.FromString,
                     response_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.ServiceResponse.SerializeToString,
             ),
             'RunRequeueCommand': grpc.unary_unary_rpc_method_handler(
@@ -164,6 +180,23 @@ class TaklerServer(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/takler_protocol.TaklerServer/RunAbortCommand',
             takler_dot_server_dot_protocol_dot_takler__pb2.AbortCommand.SerializeToString,
+            takler_dot_server_dot_protocol_dot_takler__pb2.ServiceResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def RunEventCommand(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/takler_protocol.TaklerServer/RunEventCommand',
+            takler_dot_server_dot_protocol_dot_takler__pb2.EventCommand.SerializeToString,
             takler_dot_server_dot_protocol_dot_takler__pb2.ServiceResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

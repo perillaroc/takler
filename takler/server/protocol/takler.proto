@@ -29,6 +29,11 @@ message AbortCommand {
   string reason = 2;
 }
 
+message EventCommand {
+  ChildCommandOptions child_options = 1;
+  string event_name = 2;
+}
+
 // control command
 
 message RequeueCommand {
@@ -50,6 +55,7 @@ service TaklerServer {
   rpc RunInitCommand(InitCommand) returns (ServiceResponse){}
   rpc RunCompleteCommand(CompleteCommand) returns (ServiceResponse){}
   rpc RunAbortCommand(AbortCommand) returns (ServiceResponse){}
+  rpc RunEventCommand(EventCommand) returns (ServiceResponse){}
 
   // control command
 

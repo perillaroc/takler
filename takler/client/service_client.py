@@ -63,6 +63,30 @@ class TaklerServiceClient:
         )
         print(f"received: {response.flag}")
 
+    def run_command_abort(self, node_path: str, reason: str):
+        response = self.stub.RunAbortCommand(
+            takler_pb2.AbortCommand(
+                child_options=takler_pb2.ChildCommandOptions(
+                    node_path=node_path,
+                ),
+                reason=reason
+            )
+        )
+        print(f"received: {response.flag}")
+
+    def run_command_event(self, node_path: str, event_name: str):
+        response = self.stub.RunEventCommand(
+            takler_pb2.EventCommand(
+                child_options=takler_pb2.ChildCommandOptions(
+                    node_path=node_path,
+                ),
+                event_name=event_name,
+            )
+        )
+        print(f"received: {response.flag}")
+
+    # ----------------------------------------------------
+
     def run_command_requeue(self, node_path: str):
         response = self.stub.RunRequeueCommand(
             takler_pb2.RequeueCommand(
@@ -70,6 +94,8 @@ class TaklerServiceClient:
             )
         )
         print(f"received: {response.flag}")
+
+    # ----------------------------------------------------
 
     def run_request_show(self):
         response = self.stub.RunShowRequest(

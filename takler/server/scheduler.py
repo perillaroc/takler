@@ -120,6 +120,15 @@ class Scheduler:
 
         node.requeue()
 
+    def run_command_event(self, node_path: str, event_name: str):
+        node = self.bunch.find_node(node_path)
+        if node is None:
+            raise ValueError(f"node is not found: {node_path}")
+
+        node.set_event(event_name, True)
+
+    # -------------------------------------------------
+
     def handle_request_show(self) -> str:
         stream = StringIO()
 

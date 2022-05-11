@@ -43,6 +43,38 @@ def complete(
 
 
 @app.command()
+def abort(
+        node_path: str = typer.Option(...),
+        host: str = typer.Option(None, help="takler service host"),
+        port: int = typer.Option(None, help="takler service port"),
+        reason: str = typer.Option("", help="abort reason")
+):
+    host = get_host(host)
+    port = get_port(port)
+    client = TaklerServiceClient(host=host, port=port)
+    client.start()
+    client.run_command_abort(node_path=node_path, reason=reason)
+    client.shutdown()
+
+
+@app.command()
+def event(
+        node_path: str = typer.Option(...),
+        host: str = typer.Option(None, help="takler service host"),
+        port: int = typer.Option(None, help="takler service port"),
+        event_name: str = typer.Option(..., help="event name"),
+):
+    host = get_host(host)
+    port = get_port(port)
+    client = TaklerServiceClient(host=host, port=port)
+    client.start()
+    client.run_command_event(node_path=node_path, event_name=event_name)
+    client.shutdown()
+
+
+# --------------------------------------------------------
+
+@app.command()
 def requeue(
         node_path: str = typer.Option(...),
         host: str = typer.Option(None, help="takler service host"),
@@ -54,6 +86,9 @@ def requeue(
     client.start()
     client.run_command_requeue(node_path=node_path)
     client.shutdown()
+
+
+# --------------------------------------------------------
 
 
 @app.command()
