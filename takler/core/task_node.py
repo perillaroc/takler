@@ -55,6 +55,10 @@ class Task(Node):
         if not Node.resolve_dependencies(self):
             return False
 
+        # don't run when task is aborted. See :github:issue:`27`
+        if node_status == NodeStatus.aborted:
+            return False
+
         # run jobs
         self.run()
 
