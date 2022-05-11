@@ -1,6 +1,9 @@
 from lark import Lark, Transformer
 
-from .expression_ast import AstNodePath, AstOpEq, AstOpAnd, AstNodeStatus, AstRoot
+from .expression_ast import (
+    AstNodePath, AstOpEq, AstOpAnd, AstNodeStatus, AstRoot,
+    AstVariablePath, AstEventValue
+)
 from .state import NodeStatus
 
 
@@ -10,6 +13,11 @@ class ExpressionTransformer(Transformer):
     """
     def node_path(self, items) -> AstNodePath:
         return AstNodePath("".join(items))
+
+    def variable_path(self, items) -> AstVariablePath:
+        node = items[0]
+        variable_name = items[2]
+        return AstVariablePath(node=node, variable_name=variable_name)
 
     # def node_name(self, s: str) -> str:
     #     (s, ) = s
@@ -31,6 +39,12 @@ class ExpressionTransformer(Transformer):
         """Operation: and"""
         return AstOpAnd()
 
+    def event_set(self, _) -> AstEventValue:
+        return AstEventValue(1)
+
+    def event_unset(self, _) -> AstEventValue:
+        return AstEventValue(0)
+
     def expression(self, s):
         s[1].left = s[0]
         s[1].right = s[2]
@@ -40,6 +54,8 @@ class ExpressionTransformer(Transformer):
 # Lark version of expression trigger parser.
 trigger_parser: Lark = Lark(r"""
     !node_path: ("."|"..")?"/"node_name("/"node_name)*
+    !variable_path: node_path":"variable_name
+    path: node_path | variable_path
 
     op_eq: "==" | "eq"i
     op_gt: ">"
@@ -50,10 +66,17 @@ trigger_parser: Lark = Lark(r"""
     st_complete: "complete"i
     st_aborted: "aborted"i
     ?status: st_complete | st_aborted
+    
+    event_set: "set"i
+    event_unset: "unset"i
+    ?event_value: event_set|event_unset
 
     ?node_name: CNAME | "." | ".."
+    ?variable_name: CNAME
 
-    expression: (node_path operator status) | (expression op_and expression) 
+    expression: (node_path operator status) 
+              | (variable_path operator event_value)
+              | (expression op_and expression) 
 
     %import common.CNAME
     %import common.WORD

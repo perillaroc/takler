@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Optional, TYPE_CHECKING
 
 from .state import NodeStatus
+from .event import Event
 
 if TYPE_CHECKING:
     from .node import Node
@@ -71,6 +72,48 @@ class AstNodePath(AstBase):
             self._reference_node = self.parent_node.find_node(self.node_path)
             return self._reference_node
         return None
+
+
+@dataclass
+class AstVariablePath(AstBase):
+    node: AstNodePath
+    variable_name: str
+    _node_variable: Optional = None
+
+    def set_parent_node(self, node: "Node"):
+        self.node.set_parent_node(node)
+
+        node_variable = self.get_variable()
+        if node_variable is None:
+            raise ValueError(f"variable path '{self.node.node_path}:{self.variable_name}' is not found")
+
+    def value(self):
+        v = self.get_variable()
+        if v is None:
+            return None
+
+        if isinstance(v, Event):
+            if v.value:
+                return 1
+            else:
+                return 0
+        else:
+            raise NotImplementedError(f"{v} is not support")
+
+    def get_variable(self) -> Optional[Event]:
+        if self._node_variable is not None:
+            return self._node_variable
+
+        self._node_variable = self.node.get_reference_node().find_variable(self.variable_name)
+        return self._node_variable
+
+
+@dataclass
+class AstEventValue(AstBase):
+    event_value: int
+
+    def value(self):
+        return self.event_value
 
 
 @dataclass
