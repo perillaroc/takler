@@ -15,8 +15,8 @@ from .parameter import (
 class Bunch(NodeContainer):
     def __init__(self, name: str = "", port: str = None):
         super(Bunch, self).__init__(name=name)
-        self.flows = dict()  # type: Dict[str, Flow]
-        self.server_state = ServerState(port=port)  # type: ServerState
+        self.flows: Dict[str, Flow] = dict()
+        self.server_state: ServerState = ServerState(port=port)
         self.server_state.setup()
 
     # Flow ------------------------------------------------

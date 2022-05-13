@@ -23,10 +23,10 @@ class Scheduler:
         time interval to check flow dependencies, unit is seconds.
     """
     def __init__(self, bunch: Bunch):
-        self.bunch = bunch  # type: Bunch
-        self.interval_main_loop = 10.0  # type: float
-        self.command_queue = Queue()  # type: Queue
-        self.should_stop = False  # type: bool
+        self.bunch: Bunch = bunch
+        self.interval_main_loop: float = 10.0
+        self.command_queue: Queue = Queue()
+        self.should_stop: bool = False
 
     async def start(self):
         pass

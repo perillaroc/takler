@@ -18,8 +18,8 @@ TAKLER_RID = "TAKLER_RID"
 
 class Parameter(object):
     def __init__(self, name: str, value: Optional[Union[str, int, float, bool]] = None):
-        self.name = name  # type: str
-        self._value = value  # type: Optional[Union[str, int, float, bool]]
+        self.name: str = name
+        self._value: Optional[Union[str, int, float, bool]] = value
 
     def __repr__(self):
         return f"Parameter<{self.name}, {self.value}>"

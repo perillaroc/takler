@@ -16,9 +16,9 @@ from ._logger import logger
 class Task(Node):
     def __init__(self, name: str):
         super(Task, self).__init__(name)
-        self.task_id = None  # type: Optional[str]
+        self.task_id: Optional[str] = None
 
-        self.generated_parameters = TaskNodeGeneratedParameters(node=self)  # type: TaskNodeGeneratedParameters
+        self.generated_parameters: TaskNodeGeneratedParameters = TaskNodeGeneratedParameters(node=self)
 
     def __repr__(self):
         return f"Task {self.name}"

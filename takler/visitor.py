@@ -1,10 +1,14 @@
+from typing import IO
+from abc import ABC, abstractmethod
+
 from takler.core.node import Node
 
 
-class NodeVisitor(object):
+class NodeVisitor(ABC):
     def __init__(self):
         pass
 
+    @abstractmethod
     def visit(self, node: Node):
         pass
 
@@ -34,10 +38,10 @@ class SimplePrintVisitor(NodeVisitor):
 
 
 class PrintVisitor(NodeVisitor):
-    def __init__(self, stream):
+    def __init__(self, stream: IO):
         NodeVisitor.__init__(self)
-        self.level = 0
-        self.stream = stream
+        self.level: int = 0
+        self.stream: IO = stream
 
     def visit(self, node: Node):
         place_holder = "  " * self.level
@@ -60,7 +64,7 @@ class PrintVisitor(NodeVisitor):
         self.level -= 1
 
 
-def pre_order_travel(root_node, visitor):
+def pre_order_travel(root_node: Node, visitor: NodeVisitor):
     visitor.visit(root_node)
     for child_node in root_node.children:
         visitor.before_visit_child()
