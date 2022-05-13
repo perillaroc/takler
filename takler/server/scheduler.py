@@ -4,9 +4,8 @@ from io import StringIO
 from queue import Queue
 
 from takler.core import Bunch, Task
-from takler.core.node import Node
 from takler.logging import get_logger
-from takler.visitor import NodeVisitor, pre_order_travel
+from takler.visitor import pre_order_travel, PrintVisitor
 
 
 logger = get_logger("server.scheduler")
@@ -143,32 +142,7 @@ class Scheduler:
     def handle_request_show(self) -> str:
         stream = StringIO()
 
-        class PrintVisitor(NodeVisitor):
-            def __init__(self):
-                NodeVisitor.__init__(self)
-                self.level = 0
-
-            def visit(self, node: Node):
-                place_holder = "  " * self.level
-                node_name = node.name
-                node_state = node.state.node_status.name
-                stream.write(f"{place_holder}|- {node_name} [{node_state}]\n")
-                pre_spaces = " "*len(f"{place_holder}|- ")
-                if len(node.events) > 0:
-                    for event in node.events:
-                        v = "set" if event.value else "unset"
-                        stream.write(f"{pre_spaces} event {event.name} [{v}]\n")
-                if len(node.meters) > 0:
-                    for meter in node.meters:
-                        stream.write(f"{pre_spaces} meter {meter.name} {meter.min_value} {meter.max_value} [{meter.value}]\n")
-
-            def before_visit_child(self):
-                self.level += 1
-
-            def after_visit_child(self):
-                self.level -= 1
-
         for name, flow in self.bunch.flows.items():
-            pre_order_travel(flow, PrintVisitor())
+            pre_order_travel(flow, PrintVisitor(stream=stream))
 
         return stream.getvalue()
