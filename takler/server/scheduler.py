@@ -83,6 +83,8 @@ class Scheduler:
         for name, flow in self.bunch.flows.items():
             flow.resolve_dependencies()
 
+    # Child -------------------------------------------------
+
     async def run_command_init(self, node_path: str, task_id: str):
         node = self.bunch.find_node(node_path)
         if node is None:
@@ -113,13 +115,6 @@ class Scheduler:
         else:
             raise ValueError(f"node must be Task: {node_path}")
 
-    def run_command_requeue(self, node_path: str):
-        node = self.bunch.find_node(node_path)
-        if node is None:
-            raise ValueError(f"node is not found: {node_path}")
-
-        node.requeue()
-
     def run_command_event(self, node_path: str, event_name: str):
         node = self.bunch.find_node(node_path)
         if node is None:
@@ -134,7 +129,16 @@ class Scheduler:
 
         node.set_meter(meter_name, int(meter_value))
 
-    # -------------------------------------------------
+    # Control -------------------------------------------------
+
+    def run_command_requeue(self, node_path: str):
+        node = self.bunch.find_node(node_path)
+        if node is None:
+            raise ValueError(f"node is not found: {node_path}")
+
+        node.requeue()
+
+    # Query -------------------------------------------------
 
     def handle_request_show(self) -> str:
         stream = StringIO()
@@ -149,6 +153,14 @@ class Scheduler:
                 node_name = node.name
                 node_state = node.state.node_status.name
                 stream.write(f"{place_holder}|- {node_name} [{node_state}]\n")
+                pre_spaces = " "*len(f"{place_holder}|- ")
+                if len(node.events) > 0:
+                    for event in node.events:
+                        v = "set" if event.value else "unset"
+                        stream.write(f"{pre_spaces} event {event.name} [{v}]\n")
+                if len(node.meters) > 0:
+                    for meter in node.meters:
+                        stream.write(f"{pre_spaces} meter {meter.name} {meter.min_value} {meter.max_value} [{meter.value}]\n")
 
             def before_visit_child(self):
                 self.level += 1
