@@ -4,39 +4,39 @@ from takler.core import Parameter, Bunch
 
 
 @pytest.fixture
-def simple_bunch(simple_flow_objects, simple_flow_2_objects):
+def simple_bunch(simple_flow, simple_flow_2):
     bunch = Bunch("nwpc_op")
     bunch.add_parameter("TAKLER_HOME", "/home/johndoe/takler_out")
 
     # flow1
-    with simple_flow_objects["flow1"] as flow1:
+    with simple_flow.flow1 as flow1:
         bunch.add_flow(flow1)
         flow1.add_parameter("TAKLER_HOME", "/home/johndoe/bunch/flow1")
         flow1.add_parameter("HH", "00")
         flow1.add_parameter("FORECAST_INTERVAL", 3)
         flow1.add_parameter("FORECAST_LENGTH", 240)
 
-    with simple_flow_objects["container1"] as container1:
+    with simple_flow.container1 as container1:
         container1.add_parameter("CLASS", "serial_op")
 
-    with simple_flow_objects["task1"] as task1:
+    with simple_flow.task1 as task1:
         task1.add_parameter("UPLOAD_GRIB2", True)
         task1.add_parameter("FORECAST_LENGTH", 120)
 
-    with simple_flow_objects["task3"] as task3:
+    with simple_flow.task3 as task3:
         task3.add_parameter("FORECAST_LENGTH", 24)
         task3.add_parameter("TASKS", 64)
 
     # flow2
-    with simple_flow_2_objects["flow2"] as flow2:
+    with simple_flow_2.flow2 as flow2:
         flow2.add_parameter("TAKLER_HOME", "/home/johndoe/bunch/flow2")
         bunch.add_flow(flow2)
 
     return bunch
 
 
-def test_get_flow1_task1_parameters(simple_bunch, simple_flow_objects):
-    task1 = simple_flow_objects["task1"]
+def test_get_flow1_task1_parameters(simple_bunch, simple_flow):
+    task1 = simple_flow.task1
     task1.update_generated_parameters()
     params = task1.parameters()
     params_keys = params.keys()
@@ -81,8 +81,8 @@ def test_get_flow1_task1_parameters(simple_bunch, simple_flow_objects):
     assert params["TAKLER_PORT"] == Parameter("TAKLER_PORT", "33083")
 
 
-def test_get_flow1_task3_parameters(simple_bunch, simple_flow_objects):
-    task3 = simple_flow_objects["task3"]
+def test_get_flow1_task3_parameters(simple_bunch, simple_flow):
+    task3 = simple_flow.task3
     task3.update_generated_parameters()
     params = task3.parameters()
     params_keys = params.keys()

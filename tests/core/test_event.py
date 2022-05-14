@@ -1,16 +1,16 @@
 from takler.core import Event
 
 
-def test_create_event(simple_flow_objects):
-    task1 = simple_flow_objects["task1"]
+def test_create_event(simple_flow):
+    task1 = simple_flow.task1
     event = task1.add_event("arrived")
     assert task1.events == [Event("arrived")]
     assert not event.initial_value
     assert not event.value
 
 
-def test_set_event(simple_flow_objects):
-    task1 = simple_flow_objects["task1"]
+def test_set_event(simple_flow):
+    task1 = simple_flow.task1
     event1 = task1.add_event("event1")
     event2 = task1.add_event("event2")
 
@@ -27,8 +27,8 @@ def test_set_event(simple_flow_objects):
     assert not task1.set_event("not_exist_event", True)
 
 
-def test_reset_event(simple_flow_objects):
-    task1 = simple_flow_objects["task1"]
+def test_reset_event(simple_flow):
+    task1 = simple_flow.task1
     event1 = task1.add_event("event1")
     event2 = task1.add_event("event2", True)
 

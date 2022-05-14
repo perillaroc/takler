@@ -4,25 +4,25 @@ from takler.core import Parameter, parameter
 
 
 @pytest.fixture
-def simple_flow_objects_with_parameter(simple_flow_objects):
-    flow1 = simple_flow_objects["flow1"]
+def simple_flow_with_parameter(simple_flow):
+    flow1 = simple_flow.flow1
     flow1.add_parameter("ECF_HOME", "/home/johndoe")
     flow1.add_parameter("NODES", 4)
     flow1.add_parameter("TIME_INTERVAL", 0.1)
 
-    container1 = simple_flow_objects["container1"]
+    container1 = simple_flow.container1
     container1.add_parameter("TASKS", 32)
 
-    task1 = simple_flow_objects["task1"]
+    task1 = simple_flow.task1
     task1.add_parameter("FLAG", True)
 
     task1.init(task_id="1001")
 
-    return simple_flow_objects
+    return simple_flow
 
 
-def test_update_generated_parameter(simple_flow_objects_with_parameter):
-    task1 = simple_flow_objects_with_parameter["task1"]
+def test_update_generated_parameter(simple_flow_with_parameter):
+    task1 = simple_flow_with_parameter.task1
     task1.update_generated_parameters()
 
     assert task1.find_generated_parameter(parameter.TASK) == \

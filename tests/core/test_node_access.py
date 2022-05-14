@@ -2,48 +2,48 @@ from dataclasses import dataclass
 from typing import Optional
 
 
-def test_node_path(simple_flow_objects):
-    assert simple_flow_objects["flow1"].node_path == "/flow1"
-    assert simple_flow_objects["container1"].node_path == "/flow1/container1"
-    assert simple_flow_objects["task1"].node_path == "/flow1/container1/task1"
-    assert simple_flow_objects["container2"].node_path == "/flow1/container1/container2"
-    assert simple_flow_objects["task2"].node_path == "/flow1/container1/container2/task2"
-    assert simple_flow_objects["task3"].node_path == "/flow1/container1/container2/task3"
-    assert simple_flow_objects["task4"].node_path == "/flow1/task4"
-    assert simple_flow_objects["container3"].node_path == "/flow1/container3"
-    assert simple_flow_objects["task5"].node_path == "/flow1/container3/task5"
-    assert simple_flow_objects["task6"].node_path == "/flow1/task6"
+def test_node_path(simple_flow):
+    assert simple_flow.flow1.node_path == "/flow1"
+    assert simple_flow.container1.node_path == "/flow1/container1"
+    assert simple_flow.task1.node_path == "/flow1/container1/task1"
+    assert simple_flow.container2.node_path == "/flow1/container1/container2"
+    assert simple_flow.task2.node_path == "/flow1/container1/container2/task2"
+    assert simple_flow.task3.node_path == "/flow1/container1/container2/task3"
+    assert simple_flow.task4.node_path == "/flow1/task4"
+    assert simple_flow.container3.node_path == "/flow1/container3"
+    assert simple_flow.task5.node_path == "/flow1/container3/task5"
+    assert simple_flow.task6.node_path == "/flow1/task6"
 
 
-def test_get_root(simple_flow_objects):
-    flow1 = simple_flow_objects["flow1"]
+def test_get_root(simple_flow):
+    flow1 = simple_flow.flow1
 
-    assert simple_flow_objects["flow1"].get_root() == flow1
-    assert simple_flow_objects["container1"].get_root() == flow1
-    assert simple_flow_objects["task1"].get_root() == flow1
-    assert simple_flow_objects["container2"].get_root() == flow1
-    assert simple_flow_objects["task2"].get_root() == flow1
-    assert simple_flow_objects["task3"].get_root() == flow1
-    assert simple_flow_objects["task4"].get_root() == flow1
-    assert simple_flow_objects["container3"].get_root() == flow1
-    assert simple_flow_objects["task5"].get_root() == flow1
-    assert simple_flow_objects["task6"].get_root() == flow1
-
-
-def test_is_leaf_node(simple_flow_objects):
-    assert not simple_flow_objects["flow1"].is_leaf_node()
-    assert not simple_flow_objects["container1"].is_leaf_node()
-    assert simple_flow_objects["task1"].is_leaf_node()
-    assert not simple_flow_objects["container2"].is_leaf_node()
-    assert simple_flow_objects["task2"].is_leaf_node()
-    assert simple_flow_objects["task3"].is_leaf_node()
-    assert simple_flow_objects["task4"].is_leaf_node()
-    assert not simple_flow_objects["container3"].is_leaf_node()
-    assert simple_flow_objects["task5"].is_leaf_node()
-    assert simple_flow_objects["task6"].is_leaf_node()
+    assert simple_flow.flow1.get_root() == flow1
+    assert simple_flow.container1.get_root() == flow1
+    assert simple_flow.task1.get_root() == flow1
+    assert simple_flow.container2.get_root() == flow1
+    assert simple_flow.task2.get_root() == flow1
+    assert simple_flow.task3.get_root() == flow1
+    assert simple_flow.task4.get_root() == flow1
+    assert simple_flow.container3.get_root() == flow1
+    assert simple_flow.task5.get_root() == flow1
+    assert simple_flow.task6.get_root() == flow1
 
 
-def test_find_node(simple_flow_objects):
+def test_is_leaf_node(simple_flow):
+    assert not simple_flow.flow1.is_leaf_node()
+    assert not simple_flow.container1.is_leaf_node()
+    assert simple_flow.task1.is_leaf_node()
+    assert not simple_flow.container2.is_leaf_node()
+    assert simple_flow.task2.is_leaf_node()
+    assert simple_flow.task3.is_leaf_node()
+    assert simple_flow.task4.is_leaf_node()
+    assert not simple_flow.container3.is_leaf_node()
+    assert simple_flow.task5.is_leaf_node()
+    assert simple_flow.task6.is_leaf_node()
+
+
+def test_find_node(simple_flow):
     @dataclass
     class QueryOption:
         node_name: str
@@ -56,11 +56,11 @@ def test_find_node(simple_flow_objects):
 
     def do_tests(cases):
         for test_case in cases:
-            node = simple_flow_objects[test_case.query.node_name]
+            node = getattr(simple_flow, test_case.query.node_name)
             if test_case.expected_node_name is None:
                 expected_node = None
             else:
-                expected_node = simple_flow_objects[test_case.expected_node_name]
+                expected_node = getattr(simple_flow, test_case.expected_node_name)
             assert node.find_node(test_case.query.node_path) == expected_node
 
     test_cases = [
