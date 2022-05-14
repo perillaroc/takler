@@ -1,6 +1,6 @@
 import asyncio
 
-from takler.core import Bunch
+from takler.core import Bunch, NodeStatus
 from takler.logging import get_logger
 
 from .scheduler import Scheduler
@@ -45,3 +45,28 @@ class TaklerServer:
         """
         await self.network_service.stop()
         await self.scheduler.stop()
+
+
+async def run_server_until_complete(server: TaklerServer):
+    """
+    Run takler server until all flows in bunch are complete.
+
+    Parameters
+    ----------
+    server
+
+    Returns
+    -------
+
+    """
+    while True:
+        status = server.bunch.get_node_status()
+        if status == NodeStatus.complete:
+            logger.info("all flows are complete, about to exit...")
+            await asyncio.sleep(10)
+            logger.info("stop server...")
+            await server.stop()
+            logger.info("stop server...done")
+            break
+
+        await asyncio.sleep(10)
