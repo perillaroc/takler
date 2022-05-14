@@ -1,6 +1,6 @@
 import pytest
 
-from takler.core import Bunch
+from takler.core import Bunch, NodeStatus
 
 
 @pytest.fixture
@@ -82,3 +82,22 @@ def get_bunch(simple_bunch, simple_flow_objects, simple_flow_2_objects):
 
     container2 = simple_flow_2_objects["container2"]
     assert container2.get_bunch() == bunch
+
+
+def test_bunch_status(simple_flow_objects):
+    bunch = Bunch()
+    flow1 = simple_flow_objects["flow1"]
+    bunch.add_flow(flow1)
+    flow1.requeue()
+    assert bunch.get_node_status() == NodeStatus.queued
+
+    task1 = simple_flow_objects["task1"]
+    task1.init("1001")
+    assert bunch.get_node_status() == NodeStatus.active
+
+    task1.complete()
+    assert bunch.get_node_status() == NodeStatus.queued
+
+    task2 = simple_flow_objects["task2"]
+    task2.abort()
+    assert bunch.get_node_status() == NodeStatus.aborted

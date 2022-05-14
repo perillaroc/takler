@@ -7,6 +7,7 @@ from takler import constant
 from .node_container import NodeContainer
 from .flow import Flow
 from .node import Node
+from .state import NodeStatus
 from .parameter import (
     Parameter, TAKLER_HOST, TAKLER_PORT, TAKLER_HOME
 )
@@ -18,6 +19,16 @@ class Bunch(NodeContainer):
         self.flows: Dict[str, Flow] = dict()
         self.server_state: ServerState = ServerState(port=port)
         self.server_state.setup()
+
+    # Attr ------------------------------------------------
+
+    def get_node_status(self) -> NodeStatus:
+        if len(self.flows) == 0:
+            return NodeStatus.unknown
+        status = []
+        for _, flow in self.flows.items():
+            status.append(flow.computed_status(True))
+        return max(status)
 
     # Flow ------------------------------------------------
 
@@ -77,7 +88,7 @@ class ServerState(BaseModel):
         validate_assignment = True
 
     @validator("port")
-    def set_port(cls, p):
+    def set_port(cls, p: Optional[str]):
         if p is None:
             p = constant.DEFAULT_PORT
         return p
