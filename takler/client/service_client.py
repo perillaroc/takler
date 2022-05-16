@@ -1,19 +1,20 @@
-from typing import Optional
+from typing import Optional, Union
 
 import grpc
 
 from takler.server.protocol.takler_pb2_grpc import TaklerServerStub
 from takler.server.protocol import takler_pb2
 from takler.logging import get_logger
+from takler.constant import DEFAULT_HOST, DEFAULT_PORT
 
 
 logger = get_logger("client")
 
 
 class TaklerServiceClient:
-    def __init__(self, host: str = "localhost", port: int = 33083):
+    def __init__(self, host: str = DEFAULT_HOST, port: Union[int, str] = DEFAULT_PORT):
         self.host: str = host
-        self.port: int = port
+        self.port: str = str(port)
         self.channel: Optional[grpc.Channel] = None
         self.stub: Optional[TaklerServerStub] = None
 
@@ -41,6 +42,8 @@ class TaklerServiceClient:
 
     def shutdown(self):
         self.close_channel()
+
+    # Child command -------------------------------------------------
 
     def run_command_init(self, node_path: str, task_id: str):
         response = self.stub.RunInitCommand(
@@ -97,7 +100,7 @@ class TaklerServiceClient:
         )
         print(f"received: {response.flag}")
 
-    # ----------------------------------------------------
+    # Control command ----------------------------------------------------
 
     def run_command_requeue(self, node_path: str):
         response = self.stub.RunRequeueCommand(
@@ -107,7 +110,7 @@ class TaklerServiceClient:
         )
         print(f"received: {response.flag}")
 
-    # ----------------------------------------------------
+    # Show command ----------------------------------------------------
 
     def run_request_show(self):
         response = self.stub.RunShowRequest(

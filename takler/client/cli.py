@@ -14,6 +14,9 @@ TAKLER_NAME = "TAKLER_NAME"
 app = typer.Typer()
 
 
+# Child command -----------------------------------------------------
+
+
 @app.command()
 def init(
         task_id: str = typer.Option(...),
@@ -94,7 +97,7 @@ def meter(
     client.shutdown()
 
 
-# --------------------------------------------------------
+# Control command --------------------------------------------------------
 
 @app.command()
 def requeue(
@@ -111,7 +114,7 @@ def requeue(
     client.shutdown()
 
 
-# --------------------------------------------------------
+# Show command --------------------------------------------------------
 
 
 @app.command()

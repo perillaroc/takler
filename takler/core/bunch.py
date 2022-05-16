@@ -23,6 +23,13 @@ class Bunch(NodeContainer):
     # Attr ------------------------------------------------
 
     def get_node_status(self) -> NodeStatus:
+        """
+        Calculate node status from all flows in bunch.
+
+        Returns
+        -------
+        NodeStatus
+        """
         if len(self.flows) == 0:
             return NodeStatus.unknown
         status = []
