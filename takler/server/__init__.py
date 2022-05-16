@@ -12,10 +12,10 @@ logger = get_logger("server")
 
 class TaklerServer:
     def __init__(self, host: str = None, port: int = None):
-        self.bunch: Bunch = Bunch()
+        self.bunch: Bunch = Bunch(host=host, port=port)
         self.scheduler: Scheduler = Scheduler(bunch=self.bunch)
         self.network_service: TaklerService = TaklerService(
-            scheduler=self.scheduler, host=host, port=port
+            scheduler=self.scheduler, host="[::]", port=port
         )
 
     async def start(self):

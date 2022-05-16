@@ -14,10 +14,10 @@ from .parameter import (
 
 
 class Bunch(NodeContainer):
-    def __init__(self, name: str = "", port: str = None):
+    def __init__(self, name: str = "", host: str = None, port: str = None):
         super(Bunch, self).__init__(name=name)
         self.flows: Dict[str, Flow] = dict()
-        self.server_state: ServerState = ServerState(port=port)
+        self.server_state: ServerState = ServerState(host=host, port=port)
         self.server_state.setup()
 
     # Attr ------------------------------------------------
