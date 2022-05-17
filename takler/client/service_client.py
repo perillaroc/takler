@@ -12,6 +12,15 @@ logger = get_logger("client")
 
 
 class TaklerServiceClient:
+    """
+    Notes
+    -----
+    If HPC login node's name is used, should set an environment to use native DNS resolver.
+
+        export GRPC_DNS_RESOLVER=native
+
+    Or use GOLANG version client.
+    """
     def __init__(self, host: str = DEFAULT_HOST, port: Union[int, str] = DEFAULT_PORT):
         self.host: str = host
         self.port: str = str(port)
