@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Optional, List
 
 import typer
 
@@ -111,6 +111,34 @@ def requeue(
     client = TaklerServiceClient(host=host, port=port)
     client.start()
     client.run_command_requeue(node_path=node_path)
+    client.shutdown()
+
+
+@app.command()
+def suspend(
+        host: str = typer.Option(None, help="takler service host"),
+        port: int = typer.Option(None, help="takler service port"),
+        node_path: List[str] = typer.Argument(..., help="node paths"),
+):
+    host = get_host(host)
+    port = get_port(port)
+    client = TaklerServiceClient(host=host, port=port)
+    client.start()
+    client.run_command_suspend(node_path=node_path)
+    client.shutdown()
+
+
+@app.command()
+def resume(
+        host: str = typer.Option(None, help="takler service host"),
+        port: int = typer.Option(None, help="takler service port"),
+        node_path: List[str] = typer.Argument(..., help="node paths"),
+):
+    host = get_host(host)
+    port = get_port(port)
+    client = TaklerServiceClient(host=host, port=port)
+    client.start()
+    client.run_command_resume(node_path=node_path)
     client.shutdown()
 
 

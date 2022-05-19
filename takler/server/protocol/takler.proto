@@ -57,6 +57,10 @@ message RequeueCommand {
   string node_path = 1;
 }
 
+message SuspendCommand {
+  repeated string node_path = 1;
+}
+
 // query command
 
 message ShowRequest{
@@ -78,6 +82,9 @@ service TaklerServer {
   // control command
 
   rpc RunRequeueCommand(RequeueCommand) returns (ServiceResponse){}
+
+  rpc RunSuspendCommand(SuspendCommand) returns (ServiceResponse){}
+  rpc RunResumeCommand(SuspendCommand) returns (ServiceResponse){}
 
   // query command
 

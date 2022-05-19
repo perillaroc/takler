@@ -118,7 +118,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
-    # -------------------------------------------------------------
+    # Control command -------------------------------------------------------------
 
     async def RunRequeueCommand(self, request, context):
         node_path = request.node_path
@@ -130,7 +130,29 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
-    # -----------------------------------------------------
+    async def RunSuspendCommand(self, request: takler_pb2.SuspendCommand, context):
+        node_paths = request.node_path
+        for node_path in node_paths:
+            logger.info(f"Suspend: {node_path}")
+            self.scheduler.run_command_suspend(node_path)
+
+        return takler_pb2.ServiceResponse(
+            flag=0,
+            message="",
+        )
+
+    async def RunResumeCommand(self, request: takler_pb2.SuspendCommand, context):
+        node_paths = request.node_path
+        for node_path in node_paths:
+            logger.info(f"Resume: {node_path}")
+            self.scheduler.run_command_resume(node_path)
+
+        return takler_pb2.ServiceResponse(
+            flag=0,
+            message="",
+        )
+
+    # Query command -----------------------------------------------------
 
     async def RunShowRequest(self, request, context):
         output = self.scheduler.handle_request_show()

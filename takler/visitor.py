@@ -47,6 +47,8 @@ class PrintVisitor(NodeVisitor):
         place_holder = "  " * self.level
         node_name = node.name
         node_state = node.state.node_status.name
+        if node.is_suspended():
+            node_state = f"suspend ({node_state})"
         self.stream.write(f"{place_holder}|- {node_name} [{node_state}]\n")
         pre_spaces = " " * len(f"{place_holder}|- ")
         if len(node.events) > 0:

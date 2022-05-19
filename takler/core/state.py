@@ -39,4 +39,5 @@ class State(object):
     def __init__(self, node_status: Optional[NodeStatus] = None):
         if node_status is None:
             node_status = NodeStatus.unknown
-        self.node_status = node_status
+        self.node_status: NodeStatus = node_status
+        self.suspended: bool = False

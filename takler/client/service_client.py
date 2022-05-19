@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, List
 
 import grpc
 
@@ -114,6 +114,22 @@ class TaklerServiceClient:
     def run_command_requeue(self, node_path: str):
         response = self.stub.RunRequeueCommand(
             takler_pb2.RequeueCommand(
+                node_path=node_path
+            )
+        )
+        print(f"received: {response.flag}")
+
+    def run_command_suspend(self, node_path: List[str]):
+        response = self.stub.RunSuspendCommand(
+            takler_pb2.SuspendCommand(
+                node_path=node_path
+            )
+        )
+        print(f"received: {response.flag}")
+
+    def run_command_resume(self, node_path: List[str]):
+        response = self.stub.RunResumeCommand(
+            takler_pb2.SuspendCommand(
                 node_path=node_path
             )
         )

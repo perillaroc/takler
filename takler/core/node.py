@@ -269,6 +269,9 @@ class Node(ABC):
 
     # State management -----------------------------------------------------
 
+    def is_suspended(self) -> bool:
+        return self.state.suspended
+
     def computed_status(self, immediate: bool) -> NodeStatus:
         """
         Compute node_status of a node from its children. Won't change anything in ``node``.
@@ -383,6 +386,9 @@ class Node(ABC):
         return self.trigger_expression.evaluate()
 
     def resolve_dependencies(self) -> bool:
+        if self.is_suspended():
+            return False
+
         if not self.evaluate_trigger():
             return False
 
@@ -586,3 +592,8 @@ class Node(ABC):
         """
         self.set_node_status_only(NodeStatus.queued)
 
+    def suspend(self):
+        self.state.suspended = True
+
+    def resume(self):
+        self.state.suspended = False

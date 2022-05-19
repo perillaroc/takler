@@ -137,6 +137,20 @@ class Scheduler:
 
         node.requeue()
 
+    def run_command_suspend(self, node_path: str):
+        node = self.bunch.find_node(node_path)
+        if node is None:
+            raise ValueError(f"node is not found: {node_path}")
+
+        node.suspend()
+
+    def run_command_resume(self, node_path: str):
+        node = self.bunch.find_node(node_path)
+        if node is None:
+            raise ValueError(f"node is not found: {node_path}")
+
+        node.resume()
+
     # Query -------------------------------------------------
 
     def handle_request_show(self) -> str:
