@@ -85,10 +85,11 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
-    async def RunAbortCommand(self, request, context):
+    async def RunAbortCommand(self, request: takler_pb2.AbortCommand, context):
         node_path = request.child_options.node_path
+        reason = request.reason
         logger.info(f"Abort: {node_path}")
-        self.scheduler.run_command_abort(node_path)
+        self.scheduler.run_command_abort(node_path, reason=reason)
 
         return takler_pb2.ServiceResponse(
             flag=0,

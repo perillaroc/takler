@@ -2,6 +2,7 @@ import asyncio
 import time
 from io import StringIO
 from queue import Queue
+from typing import Optional
 
 from takler.core import Bunch, Task
 from takler.logging import get_logger
@@ -104,13 +105,13 @@ class Scheduler:
         else:
             raise ValueError(f"node must be Task: {node_path}")
 
-    def run_command_abort(self, node_path: str):
+    def run_command_abort(self, node_path: str, reason: Optional[str] = None):
         node = self.bunch.find_node(node_path)
         if node is None:
             raise ValueError(f"node is not found: {node_path}")
 
         if isinstance(node, Task):
-            node.abort()
+            node.abort(reason)
         else:
             raise ValueError(f"node must be Task: {node_path}")
 

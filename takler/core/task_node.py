@@ -18,6 +18,8 @@ class Task(Node):
         super(Task, self).__init__(name)
         self.task_id: Optional[str] = None
 
+        self.aborted_reason: Optional[str] = None
+
         self.generated_parameters: TaskNodeGeneratedParameters = TaskNodeGeneratedParameters(node=self)
 
     def __repr__(self):
@@ -82,12 +84,17 @@ class Task(Node):
         """
         Run the task, set status to ``NodeStatus.submitted`` and handle status change.
 
-        Subclasses of ``Task`` should reimplement this method to do the real run operation.
+        Subclasses of ``Task`` should reimplement this method to do the real run operation and deal with errors.
         """
         # change node status
         self.set_node_status(node_status=NodeStatus.submitted)
+        self.aborted_reason = None
         logger.info(f"run: {self.node_path}")
         self.handle_status_change()
+
+    def requeue(self):
+        self.aborted_reason = None
+        super(Task, self).requeue()
 
     # Status update operation -------------------------------------
     #   Status update operation is used in task's running period,
@@ -104,9 +111,10 @@ class Task(Node):
         logger.info(f"complete: {self.node_path}")
         self.handle_status_change()
 
-    def abort(self):
+    def abort(self, reason: str = ""):
         self.set_node_status(node_status=NodeStatus.aborted)
-        logger.info(f"abort: {self.node_path}")
+        self.aborted_reason = reason
+        logger.info(f"abort: {self.node_path} {reason}")
         self.handle_status_change()
 
 
