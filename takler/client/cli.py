@@ -142,6 +142,21 @@ def resume(
     client.shutdown()
 
 
+@app.command()
+def run(
+        host: str = typer.Option(None, help="takler service host"),
+        port: int = typer.Option(None, help="takler service port"),
+        node_path: List[str] = typer.Argument(..., help="node paths"),
+        force: bool = typer.Option(False, help="force run"),
+):
+    host = get_host(host)
+    port = get_port(port)
+    client = TaklerServiceClient(host=host, port=port)
+    client.start()
+    client.run_command_run(node_path=node_path, force=force)
+    client.shutdown()
+
+
 # Show command --------------------------------------------------------
 
 

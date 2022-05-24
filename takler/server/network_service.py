@@ -153,6 +153,21 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
+    async def RunRunCommand(self, request, context):
+        node_paths = request.node_path
+        force = request.force
+        for node_path in node_paths:
+            result = self.scheduler.run_command_run(node_path, force=force)
+            if result:
+                logger.info(f"Run: {node_path}")
+            else:
+                logger.info(f"Run has error: {node_path}")
+
+        return takler_pb2.ServiceResponse(
+            flag=0,
+            message="",
+        )
+
     # Query command -----------------------------------------------------
 
     async def RunShowRequest(self, request, context):

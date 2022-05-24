@@ -135,6 +135,15 @@ class TaklerServiceClient:
         )
         print(f"received: {response.flag}")
 
+    def run_command_run(self, node_path: List[str], force: bool):
+        response = self.stub.RunRunCommand(
+            takler_pb2.RunCommand(
+                force=force,
+                node_path=node_path
+            )
+        )
+        print(f"received: {response.flag}")
+
     # Show command ----------------------------------------------------
 
     def run_request_show(self):

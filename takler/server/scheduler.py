@@ -4,7 +4,7 @@ from io import StringIO
 from queue import Queue
 from typing import Optional
 
-from takler.core import Bunch, Task
+from takler.core import Bunch, Task, NodeStatus
 from takler.logging import get_logger
 from takler.visitor import pre_order_travel, PrintVisitor
 
@@ -151,6 +151,19 @@ class Scheduler:
             raise ValueError(f"node is not found: {node_path}")
 
         node.resume()
+
+    def run_command_run(self, node_path: str, force: bool = False) -> bool:
+        node = self.bunch.find_node(node_path)
+        if not isinstance(node, Task):
+            return False
+        if not force:
+            status = node.state.node_status
+            if status in (NodeStatus.submitted, NodeStatus.active):
+                # don't run
+                return False
+
+        node.run()
+        return True
 
     # Query -------------------------------------------------
 

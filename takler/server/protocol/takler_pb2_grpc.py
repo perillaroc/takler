@@ -54,6 +54,11 @@ class TaklerServerStub(object):
                 request_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.SuspendCommand.SerializeToString,
                 response_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.ServiceResponse.FromString,
                 )
+        self.RunRunCommand = channel.unary_unary(
+                '/takler_protocol.TaklerServer/RunRunCommand',
+                request_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.RunCommand.SerializeToString,
+                response_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.ServiceResponse.FromString,
+                )
         self.RunShowRequest = channel.unary_unary(
                 '/takler_protocol.TaklerServer/RunShowRequest',
                 request_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.ShowRequest.SerializeToString,
@@ -115,6 +120,12 @@ class TaklerServerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RunRunCommand(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
     def RunShowRequest(self, request, context):
         """query command
 
@@ -164,6 +175,11 @@ def add_TaklerServerServicer_to_server(servicer, server):
             'RunResumeCommand': grpc.unary_unary_rpc_method_handler(
                     servicer.RunResumeCommand,
                     request_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.SuspendCommand.FromString,
+                    response_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.ServiceResponse.SerializeToString,
+            ),
+            'RunRunCommand': grpc.unary_unary_rpc_method_handler(
+                    servicer.RunRunCommand,
+                    request_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.RunCommand.FromString,
                     response_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.ServiceResponse.SerializeToString,
             ),
             'RunShowRequest': grpc.unary_unary_rpc_method_handler(
@@ -313,6 +329,23 @@ class TaklerServer(object):
             metadata=None):
         return grpc.experimental.unary_unary(request, target, '/takler_protocol.TaklerServer/RunResumeCommand',
             takler_dot_server_dot_protocol_dot_takler__pb2.SuspendCommand.SerializeToString,
+            takler_dot_server_dot_protocol_dot_takler__pb2.ServiceResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def RunRunCommand(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/takler_protocol.TaklerServer/RunRunCommand',
+            takler_dot_server_dot_protocol_dot_takler__pb2.RunCommand.SerializeToString,
             takler_dot_server_dot_protocol_dot_takler__pb2.ServiceResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

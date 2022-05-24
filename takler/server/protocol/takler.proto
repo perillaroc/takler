@@ -61,6 +61,11 @@ message SuspendCommand {
   repeated string node_path = 1;
 }
 
+message RunCommand {
+  bool force = 1;
+  repeated string node_path = 2;
+}
+
 // query command
 
 message ShowRequest{
@@ -85,6 +90,7 @@ service TaklerServer {
 
   rpc RunSuspendCommand(SuspendCommand) returns (ServiceResponse){}
   rpc RunResumeCommand(SuspendCommand) returns (ServiceResponse){}
+  rpc RunRunCommand(RunCommand) returns (ServiceResponse) {}
 
   // query command
 
