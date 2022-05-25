@@ -127,12 +127,18 @@ class Bunch(NodeContainer):
 
 class ServerState(BaseModel):
     server_parameters: List[Parameter] = []
-    host: str = constant.DEFAULT_HOST
+    host: Optional[str] = constant.DEFAULT_HOST
     port: Optional[str] = constant.DEFAULT_PORT
 
     class Config:
         arbitrary_types_allowed = True
         validate_assignment = True
+
+    @validator("host")
+    def set_host(cls, h: Optional[str]):
+        if h is None:
+            h = constant.DEFAULT_HOST
+        return h
 
     @validator("port")
     def set_port(cls, p: Optional[str]):
