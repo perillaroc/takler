@@ -154,7 +154,7 @@ class TaklerServiceClient:
         )
         print(f"received: {response.flag}")
 
-    # Show command ----------------------------------------------------
+    # Query command ----------------------------------------------------
 
     def run_request_show(self):
         response = self.stub.RunShowRequest(
