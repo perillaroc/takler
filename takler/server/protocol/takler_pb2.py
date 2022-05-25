@@ -14,7 +14,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n#takler/server/protocol/takler.proto\x12\x0ftakler_protocol\"0\n\x0fServiceResponse\x12\x0c\n\x04\x66lag\x18\x01 \x01(\x05\x12\x0f\n\x07message\x18\x02 \x01(\t\"(\n\x13\x43hildCommandOptions\x12\x11\n\tnode_path\x18\x01 \x01(\t\"[\n\x0bInitCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x0f\n\x07task_id\x18\x02 \x01(\t\"N\n\x0f\x43ompleteCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\"[\n\x0c\x41\x62ortCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x0e\n\x06reason\x18\x02 \x01(\t\"_\n\x0c\x45ventCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x12\n\nevent_name\x18\x02 \x01(\t\"t\n\x0cMeterCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x12\n\nmeter_name\x18\x02 \x01(\t\x12\x13\n\x0bmeter_value\x18\x03 \x01(\t\"#\n\x0eRequeueCommand\x12\x11\n\tnode_path\x18\x01 \x01(\t\"#\n\x0eSuspendCommand\x12\x11\n\tnode_path\x18\x01 \x03(\t\".\n\nRunCommand\x12\r\n\x05\x66orce\x18\x01 \x01(\x08\x12\x11\n\tnode_path\x18\x02 \x03(\t\"\r\n\x0bShowRequest\"\x1e\n\x0cShowResponse\x12\x0e\n\x06output\x18\x01 \x01(\t2\xf0\x06\n\x0cTaklerServer\x12R\n\x0eRunInitCommand\x12\x1c.takler_protocol.InitCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12Z\n\x12RunCompleteCommand\x12 .takler_protocol.CompleteCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12T\n\x0fRunAbortCommand\x12\x1d.takler_protocol.AbortCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12T\n\x0fRunEventCommand\x12\x1d.takler_protocol.EventCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12T\n\x0fRunMeterCommand\x12\x1d.takler_protocol.MeterCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12X\n\x11RunRequeueCommand\x12\x1f.takler_protocol.RequeueCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12X\n\x11RunSuspendCommand\x12\x1f.takler_protocol.SuspendCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12W\n\x10RunResumeCommand\x12\x1f.takler_protocol.SuspendCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12P\n\rRunRunCommand\x12\x1b.takler_protocol.RunCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12O\n\x0eRunShowRequest\x12\x1c.takler_protocol.ShowRequest\x1a\x1d.takler_protocol.ShowResponse\"\x00\x42\x35Z3github.com/perillaroc/takler-client/takler_protocolb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n#takler/server/protocol/takler.proto\x12\x0ftakler_protocol\"0\n\x0fServiceResponse\x12\x0c\n\x04\x66lag\x18\x01 \x01(\x05\x12\x0f\n\x07message\x18\x02 \x01(\t\"(\n\x13\x43hildCommandOptions\x12\x11\n\tnode_path\x18\x01 \x01(\t\"[\n\x0bInitCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x0f\n\x07task_id\x18\x02 \x01(\t\"N\n\x0f\x43ompleteCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\"[\n\x0c\x41\x62ortCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x0e\n\x06reason\x18\x02 \x01(\t\"_\n\x0c\x45ventCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x12\n\nevent_name\x18\x02 \x01(\t\"t\n\x0cMeterCommand\x12;\n\rchild_options\x18\x01 \x01(\x0b\x32$.takler_protocol.ChildCommandOptions\x12\x12\n\nmeter_name\x18\x02 \x01(\t\x12\x13\n\x0bmeter_value\x18\x03 \x01(\t\"#\n\x0eRequeueCommand\x12\x11\n\tnode_path\x18\x01 \x01(\t\"#\n\x0eSuspendCommand\x12\x11\n\tnode_path\x18\x01 \x03(\t\".\n\nRunCommand\x12\r\n\x05\x66orce\x18\x01 \x01(\x08\x12\x11\n\tnode_path\x18\x02 \x03(\t\"\xd9\x01\n\x0c\x46orceCommand\x12\x37\n\x05state\x18\x01 \x01(\x0e\x32(.takler_protocol.ForceCommand.ForceState\x12\x11\n\trecursive\x18\x02 \x01(\x08\x12\x0c\n\x04path\x18\x03 \x03(\t\"o\n\nForceState\x12\x0b\n\x07unknown\x10\x00\x12\x0c\n\x08\x63omplete\x10\x01\x12\n\n\x06queued\x10\x02\x12\r\n\tsubmitted\x10\x03\x12\n\n\x06\x61\x63tive\x10\x04\x12\x0b\n\x07\x61\x62orted\x10\x05\x12\t\n\x05\x63lear\x10\x06\x12\x07\n\x03set\x10\x07\"\r\n\x0bShowRequest\"\x1e\n\x0cShowResponse\x12\x0e\n\x06output\x18\x01 \x01(\t2\xc6\x07\n\x0cTaklerServer\x12R\n\x0eRunInitCommand\x12\x1c.takler_protocol.InitCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12Z\n\x12RunCompleteCommand\x12 .takler_protocol.CompleteCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12T\n\x0fRunAbortCommand\x12\x1d.takler_protocol.AbortCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12T\n\x0fRunEventCommand\x12\x1d.takler_protocol.EventCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12T\n\x0fRunMeterCommand\x12\x1d.takler_protocol.MeterCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12X\n\x11RunRequeueCommand\x12\x1f.takler_protocol.RequeueCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12X\n\x11RunSuspendCommand\x12\x1f.takler_protocol.SuspendCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12W\n\x10RunResumeCommand\x12\x1f.takler_protocol.SuspendCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12P\n\rRunRunCommand\x12\x1b.takler_protocol.RunCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12T\n\x0fRunForceCommand\x12\x1d.takler_protocol.ForceCommand\x1a .takler_protocol.ServiceResponse\"\x00\x12O\n\x0eRunShowRequest\x12\x1c.takler_protocol.ShowRequest\x1a\x1d.takler_protocol.ShowResponse\"\x00\x42\x35Z3github.com/perillaroc/takler-client/takler_protocolb\x06proto3')
 
 
 
@@ -28,8 +28,10 @@ _METERCOMMAND = DESCRIPTOR.message_types_by_name['MeterCommand']
 _REQUEUECOMMAND = DESCRIPTOR.message_types_by_name['RequeueCommand']
 _SUSPENDCOMMAND = DESCRIPTOR.message_types_by_name['SuspendCommand']
 _RUNCOMMAND = DESCRIPTOR.message_types_by_name['RunCommand']
+_FORCECOMMAND = DESCRIPTOR.message_types_by_name['ForceCommand']
 _SHOWREQUEST = DESCRIPTOR.message_types_by_name['ShowRequest']
 _SHOWRESPONSE = DESCRIPTOR.message_types_by_name['ShowResponse']
+_FORCECOMMAND_FORCESTATE = _FORCECOMMAND.enum_types_by_name['ForceState']
 ServiceResponse = _reflection.GeneratedProtocolMessageType('ServiceResponse', (_message.Message,), {
   'DESCRIPTOR' : _SERVICERESPONSE,
   '__module__' : 'takler.server.protocol.takler_pb2'
@@ -100,6 +102,13 @@ RunCommand = _reflection.GeneratedProtocolMessageType('RunCommand', (_message.Me
   })
 _sym_db.RegisterMessage(RunCommand)
 
+ForceCommand = _reflection.GeneratedProtocolMessageType('ForceCommand', (_message.Message,), {
+  'DESCRIPTOR' : _FORCECOMMAND,
+  '__module__' : 'takler.server.protocol.takler_pb2'
+  # @@protoc_insertion_point(class_scope:takler_protocol.ForceCommand)
+  })
+_sym_db.RegisterMessage(ForceCommand)
+
 ShowRequest = _reflection.GeneratedProtocolMessageType('ShowRequest', (_message.Message,), {
   'DESCRIPTOR' : _SHOWREQUEST,
   '__module__' : 'takler.server.protocol.takler_pb2'
@@ -139,10 +148,14 @@ if _descriptor._USE_C_DESCRIPTORS == False:
   _SUSPENDCOMMAND._serialized_end=701
   _RUNCOMMAND._serialized_start=703
   _RUNCOMMAND._serialized_end=749
-  _SHOWREQUEST._serialized_start=751
-  _SHOWREQUEST._serialized_end=764
-  _SHOWRESPONSE._serialized_start=766
-  _SHOWRESPONSE._serialized_end=796
-  _TAKLERSERVER._serialized_start=799
-  _TAKLERSERVER._serialized_end=1679
+  _FORCECOMMAND._serialized_start=752
+  _FORCECOMMAND._serialized_end=969
+  _FORCECOMMAND_FORCESTATE._serialized_start=858
+  _FORCECOMMAND_FORCESTATE._serialized_end=969
+  _SHOWREQUEST._serialized_start=971
+  _SHOWREQUEST._serialized_end=984
+  _SHOWRESPONSE._serialized_start=986
+  _SHOWRESPONSE._serialized_end=1016
+  _TAKLERSERVER._serialized_start=1019
+  _TAKLERSERVER._serialized_end=1985
 # @@protoc_insertion_point(module_scope)

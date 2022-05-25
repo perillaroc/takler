@@ -144,6 +144,16 @@ class TaklerServiceClient:
         )
         print(f"received: {response.flag}")
 
+    def run_command_force(self, variable_paths: List[str], state: str, recursive: bool):
+        response = self.stub.RunForceCommand(
+            takler_pb2.ForceCommand(
+                state=takler_pb2.ForceCommand.ForceState.Value(state),
+                recursive=recursive,
+                path=variable_paths,
+            )
+        )
+        print(f"received: {response.flag}")
+
     # Show command ----------------------------------------------------
 
     def run_request_show(self):

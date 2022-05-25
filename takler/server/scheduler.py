@@ -4,7 +4,8 @@ from io import StringIO
 from queue import Queue
 from typing import Optional
 
-from takler.core import Bunch, Task, NodeStatus
+from takler.core import Bunch, Task, NodeStatus, Event
+from takler.core.node import Node
 from takler.logging import get_logger
 from takler.visitor import pre_order_travel, PrintVisitor
 
@@ -163,6 +164,30 @@ class Scheduler:
                 return False
 
         node.run()
+        return True
+
+    def run_command_force(self, variable_path: str, state: str, recursive: bool = False) -> bool:
+        variable = self.bunch.find_path(variable_path)
+        if variable is None:
+            return False
+        if isinstance(variable, Node):
+            # if state in NodeStatus:
+            node_status = NodeStatus[state]
+            # else:
+            #     raise ValueError(f"state {state} is not supported for Node")
+            if recursive:
+                variable.sink_status_change(node_status)
+            else:
+                variable.set_node_status(node_status)
+            return True
+        elif isinstance(variable, Event):
+            if state == "set":
+                variable.value = True
+            elif state == "clear":
+                variable.value = False
+            else:
+                raise ValueError(f"state {state} is not supported for Event")
+            return True
         return True
 
     # Query -------------------------------------------------

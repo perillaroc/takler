@@ -157,6 +157,22 @@ def run(
     client.shutdown()
 
 
+@app.command()
+def force(
+        host: str = typer.Option(None, help="takler service host"),
+        port: int = typer.Option(None, help="takler service port"),
+        recursive: bool = typer.Option(True, help="recursive"),
+        state: str = typer.Argument(..., help="state"),
+        variable_path: List[str] = typer.Argument(..., help="variable paths"),
+):
+    host = get_host(host)
+    port = get_port(port)
+    client = TaklerServiceClient(host=host, port=port)
+    client.start()
+    client.run_command_force(variable_paths=variable_path, state=state, recursive=recursive)
+    client.shutdown()
+
+
 # Show command --------------------------------------------------------
 
 

@@ -66,6 +66,22 @@ message RunCommand {
   repeated string node_path = 2;
 }
 
+message ForceCommand {
+  enum ForceState {
+    unknown = 0;
+    complete = 1;
+    queued = 2;
+    submitted = 3;
+    active = 4;
+    aborted = 5;
+    clear = 6;
+    set = 7;
+  }
+  ForceState state = 1;
+  bool recursive = 2;
+  repeated string path = 3;
+}
+
 // query command
 
 message ShowRequest{
@@ -90,7 +106,10 @@ service TaklerServer {
 
   rpc RunSuspendCommand(SuspendCommand) returns (ServiceResponse){}
   rpc RunResumeCommand(SuspendCommand) returns (ServiceResponse){}
+
   rpc RunRunCommand(RunCommand) returns (ServiceResponse) {}
+
+  rpc RunForceCommand(ForceCommand) returns (ServiceResponse) {}
 
   // query command
 

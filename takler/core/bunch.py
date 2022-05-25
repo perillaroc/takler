@@ -8,6 +8,8 @@ from .node_container import NodeContainer
 from .flow import Flow
 from .node import Node
 from .state import NodeStatus
+from .event import Event
+from .meter import Meter
 from .parameter import (
     Parameter, TAKLER_HOST, TAKLER_PORT, TAKLER_HOME
 )
@@ -65,6 +67,17 @@ class Bunch(NodeContainer):
     # Node access -----------------------------------------------
 
     def find_node(self, a_path: str) -> Optional[Node]:
+        """
+        Find node from path string.
+
+        Parameters
+        ----------
+        a_path
+            node path starting with "/".
+        Returns
+        -------
+        Optional[Node]
+        """
         if not Node.check_absolute_node_path(a_path):
             raise ValueError(f"absolute node path is illegal: {a_path}")
         tokens = a_path.split("/")
@@ -74,6 +87,33 @@ class Bunch(NodeContainer):
         if a_flow is None:
             return None
         return a_flow.find_node(a_path)
+
+    def find_path(self, a_path: str) -> Optional[Union[Node, Meter, Event]]:
+        """
+        Find node or node's variable from path string.
+
+        Parameters
+        ----------
+        a_path
+            node path (/flow1/task1) or variable path (/flow1/task1:event1)
+
+        Returns
+        -------
+        Optional[Union[Node, Meter, Event]]
+        """
+        tokens = a_path.split(":")
+        if len(tokens) == 1:
+            return self.find_node(a_path)
+        elif len(tokens) == 2:
+            node_path = tokens[0]
+            variable_name = tokens[1]
+            node = self.find_node(node_path)
+            if node is None:
+                return None
+            v = node.find_variable(variable_name)
+            return v
+        else:
+            return None
 
     # Parameter ------------------------------------------------
 

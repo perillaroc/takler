@@ -168,6 +168,24 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
+    async def RunForceCommand(self, request: takler_pb2.ForceCommand, context):
+        paths = request.path
+        state = takler_pb2.ForceCommand.ForceState.Name(request.state)
+        recursive = request.recursive
+
+        for variable_path in paths:
+            result = self.scheduler.run_command_force(variable_path, state=state, recursive=recursive)
+            if result:
+                logger.info(f"Force: {variable_path} {state}")
+            else:
+                logger.info(f"Force has error: {variable_path} {state}")
+
+        return takler_pb2.ServiceResponse(
+            flag=0,
+            message="",
+        )
+
+
     # Query command -----------------------------------------------------
 
     async def RunShowRequest(self, request, context):
