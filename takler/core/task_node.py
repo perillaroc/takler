@@ -40,6 +40,11 @@ class Task(Node):
         """
         return self.parent.swim_status_change()
 
+    def handle_status_change(self):
+        self.swim_status_change()
+
+        super(Task, self).handle_status_change()
+
     # Trigger -----------------------------------------------------
 
     def resolve_dependencies(self) -> bool:

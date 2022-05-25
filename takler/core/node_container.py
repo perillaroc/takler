@@ -20,6 +20,31 @@ class NodeContainer(Node):
         c_state = compute_most_significant_status(self.children, immediate)
         return c_state
 
+    def sink_status_change_only(self, node_status: NodeStatus):
+        """
+        Apply the node_status change to all its descendants without doing anything.
+
+        Sink status down. This method can only be called in set_state and itself.
+        """
+        self.set_node_status_only(node_status)
+        for a_node in self.children:
+            a_node.sink_status_change_only(node_status)
+
+    def sink_status_change(self, node_status: NodeStatus):
+        """
+        Apply the node_status change to all its descendants with side effects.
+        """
+        # if self.state.node_status == node_status:
+        #     return
+
+        self.sink_status_change_only(node_status)
+        self.handle_status_change()
+
+    def handle_status_change(self):
+        self.swim_status_change()
+
+        super(NodeContainer, self).handle_status_change()
+
     # Build flow tree structure -------------------------------------------
 
     def add_container(self, container: Union[str, NodeContainer]) -> NodeContainer:
