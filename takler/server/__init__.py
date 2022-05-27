@@ -11,6 +11,13 @@ logger = get_logger("server")
 
 
 class TaklerServer:
+    """
+    Takler server which will create three members when init:
+
+    * bunch: A bunch for flows.
+    * scheduler: A scheduler to check dependencies in loop.
+    * network service: A gRPC server to receive client command.
+    """
     def __init__(self, host: str = None, port: int = None):
         self.bunch: Bunch = Bunch(host=host, port=port)
         self.scheduler: Scheduler = Scheduler(bunch=self.bunch)
@@ -19,6 +26,12 @@ class TaklerServer:
         )
 
     async def start(self):
+        """
+        Start services:
+
+        * start scheduler
+        * start network service
+        """
         logger.info("start server...")
         await self.scheduler.start()
         await self.network_service.start()
@@ -47,13 +60,15 @@ class TaklerServer:
         await self.scheduler.stop()
 
 
-async def run_server_until_complete(server: TaklerServer):
+async def run_server_until_complete(server: TaklerServer, check_interval: int = 10):
     """
     Run takler server until all flows in bunch are complete.
 
     Parameters
     ----------
     server
+    check_interval
+        check interval seconds
 
     Returns
     -------
@@ -69,4 +84,4 @@ async def run_server_until_complete(server: TaklerServer):
             logger.info("stop server...done")
             break
 
-        await asyncio.sleep(10)
+        await asyncio.sleep(check_interval)

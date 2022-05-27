@@ -49,6 +49,8 @@ class Scheduler:
     async def main_loop(self):
         """
         Main loop of scheduler.
+
+        Travel bunch until ``should_stop`` flag is set.
         """
         while not self.should_stop:
             logger.info("main loop...")
@@ -58,6 +60,7 @@ class Scheduler:
 
             elapsed = time.time() - start_time
             if elapsed > self.interval_main_loop:
+                logger.warning(f"elapse time ({elapsed:.2f}) seconds is larger than main loop interval ({self.interval_main_loop} seconds)")
                 duration = 0
             else:
                 duration = self.interval_main_loop - elapsed
@@ -66,7 +69,9 @@ class Scheduler:
 
     async def stop(self):
         """
-        Stop scheduler and wait until main loop unset ``should_stop`` flag
+        Stop scheduler by set ``should_stop`` flag and wait until main loop unset ``should_stop`` flag
+
+        This method should only be called once.
         """
         logger.info("scheduler shutting down...")
         self.should_stop = True
@@ -80,6 +85,10 @@ class Scheduler:
         Travel all flows in bunch to resolve dependencies.
 
         This function will submit tasks which fit its dependencies.
+
+        Notes
+        -----
+        是否使用异步函数遍历工作流？
         """
         for name, flow in self.bunch.flows.items():
             flow.resolve_dependencies()
@@ -87,6 +96,11 @@ class Scheduler:
     # Child -------------------------------------------------
 
     async def run_command_init(self, node_path: str, task_id: str):
+        """
+        Notes
+        -----
+        是否使用异步函数执行客户端命令？
+        """
         node = self.bunch.find_node(node_path)
         if node is None:
             raise ValueError(f"node is not found: {node_path}")

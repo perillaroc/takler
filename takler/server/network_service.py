@@ -64,6 +64,8 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
         await self.grpc_server.stop(5)
         logger.info("service shutting down..done")
 
+    # Child command -----------------------------------------------------
+
     async def RunInitCommand(self, request, context):
         node_path = request.child_options.node_path
         task_id = request.task_id
@@ -184,7 +186,6 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             flag=0,
             message="",
         )
-
 
     # Query command -----------------------------------------------------
 
