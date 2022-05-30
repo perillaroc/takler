@@ -587,6 +587,9 @@ class Node(ABC):
         """
         self.set_node_status_only(NodeStatus.queued)
 
+        for event in self.events:
+            event.reset()
+
     def suspend(self):
         self.state.suspended = True
 
