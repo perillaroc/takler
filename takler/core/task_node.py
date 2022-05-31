@@ -1,11 +1,12 @@
 import functools
 import asyncio
-from typing import Optional, Dict
+from typing import Optional, Dict, Set
 
 from pydantic import BaseModel
 
 from .node import Node
 from .state import NodeStatus
+from .limit import Limit
 from .parameter import (
     Parameter,
     TASK, TAKLER_NAME, TAKLER_RID
@@ -41,9 +42,27 @@ class Task(Node):
         return self.parent.swim_status_change()
 
     def handle_status_change(self):
+        self.update_limits()
+
         self.swim_status_change()
 
         super(Task, self).handle_status_change()
+
+    # Limit -------------------------------------------------------
+
+    def update_limits(self):
+        status = self.state.node_status
+        limit_set: Set[Limit] = set()
+        if status == NodeStatus.complete:
+            self.decrement_in_limit(limit_set)
+        elif status == NodeStatus.aborted:
+            self.decrement_in_limit(limit_set)
+        elif status == NodeStatus.submitted:
+            self.increment_in_limit(limit_set)
+        elif status == NodeStatus.active:
+            pass
+        else:
+            self.decrement_in_limit(limit_set)
 
     # Trigger -----------------------------------------------------
 
@@ -64,6 +83,9 @@ class Task(Node):
 
         # don't run when task is aborted. See :github:issue:`27`
         if node_status == NodeStatus.aborted:
+            return False
+
+        if not self.check_in_limit_up():
             return False
 
         # run jobs

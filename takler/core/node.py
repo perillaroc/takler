@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Union, List, Optional, Dict, TYPE_CHECKING
+from typing import Union, List, Optional, Dict, TYPE_CHECKING, Set
 from pathlib import PurePosixPath
 from collections import defaultdict
 from abc import ABC
@@ -9,6 +9,7 @@ from .state import State, NodeStatus
 from .parameter import Parameter
 from .event import Event
 from .meter import Meter
+from .limit import Limit, InLimit, InLimitManager
 from .expression import Expression
 
 if TYPE_CHECKING:
@@ -99,6 +100,10 @@ class Node(ABC):
 
         # 标尺
         self.meters: List[Meter] = list()
+
+        # 限制
+        self.limits: List[Limit] = list()
+        self.in_limit_manager: InLimitManager = InLimitManager(self)
 
     def __enter__(self):
         return self
@@ -576,6 +581,69 @@ class Node(ABC):
             return True
 
         return False
+
+    # Limit ----------------------------------------------------------
+
+    def add_in_limit(self, limit_name: str, node_path: Optional[str] = None, tokens: int = 1):
+        in_limit = InLimit(limit_name, node_path=node_path, tokens=tokens)
+        self.in_limit_manager.add_in_limit(in_limit)
+
+    def add_limit(self, name: str, limit: int):
+        if self.find_limit(name) is not None:
+            raise RuntimeError(f"add_limit failed: duplicate limit {name} for node {self.node_path}")
+        item = Limit(name, limit)
+        item.set_node(self)
+        self.limits.append(item)
+
+    def find_limit(self, name: str) -> Optional[Limit]:
+        for item in self.limits:
+            if item.name == name:
+                return item
+        return None
+
+    def find_limit_up_node_tree(self, name: str) -> Optional[Limit]:
+        item = self.find_limit(name)
+        if item is not None:
+            return item
+
+        the_parent = self.parent
+        while the_parent is not None:
+            item = the_parent.find_limit(name)
+            if item is not None:
+                return item
+            the_parent = self.parent
+
+        return None
+
+    def check_in_limit_up(self) -> bool:
+        if not self.in_limit_manager.in_limit():
+            return False
+
+        the_parent = self.parent
+        while the_parent is not None:
+            if not the_parent.in_limit_manager.in_limit():
+                return False
+            the_parent = the_parent.parent
+
+        return True
+
+    def increment_in_limit(self, limit_set: Set[Limit]):
+        node_path = self.node_path
+        self.in_limit_manager.increment_in_limit(limit_set, node_path)
+
+        the_parent = self.parent
+        while the_parent is not None:
+            the_parent.in_limit_manager.increment_in_limit(limit_set, node_path)
+            the_parent = the_parent.parent
+
+    def decrement_in_limit(self, limit_set: Set[Limit]):
+        node_path = self.node_path
+        self.in_limit_manager.decrement_in_limit(limit_set, node_path)
+
+        the_parent = self.parent
+        while the_parent is not None:
+            the_parent.in_limit_manager.decrement_in_limit(limit_set, node_path)
+            the_parent = the_parent.parent
 
     # Node Operations ------------------------------------------------
 
