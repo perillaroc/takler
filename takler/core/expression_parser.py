@@ -1,7 +1,7 @@
 from lark import Lark, Transformer
 
 from .expression_ast import (
-    AstNodePath, AstOpEq, AstOpAnd, AstOpGt, AstOpGe,
+    AstNodePath, AstOpEq, AstOpAnd, AstOpOr, AstOpGt, AstOpGe,
     AstNodeStatus, AstRoot,
     AstVariablePath, AstInteger,
 )
@@ -23,6 +23,12 @@ class ExpressionTransformer(Transformer):
     # def node_name(self, s: str) -> str:
     #     (s, ) = s
     #     return s
+
+    def dot(self, _) -> str:
+        return "."
+
+    def double_dot(self, _) -> str:
+        return ".."
 
     def st_complete(self, _) -> AstNodeStatus:
         """Node status: complete"""
@@ -47,6 +53,10 @@ class ExpressionTransformer(Transformer):
     def op_and(self, _) -> AstOpAnd:
         """Operation: and"""
         return AstOpAnd()
+
+    def op_or(self, _) -> AstOpOr:
+        """Operation: or"""
+        return AstOpOr()
 
     def event_set(self, _) -> AstInteger:
         return AstInteger(1)
@@ -73,7 +83,9 @@ trigger_parser: Lark = Lark(r"""
     op_gt: ">"
     op_ge: ">="
     op_and: "and"i
-    ?operator: op_eq | op_gt | op_ge | op_and
+    op_or: "or"i
+    ?operator: op_eq | op_gt | op_ge
+    ?logical_operator: op_and | op_or
 
     st_complete: "complete"i
     st_aborted: "aborted"i
@@ -85,13 +97,15 @@ trigger_parser: Lark = Lark(r"""
     
     meter_value: NUMBER
 
-    ?node_name: CNAME | "." | ".."
+    ?node_name: CNAME | dot | double_dot
+    dot: "."
+    double_dot: ".."
     ?variable_name: CNAME
 
     expression: (node_path operator status) 
               | (variable_path operator event_value)
               | (variable_path operator meter_value)
-              | (expression op_and expression) 
+              | (expression logical_operator expression)
 
     %import common.CNAME
     %import common.WORD

@@ -56,6 +56,12 @@ class AstOpAnd(AstRoot):
 
 
 @dataclass
+class AstOpOr(AstRoot):
+    def evaluate(self):
+        return self.left.evaluate() or self.right.evaluate()
+
+
+@dataclass
 class AstNodePath(AstBase):
     node_path: str
     parent_node: "Optional[Node]" = None
