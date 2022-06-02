@@ -584,24 +584,79 @@ class Node(ABC):
 
     # Limit ----------------------------------------------------------
 
-    def add_in_limit(self, limit_name: str, node_path: Optional[str] = None, tokens: int = 1):
+    def add_in_limit(self, limit_name: str, node_path: Optional[str] = None, tokens: int = 1) -> InLimit:
+        """
+        Add InLimit to this node's InLimitManager.
+
+        Parameters
+        ----------
+        limit_name
+            Limit's name
+        node_path
+            Limit's reference node path, default is None
+        tokens
+            tokens for this node, default is 1.
+
+        Returns
+        -------
+        InLimit
+        """
         in_limit = InLimit(limit_name, node_path=node_path, tokens=tokens)
         self.in_limit_manager.add_in_limit(in_limit)
+        return in_limit
 
-    def add_limit(self, name: str, limit: int):
+    def add_limit(self, name: str, limit: int) -> Limit:
+        """
+        Add a Limit to node. Limits in one Node should not have duplicate names.
+
+        Parameters
+        ----------
+        name
+            limit name.
+        limit
+            total tokens for Limit.
+        Returns
+        -------
+        Limit
+        """
         if self.find_limit(name) is not None:
             raise RuntimeError(f"add_limit failed: duplicate limit {name} for node {self.node_path}")
         item = Limit(name, limit)
         item.set_node(self)
         self.limits.append(item)
+        return item
 
     def find_limit(self, name: str) -> Optional[Limit]:
+        """
+        Find Limit in this node.
+
+        Parameters
+        ----------
+        name
+            Limit's name
+
+        Returns
+        -------
+        Optional[Limit]
+        """
         for item in self.limits:
             if item.name == name:
                 return item
         return None
 
-    def find_limit_up_node_tree(self, name: str) -> Optional[Limit]:
+    def find_limit_up(self, name: str) -> Optional[Limit]:
+        """
+        Find Limit up along the node tree.
+
+        Parameters
+        ----------
+        name
+            Limit's name
+
+        Returns
+        -------
+        Optional[Limit]
+        """
         item = self.find_limit(name)
         if item is not None:
             return item
@@ -616,6 +671,14 @@ class Node(ABC):
         return None
 
     def check_in_limit_up(self) -> bool:
+        """
+        Check if all ``InLimit``s have enough tokens up along the tree.
+
+        Returns
+        -------
+        bool
+            If all ``InLimit``s have enough tokens, return True.
+        """
         if not self.in_limit_manager.in_limit():
             return False
 
@@ -628,6 +691,14 @@ class Node(ABC):
         return True
 
     def increment_in_limit(self, limit_set: Set[Limit]):
+        """
+        Occupy all InLimit up the node tree.
+
+        Parameters
+        ----------
+        limit_set
+            A set to save changed ``Limit``s, to make sure one Limit is incremented only once.
+        """
         node_path = self.node_path
         self.in_limit_manager.increment_in_limit(limit_set, node_path)
 
@@ -637,6 +708,14 @@ class Node(ABC):
             the_parent = the_parent.parent
 
     def decrement_in_limit(self, limit_set: Set[Limit]):
+        """
+        Release all InLimit up the node tree.
+
+        Parameters
+        ----------
+        limit_set
+            A set to save changed ``Limit``s, to make sure one Limit is decremented only once.
+        """
         node_path = self.node_path
         self.in_limit_manager.decrement_in_limit(limit_set, node_path)
 
@@ -659,7 +738,15 @@ class Node(ABC):
             event.reset()
 
     def suspend(self):
+        """
+        Suspend the node.
+
+        Suspended nodes does not run automatically, see ``Node.resolve_dependencies`` method.
+        """
         self.state.suspended = True
 
     def resume(self):
+        """
+        Resume the node.
+        """
         self.state.suspended = False
