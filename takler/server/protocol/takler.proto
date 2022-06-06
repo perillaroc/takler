@@ -54,7 +54,7 @@ message MeterCommand {
 // control command
 
 message RequeueCommand {
-  string node_path = 1;
+  repeated string node_path = 1;
 }
 
 message SuspendCommand {

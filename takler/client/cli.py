@@ -1,5 +1,5 @@
 import os
-from typing import Optional, List
+from typing import Optional, List, Union
 
 import typer
 
@@ -10,6 +10,9 @@ TAKLER_HOST = "TAKLER_HOST"
 TAKLER_PORT = "TAKLER_PORT"
 TAKLER_NAME = "TAKLER_NAME"
 
+HOST_HELP_STRING = f"takler service host, or use env var {TAKLER_HOST}"
+PORT_HELP_STRING = f"takler service port, or use env var {TAKLER_PORT}"
+
 
 app = typer.Typer()
 
@@ -19,14 +22,13 @@ app = typer.Typer()
 
 @app.command()
 def init(
-        task_id: str = typer.Option(...),
-        node_path: str = typer.Option(None, help="node path"),
-        host: str = typer.Option(None, help="takler service host"),
-        port: int = typer.Option(None, help="takler service port"),
+        task_id: str = typer.Option(..., help="task id (TAKLER_RID)."),
+        node_path: str = typer.Option(..., envvar=TAKLER_NAME, help="node path."),
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
 ):
     host = get_host(host)
     port = get_port(port)
-    node_path = get_node_path(node_path)
     client = TaklerServiceClient(host=host, port=port)
     client.start()
     client.run_command_init(node_path=node_path, task_id=task_id)
@@ -35,13 +37,12 @@ def init(
 
 @app.command()
 def complete(
-        node_path: str = typer.Option(None, help="node path"),
-        host: str = typer.Option(None, help="takler service host"),
-        port: int = typer.Option(None, help="takler service port"),
+        node_path: str = typer.Option(..., envvar=TAKLER_NAME, help="node path."),
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
 ):
     host = get_host(host)
     port = get_port(port)
-    node_path = get_node_path(node_path)
     client = TaklerServiceClient(host=host, port=port)
     client.start()
     client.run_command_complete(node_path=node_path)
@@ -50,14 +51,13 @@ def complete(
 
 @app.command()
 def abort(
-        node_path: str = typer.Option(None, help="node path"),
-        host: str = typer.Option(None, help="takler service host"),
-        port: str = typer.Option(None, help="takler service port"),
+        node_path: str = typer.Option(..., envvar=TAKLER_NAME, help="node path."),
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
         reason: str = typer.Option("", help="abort reason")
 ):
     host = get_host(host)
     port = get_port(port)
-    node_path = get_node_path(node_path)
     client = TaklerServiceClient(host=host, port=port)
     client.start()
     client.run_command_abort(node_path=node_path, reason=reason)
@@ -66,14 +66,13 @@ def abort(
 
 @app.command()
 def event(
-        node_path: str = typer.Option(None, help="node path"),
-        host: str = typer.Option(None, help="takler service host"),
-        port: str = typer.Option(None, help="takler service port"),
+        node_path: str = typer.Option(..., envvar=TAKLER_NAME, help="node path."),
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
         event_name: str = typer.Option(..., help="event name"),
 ):
     host = get_host(host)
     port = get_port(port)
-    node_path = get_node_path(node_path)
     client = TaklerServiceClient(host=host, port=port)
     client.start()
     client.run_command_event(node_path=node_path, event_name=event_name)
@@ -82,15 +81,14 @@ def event(
 
 @app.command()
 def meter(
-        node_path: str = typer.Option(None, help="node path"),
-        host: str = typer.Option(None, help="takler service host"),
-        port: str = typer.Option(None, help="takler service port"),
+        node_path: str = typer.Option(..., envvar=TAKLER_NAME, help="node path."),
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
         meter_name: str = typer.Option(..., help="meter name"),
         meter_value: str = typer.Option(..., help="meter value"),
 ):
     host = get_host(host)
     port = get_port(port)
-    node_path = get_node_path(node_path)
     client = TaklerServiceClient(host=host, port=port)
     client.start()
     client.run_command_meter(node_path=node_path, meter_name=meter_name, meter_value=meter_value)
@@ -99,15 +97,15 @@ def meter(
 
 # Control command --------------------------------------------------------
 
+
 @app.command()
 def requeue(
-        node_path: str = typer.Option(None, help="node path"),
-        host: str = typer.Option(None, help="takler service host"),
-        port: str = typer.Option(None, help="takler service port"),
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
+        node_path: List[str] = typer.Argument(..., help="node paths"),
 ):
     host = get_host(host)
     port = get_port(port)
-    node_path = get_node_path(node_path)
     client = TaklerServiceClient(host=host, port=port)
     client.start()
     client.run_command_requeue(node_path=node_path)
@@ -116,8 +114,8 @@ def requeue(
 
 @app.command()
 def suspend(
-        host: str = typer.Option(None, help="takler service host"),
-        port: str = typer.Option(None, help="takler service port"),
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
         node_path: List[str] = typer.Argument(..., help="node paths"),
 ):
     host = get_host(host)
@@ -130,8 +128,8 @@ def suspend(
 
 @app.command()
 def resume(
-        host: str = typer.Option(None, help="takler service host"),
-        port: str = typer.Option(None, help="takler service port"),
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
         node_path: List[str] = typer.Argument(..., help="node paths"),
 ):
     host = get_host(host)
@@ -144,8 +142,8 @@ def resume(
 
 @app.command()
 def run(
-        host: str = typer.Option(None, help="takler service host"),
-        port: str = typer.Option(None, help="takler service port"),
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
         node_path: List[str] = typer.Argument(..., help="node paths"),
         force: bool = typer.Option(False, help="force run"),
 ):
@@ -159,8 +157,8 @@ def run(
 
 @app.command()
 def force(
-        host: str = typer.Option(None, help="takler service host"),
-        port: str = typer.Option(None, help="takler service port"),
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
         recursive: bool = typer.Option(True, help="recursive"),
         state: str = typer.Argument(..., help="state"),
         variable_path: List[str] = typer.Argument(..., help="variable paths"),
@@ -178,8 +176,8 @@ def force(
 
 @app.command()
 def show(
-        host: str = typer.Option(None, help="takler service host"),
-        port: str = typer.Option(None, help="takler service port"),
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
 ):
     host = get_host(host)
     port = get_port(port)
@@ -211,7 +209,7 @@ def get_host(host: Optional[str] = None) -> Optional[str]:
     return None
 
 
-def get_port(port: Optional[str] = None) -> Optional[str]:
+def get_port(port: Optional[Union[str, int]] = None) -> Optional[str]:
     """
     Get takler server's port. If ``port`` is ``None``, check environment variable ``TAKLER_PORT``.
 
@@ -224,7 +222,7 @@ def get_port(port: Optional[str] = None) -> Optional[str]:
     Optional[str]
     """
     if port is not None:
-        return port
+        return str(port)
     if TAKLER_PORT in os.environ:
         return os.environ[TAKLER_PORT]
     return None

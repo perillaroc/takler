@@ -123,10 +123,11 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
 
     # Control command -------------------------------------------------------------
 
-    async def RunRequeueCommand(self, request, context):
-        node_path = request.node_path
-        logger.info(f"Requeue: {node_path}")
-        self.scheduler.run_command_requeue(node_path)
+    async def RunRequeueCommand(self, request: takler_pb2.RequeueCommand, context):
+        node_path_list = request.node_path
+        for node_path in node_path_list:
+            logger.info(f"Requeue: {node_path}")
+            self.scheduler.run_command_requeue(node_path)
 
         return takler_pb2.ServiceResponse(
             flag=0,

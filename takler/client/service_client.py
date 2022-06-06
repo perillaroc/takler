@@ -111,7 +111,7 @@ class TaklerServiceClient:
 
     # Control command ----------------------------------------------------
 
-    def run_command_requeue(self, node_path: str):
+    def run_command_requeue(self, node_path: List[str]):
         response = self.stub.RunRequeueCommand(
             takler_pb2.RequeueCommand(
                 node_path=node_path
