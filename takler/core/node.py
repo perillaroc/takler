@@ -118,6 +118,7 @@ class Node(ABC):
         return f"{self.__class__.__name__} {self.name}"
 
     # Children operation ------------------------------------------------
+    #   These methods are for inner usage, and should not be used by Users.
 
     def append_child(self, child: Union[str, Node]) -> Node:
         if isinstance(child, str):
@@ -190,7 +191,7 @@ class Node(ABC):
 
     def get_root(self) -> Node:
         """
-        get root node
+        get root node which is usually a ``Flow``
 
         Returns
         -------
@@ -202,6 +203,13 @@ class Node(ABC):
         return root
 
     def get_bunch(self) -> "Optional[Bunch]":
+        """
+        get ``Bunch`` node if node's root is in some bunch.
+
+        Returns
+        -------
+        Bunch or None
+        """
         if self.parent is not None:
             return self.parent.get_bunch()
         else:
@@ -471,7 +479,7 @@ class Node(ABC):
 
     def parameters(self) -> Dict[str, Parameter]:
         """
-        Return all parameters accessible to this Node.
+        Return all parameters accessible to this Node up the node tree.
         """
         params = self.parameters_only().copy()
 
@@ -494,7 +502,7 @@ class Node(ABC):
 
     def parameters_only(self) -> Dict[str, Parameter]:
         """
-        Return all parameters in this Node.
+        Return all parameters only in this Node.
         """
         user_params = self.user_parameters_only()
         generated_params = self.generated_parameters_only()
@@ -637,7 +645,7 @@ class Node(ABC):
 
         Returns
         -------
-        Optional[Limit]
+        Limit or None
         """
         for item in self.limits:
             if item.name == name:
@@ -655,7 +663,7 @@ class Node(ABC):
 
         Returns
         -------
-        Optional[Limit]
+        Limit or None
         """
         item = self.find_limit(name)
         if item is not None:
