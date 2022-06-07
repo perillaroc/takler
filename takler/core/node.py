@@ -11,6 +11,7 @@ from .event import Event
 from .meter import Meter
 from .limit import Limit, InLimit, InLimitManager
 from .expression import Expression
+from .repeat import Repeat, RepeatBase
 
 if TYPE_CHECKING:
     from .bunch import Bunch
@@ -104,6 +105,9 @@ class Node(ABC):
         # 限制
         self.limits: List[Limit] = list()
         self.in_limit_manager: InLimitManager = InLimitManager(self)
+
+        # 重复
+        self.repeat: Optional[Repeat] = None
 
     def __enter__(self):
         return self
@@ -352,10 +356,29 @@ class Node(ABC):
 
         Swim current status up. This method can only be called in handle_status_change and itself.
         """
-        node_state = self.computed_status(immediate=True)
+        node_status = self.computed_status(immediate=True)
 
-        if node_state != self.state:
-            self.state.node_status = node_state
+        if node_status == NodeStatus.complete:
+            if node_status != self.state.node_status:
+                self.set_node_status_only(node_status=node_status)
+            if self.repeat is not None:
+                if self.repeat.increment():
+                    self.requeue(reset_repeat=False)
+                    self.swim_status_change_only()
+                    return
+
+        if node_status != self.state.node_status:
+            self.set_node_status_only(node_status=node_status)
+
+        if self.parent is not None:
+            self.parent.swim_status_change()
+        return
+
+    def swim_status_change_only(self):
+        node_status = self.computed_status(immediate=True)
+
+        if node_status != self.state.node_status:
+            self.set_node_status_only(node_status=node_status)
 
         if self.parent is not None:
             self.parent.swim_status_change()
@@ -448,7 +471,11 @@ class Node(ABC):
         """
         Find generated ``parameter`` only in this node.
         """
-        return None
+        generated_params = self.generated_parameters_only()
+        if name in generated_params:
+            return generated_params[name]
+        else:
+            return None
 
     def find_parent_parameter(self, name: str) -> Optional[Parameter]:
         """
@@ -526,7 +553,10 @@ class Node(ABC):
         """
         Return generated parameters
         """
-        return dict()
+        p = dict()
+        if self.repeat is not None:
+            p.update(self.repeat.generated_parameters())
+        return p
 
     # Event ----------------------------------------------------------
 
@@ -732,9 +762,14 @@ class Node(ABC):
             the_parent.in_limit_manager.decrement_in_limit(limit_set, node_path)
             the_parent = the_parent.parent
 
+    # Repeat ---------------------------------------------------------
+
+    def add_repeat(self, r: RepeatBase):
+        self.repeat = Repeat(r)
+
     # Node Operations ------------------------------------------------
 
-    def requeue(self):
+    def requeue(self, reset_repeat: bool = True):
         """
         Requeue the node itself, don't affect children nodes.
 
@@ -744,6 +779,10 @@ class Node(ABC):
 
         for event in self.events:
             event.reset()
+
+        # TODO: add requeue agrs.
+        if reset_repeat and self.repeat is not None:
+            self.repeat.reset()
 
     def suspend(self):
         """

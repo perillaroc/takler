@@ -34,12 +34,16 @@ class Task(Node):
         """
         return self.state.node_status
 
-    def swim_status_change(self):
-        """
-        Task node use its own status, and needn't compute status again.
-        So swim status change from its parent.
-        """
-        return self.parent.swim_status_change()
+    # def swim_status_change(self):
+    #     """
+    #     Task node use its own status, and needn't compute status again.
+    #     So swim status change from its parent.
+    #     """
+    #     return self.parent.swim_status_change()
+
+    def swim_status_change_only(self):
+        if self.parent:
+            self.parent.swim_status_change_only()
 
     def handle_status_change(self):
         self.update_limits()
@@ -96,13 +100,20 @@ class Task(Node):
     # Parameter ---------------------------------------------------
 
     def find_generated_parameter(self, name: str) -> Optional[Parameter]:
-        return self.generated_parameters.find_parameter(name)
+        param = self.generated_parameters.find_parameter(name)
+        if param is not None:
+            return param
+
+        return super(Task, self).find_generated_parameter(name)
 
     def update_generated_parameters(self):
         self.generated_parameters.update_parameters()
+        super(Task, self).update_generated_parameters()
 
     def generated_parameters_only(self) -> Dict[str, Parameter]:
-        return self.generated_parameters.generated_parameters()
+        params = super(Task, self).generated_parameters_only()
+        params.update(self.generated_parameters.generated_parameters())
+        return params
 
     # Node Operation ----------------------------------------------
     #   Node operation is used to control the flow.
@@ -119,9 +130,9 @@ class Task(Node):
         logger.info(f"run: {self.node_path}")
         self.handle_status_change()
 
-    def requeue(self):
+    def requeue(self, reset_repeat: bool = True):
         self.aborted_reason = None
-        super(Task, self).requeue()
+        super(Task, self).requeue(reset_repeat=reset_repeat)
 
     # Status update operation -------------------------------------
     #   Status update operation is used in task's running period,

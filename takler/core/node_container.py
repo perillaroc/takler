@@ -107,7 +107,7 @@ class NodeContainer(Node):
 
     # Node operation -----------------------------------------
 
-    def requeue(self):
+    def requeue(self, reset_repeat: bool = True):
         """
         Requeue the node and all its child nodes.
 
@@ -120,4 +120,4 @@ class NodeContainer(Node):
         super(NodeContainer, self).requeue()
 
         for child in self.children:
-            child.requeue()
+            child.requeue(reset_repeat=reset_repeat)
