@@ -1,61 +1,120 @@
 from abc import ABC, abstractmethod
-from typing import Union, Optional, Dict
+from typing import Union, Optional, Dict, TypeVar
 from datetime import datetime, date, timedelta
 
 from .parameter import Parameter
 
 
+T = TypeVar("T")
+
+
 class RepeatBase(ABC):
     def __init__(self, name: str):
-        self.name = name
+        self.name: str = name
 
     @property
     @abstractmethod
-    def start(self):
-        ...
+    def start(self) -> T:
+        """
+        The first (start) value.
+        """
 
     @property
     @abstractmethod
-    def end(self):
-        ...
+    def end(self) -> T:
+        """
+        The last (end) value.
+        """
 
     @property
     @abstractmethod
     def step(self):
-        ...
+        """
+        step for each increment, rely on Instance.
+        """
 
     @property
     @abstractmethod
-    def value(self):
-        ...
+    def value(self) -> T:
+        """
+        Return current value for Repeat.
+        """
 
     @value.setter
     @abstractmethod
     def value(self, value):
-        ...
+        """
+        Set value without raise exception.
+        """
 
     @abstractmethod
     def valid(self) -> bool:
+        """
+        Check whether current value is valid, such as .
+
+        Returns
+        -------
+        bool
+        """
         return True
 
     @abstractmethod
     def increment(self) -> bool:
+        """
+        Increment Repeat's current value to next value.
+        Return True if there has a next value, or False if current value is the last one.
+
+        Returns
+        -------
+        bool
+            where the increment is successful.
+        """
         return True
 
     @abstractmethod
     def change(self, value):
-        ...
+        """
+        Set value, and will raise exception if value is not valid.
+
+        Raises
+        ------
+        ValueError
+            If ``value`` is not valid.
+        """
 
     @abstractmethod
     def reset(self):
-        ...
+        """
+        Set value to the first (start) value
+        """
 
     @abstractmethod
     def generated_parameters(self) -> Dict[str, Parameter]:
-        ...
+        """
+        Return generated parameters to use in Node.
+
+        Returns
+        -------
+        Dict[str, Parameter]
+            Generated parameters.
+        """
 
 
 class RepeatDate(RepeatBase):
+    """
+    Repeat dates, from start_date to end_date step by step_day.
+
+    Attributes
+    ----------
+    start_date
+        Start date
+    end_date
+        End date
+    step_day
+        Step of days
+    _value
+        Current date
+    """
     DATE_FORMAT = "%Y%m%d"
 
     def __init__(self, name: str, start_date: Union[str, int], end_date: Union[str, int], step: int = 1):
@@ -127,41 +186,89 @@ class RepeatDate(RepeatBase):
 
 
 class Repeat:
+    """
+    An attribute for Node to run tasks repeatedly under this Node.
+
+    Attributes
+    ----------
+    r
+        inner ``RepeatBase`` object. If ``None``, ``empty`` returns ``False``.
+    """
     def __init__(self, r: Optional[RepeatBase] = None):
         self.r = r
 
     def empty(self) -> bool:
+        """
+        Check if Repeat is empty.
+
+        Returns
+        -------
+        bool
+        """
         return self.r is not None
 
     def clear(self):
+        """
+        Clear Repeat and make it empty.
+        """
         self.r = None
 
-    def start(self):
+    def start(self) -> T:
+        """
+        Return the first (start) value.
+        """
         return self.r.start
 
-    def end(self):
+    def end(self) -> T:
+        """
+        Return the last (end) value.
+        """
         return self.r.end
 
     def step(self):
+        """
+        Return step.
+        """
         return self.r.step
 
-    def value(self):
+    def value(self) -> T:
+        """
+        Return current value.
+        """
         return self.r.value
 
     def valid(self) -> bool:
+        """
+        Check if current value if valid.
+        """
         return self.r.valid()
 
     def reset(self):
+        """
+        Reset Repeat to the first value.
+        """
         return self.r.reset()
 
-    def increment(self):
+    def increment(self) -> bool:
+        """
+        Increment Repeat to next value, return True if successful.
+        """
         return self.r.increment()
 
     def change(self, value):
+        """
+        Change Repeat current value and will raise exception if value is not valid.
+        """
         self.r.change(value)
 
     def set_value(self, value):
+        """
+        Set Repeat current value without raising exception.
+        """
         self.r.value = value
 
     def generated_parameters(self) -> Dict[str, Parameter]:
+        """
+        Return generated parameters.
+        """
         return self.r.generated_parameters()
