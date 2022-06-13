@@ -1,13 +1,13 @@
 from typing import Optional, TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from .node import Node
-
 from .expression_parser import parse_trigger
 from .expression_ast import AstRoot
 
 
-class Expression(object):
+if TYPE_CHECKING:
+    from .node import Node
+
+
+class Expression:
     def __init__(self, expression_str: str):
         self.free: bool = False
         self.ast: Optional[AstRoot] = None

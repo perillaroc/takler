@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, TypeVar
 
 from .state import NodeStatus
 from .event import Event
@@ -9,12 +9,15 @@ if TYPE_CHECKING:
     from .node import Node
 
 
+T = TypeVar("T")
+
+
 @dataclass
 class AstBase:
-    def set_parent_node(self, node):
-        pass
+    def set_parent_node(self, node: "Node"):
+        ...
 
-    def value(self):
+    def value(self) -> T:
         raise NotImplementedError("Method not implemented")
 
     def evaluate(self) -> bool:
@@ -26,38 +29,38 @@ class AstRoot(AstBase):
     left: Optional[AstBase] = None
     right: Optional[AstBase] = None
 
-    def set_parent_node(self, node):
+    def set_parent_node(self, node: "Node"):
         self.left.set_parent_node(node)
         self.right.set_parent_node(node)
 
 
 @dataclass
 class AstOpEq(AstRoot):
-    def evaluate(self):
+    def evaluate(self) -> bool:
         return self.left.value() == self.right.value()
 
 
 @dataclass
 class AstOpGt(AstRoot):
-    def evaluate(self):
+    def evaluate(self) -> bool:
         return self.left.value() > self.right.value()
 
 
 @dataclass
 class AstOpGe(AstRoot):
-    def evaluate(self):
+    def evaluate(self) -> bool:
         return self.left.value() >= self.right.value()
 
 
 @dataclass
 class AstOpAnd(AstRoot):
-    def evaluate(self):
+    def evaluate(self) -> bool:
         return self.left.evaluate() and self.right.evaluate()
 
 
 @dataclass
 class AstOpOr(AstRoot):
-    def evaluate(self):
+    def evaluate(self) -> bool:
         return self.left.evaluate() or self.right.evaluate()
 
 
@@ -106,7 +109,7 @@ class AstVariablePath(AstBase):
         if node_variable is None:
             raise ValueError(f"variable path '{self.node.node_path}:{self.variable_name}' is not found")
 
-    def value(self):
+    def value(self) -> Optional[int]:
         v = self.get_variable()
         if v is None:
             return None
@@ -133,7 +136,7 @@ class AstVariablePath(AstBase):
 class AstInteger(AstBase):
     number: int
 
-    def value(self):
+    def value(self) -> int:
         return self.number
 
 
@@ -141,5 +144,5 @@ class AstInteger(AstBase):
 class AstNodeStatus(AstBase):
     node_status: NodeStatus
 
-    def value(self):
+    def value(self) -> NodeStatus:
         return self.node_status
