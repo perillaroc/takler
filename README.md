@@ -1,6 +1,7 @@
 # takler
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0b6a58c078cb4af8a8745d034d456eaf)](https://www.codacy.com/gh/perillaroc/takler/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=perillaroc/takler&amp;utm_campaign=Badge_Grade)
+![test](https://github.com/perillaroc/takler/actions/workflows/test.yml/badge.svg)
 
 > :construction: takler is under construction.
 
