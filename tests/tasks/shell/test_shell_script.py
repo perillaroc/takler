@@ -1,10 +1,14 @@
 from pathlib import Path
+import sys
 
 import pytest
 
 from takler.core import Bunch, Flow
 from takler.tasks import ShellScriptTask
 from takler.tasks.shell.shell_render import ShellRender
+
+
+pytestmark = pytest.mark.skipif(sys.platform == "win32", reason="tests for linux only")
 
 
 @pytest.fixture
