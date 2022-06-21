@@ -67,7 +67,9 @@ class ShellScriptTask(Task):
         """
         run shell command
         """
-        self.submit()
+        if not self.submit():
+            self.abort()
+            return
         super(ShellScriptTask, self).run()
 
     # Task specific ------------------------------------------------------------

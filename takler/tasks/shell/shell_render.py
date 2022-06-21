@@ -40,6 +40,7 @@ class ShellRender(object):
         file_loader = FileSystemLoader(loader_paths)
         env = Environment(loader=file_loader)
 
+        # TODO: may raise exception
         template = env.get_template(script_path.name)
         job_script_content = template.render(**template_params)
 
