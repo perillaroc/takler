@@ -413,7 +413,9 @@ class Node(ABC):
         if self.trigger_expression is None:
             return True
 
-        self.trigger_expression.create_ast(self)
+        if self.trigger_expression.ast is None:
+            self.trigger_expression.create_ast(self)
+
         return self.trigger_expression.evaluate()
 
     def resolve_dependencies(self) -> bool:
