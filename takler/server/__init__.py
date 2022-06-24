@@ -62,7 +62,7 @@ class TaklerServer:
 
 async def run_server_until_complete(server: TaklerServer, check_interval: int = 10):
     """
-    Run takler server until all flows in bunch are complete.
+    Start and run takler server until all flows in bunch are complete.
 
     Parameters
     ----------
@@ -70,18 +70,74 @@ async def run_server_until_complete(server: TaklerServer, check_interval: int = 
     check_interval
         check interval seconds
 
-    Returns
-    -------
+    Examples
+    --------
+    Run a simple flow.
 
+    >>> import asyncio
+    >>> from takler.core import Flow
+    >>> from takler.server import TaklerServer, run_server_until_complete
+    >>> server = TaklerServer(host="login_a06", port=33083)
+    >>> flow = Flow("flow1")
+    >>> task1 = flow.add_task("task1")
+    >>> server.bunch.add_flow(flow)
+    >>> flow.requeue()
+    >>> asyncio.run(run_server_until_complete(server))
+
+    """
+    await start_server(server)
+
+    await wait_server_until_complete(server, check_interval)
+
+    await stop_server(server)
+
+
+async def start_server(server: TaklerServer):
+    """
+    Start server, and run the server in current running loop.
+
+    Parameters
+    ----------
+    server
+        takler server
+    """
+    await server.start()
+    loop = asyncio.get_running_loop()
+    loop.create_task(server.run())
+
+
+async def wait_server_until_complete(server: TaklerServer, check_interval: int = 10):
+    """
+    Loop check until all flows in bunch are complete.
+
+    Parameters
+    ----------
+    server
+        takler server with some flows.
+    check_interval
+        sleep seconds between checks.
     """
     while True:
         status = server.bunch.get_node_status()
         if status == NodeStatus.complete:
-            logger.info("all flows are complete, about to exit...")
-            await asyncio.sleep(10)
-            logger.info("stop server...")
-            await server.stop()
-            logger.info("stop server...done")
             break
 
         await asyncio.sleep(check_interval)
+
+
+async def stop_server(server: TaklerServer, seconds_before_stop: int = 10):
+    """
+    Stop takler server.
+
+    Parameters
+    ----------
+    server
+        takler server.
+    seconds_before_stop
+        sleep seconds before stop the server.
+    """
+    logger.info(f"all flows are complete, about to exit, sleep for {seconds_before_stop} seconds...")
+    await asyncio.sleep(seconds_before_stop)
+    logger.info("stop server...")
+    await server.stop()
+    logger.info("stop server...done")
