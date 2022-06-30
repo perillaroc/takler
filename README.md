@@ -7,6 +7,10 @@
 
 A job scheduler tool for NWP.
 
+## Documentation
+
+中文文档：[https://takler.readthedocs.io/](https://takler.readthedocs.io/)
+
 ## History
 
 Takler was a work project started from 2014, when I started the second work year at NWPC.
