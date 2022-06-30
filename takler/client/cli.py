@@ -9,6 +9,7 @@ from takler.client.service_client import TaklerServiceClient
 TAKLER_HOST = "TAKLER_HOST"
 TAKLER_PORT = "TAKLER_PORT"
 TAKLER_NAME = "TAKLER_NAME"
+NO_TAKLER = "NO_TAKLER"
 
 HOST_HELP_STRING = f"takler service host, or use env var {TAKLER_HOST}"
 PORT_HELP_STRING = f"takler service port, or use env var {TAKLER_PORT}"
@@ -27,6 +28,9 @@ def init(
         host: str = typer.Option(None, help=HOST_HELP_STRING),
         port: str = typer.Option(None, help=PORT_HELP_STRING),
 ):
+    if NO_TAKLER in os.environ:
+        typer.echo("ignore because NO_TAKLER is set.")
+        return
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
@@ -41,6 +45,9 @@ def complete(
         host: str = typer.Option(None, help=HOST_HELP_STRING),
         port: str = typer.Option(None, help=PORT_HELP_STRING),
 ):
+    if NO_TAKLER in os.environ:
+        typer.echo("ignore because NO_TAKLER is set.")
+        return
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
@@ -56,6 +63,9 @@ def abort(
         port: str = typer.Option(None, help=PORT_HELP_STRING),
         reason: str = typer.Option("", help="abort reason")
 ):
+    if NO_TAKLER in os.environ:
+        typer.echo("ignore because NO_TAKLER is set.")
+        return
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
@@ -71,6 +81,9 @@ def event(
         port: str = typer.Option(None, help=PORT_HELP_STRING),
         event_name: str = typer.Option(..., help="event name"),
 ):
+    if NO_TAKLER in os.environ:
+        typer.echo("ignore because NO_TAKLER is set.")
+        return
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
@@ -87,6 +100,9 @@ def meter(
         meter_name: str = typer.Option(..., help="meter name"),
         meter_value: str = typer.Option(..., help="meter value"),
 ):
+    if NO_TAKLER in os.environ:
+        typer.echo("ignore because NO_TAKLER is set.")
+        return
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
