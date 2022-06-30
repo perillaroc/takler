@@ -3,9 +3,11 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from takler.core import Task, Parameter
+from takler.core import Task, Parameter, Flow
+from takler.core.node import Node
 from takler.core.parameter import TAKLER_HOME
 from takler.logging import get_logger
+from takler.visitor import pre_order_travel, NodeVisitor
 
 
 from .constant import (
@@ -78,6 +80,23 @@ class ShellScriptTask(Task):
         """
         Generate job script and run job command.
         """
+        run_command = self.create_job_script()
+
+        # run command
+        shell_runner = ShellRunner()
+        shell_runner.spwan(command=run_command)
+        return True
+
+    def create_job_script(self) -> str:
+        """
+        Create job script and return run command.
+
+        Returns
+        -------
+        str
+            run command string.
+        """
+
         self.update_generated_parameters()
 
         # get script path from TAKLER_SCRIPT
@@ -96,10 +115,10 @@ class ShellScriptTask(Task):
         # get run command
         run_command = shell_script.render_job_command()
         logger.info(f"Render run command success: {run_command}")
+        return run_command
 
-        # run command
-        shell_runner = ShellRunner()
-        shell_runner.spwan(command=run_command)
+    def check_job_creation(self) -> bool:
+        run_command = self.create_job_script()
         return True
 
 
@@ -138,3 +157,37 @@ class ShellScriptTaskGeneratedParameters(BaseModel):
             TAKLER_JOB: self.takler_job,
             TAKLER_JOBOUT: self.takler_jobout,
         }
+
+
+class CheckJobCreationVisitor(NodeVisitor):
+    """
+    A node visitor to check all ``ShellScriptTask``s' job creation.
+    """
+    def __init__(self):
+        super(CheckJobCreationVisitor, self).__init__()
+        self.total = 0
+        self.success = 0
+        self.failed = 0
+
+    def visit(self, node: Node):
+        if not isinstance(node, ShellScriptTask):
+            return
+        self.total += 1
+        if node.check_job_creation():
+            self.success += 1
+        else:
+            self.failed += 1
+
+
+def check_job_creation(flow: Flow):
+    """
+    Check job creation for ``ShellScriptTask``s
+
+    Parameters
+    ----------
+    flow
+        a flow
+    """
+    visitor = CheckJobCreationVisitor()
+    pre_order_travel(flow, visitor)
+    logger.info(f"check job creation results: {visitor.total} total, {visitor.success} success, {visitor.failed} failed.")

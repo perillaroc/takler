@@ -1,1 +1,1 @@
-from .shell_script_task import ShellScriptTask, ShellScriptTaskGeneratedParameters
+from .shell_script_task import ShellScriptTask, ShellScriptTaskGeneratedParameters, check_job_creation
