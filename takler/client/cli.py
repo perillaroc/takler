@@ -4,6 +4,7 @@ from typing import Optional, List, Union
 import typer
 
 from takler.client.service_client import TaklerServiceClient
+from takler.constant import DEFAULT_HOST, DEFAULT_PORT
 
 
 TAKLER_HOST = "TAKLER_HOST"
@@ -222,7 +223,7 @@ def get_host(host: Optional[str] = None) -> Optional[str]:
         return host
     if TAKLER_HOST in os.environ:
         return os.environ[TAKLER_HOST]
-    return None
+    return DEFAULT_HOST
 
 
 def get_port(port: Optional[Union[str, int]] = None) -> Optional[str]:
@@ -241,7 +242,7 @@ def get_port(port: Optional[Union[str, int]] = None) -> Optional[str]:
         return str(port)
     if TAKLER_PORT in os.environ:
         return os.environ[TAKLER_PORT]
-    return None
+    return DEFAULT_PORT
 
 
 def get_node_path(node_path: Optional[str] = None) -> Optional[str]:
