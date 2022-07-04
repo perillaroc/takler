@@ -91,6 +91,12 @@ message ShowResponse{
   string output = 1;
 }
 
+message PingRequest {
+}
+
+message PingResponse {
+}
+
 service TaklerServer {
 
   // child command
@@ -114,4 +120,6 @@ service TaklerServer {
   // query command
 
   rpc RunShowRequest(ShowRequest) returns (ShowResponse){}
+
+  rpc RunPingRequest(PingRequest) returns (PingResponse){}
 }

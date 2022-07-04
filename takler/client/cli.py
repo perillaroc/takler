@@ -1,5 +1,6 @@
 import os
 from typing import Optional, List, Union
+from datetime import datetime
 
 import typer
 
@@ -203,6 +204,22 @@ def show(
     client.run_request_show()
     client.shutdown()
 
+
+@app.command()
+def ping(
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
+):
+    start_time = datetime.now()
+    host = get_host(host)
+    port = get_port(port)
+    client = TaklerServiceClient(host=host, port=port)
+    client.start()
+    client.run_request_ping()
+    end_time = datetime.now()
+    print(f"ping server ({host}:{port}) successed in {end_time - start_time}.")
+
+    client.shutdown()
 
 # ----------------------------
 

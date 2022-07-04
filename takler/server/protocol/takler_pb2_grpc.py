@@ -69,6 +69,11 @@ class TaklerServerStub(object):
                 request_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.ShowRequest.SerializeToString,
                 response_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.ShowResponse.FromString,
                 )
+        self.RunPingRequest = channel.unary_unary(
+                '/takler_protocol.TaklerServer/RunPingRequest',
+                request_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.PingRequest.SerializeToString,
+                response_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.PingResponse.FromString,
+                )
 
 
 class TaklerServerServicer(object):
@@ -145,6 +150,12 @@ class TaklerServerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def RunPingRequest(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_TaklerServerServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -202,6 +213,11 @@ def add_TaklerServerServicer_to_server(servicer, server):
                     servicer.RunShowRequest,
                     request_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.ShowRequest.FromString,
                     response_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.ShowResponse.SerializeToString,
+            ),
+            'RunPingRequest': grpc.unary_unary_rpc_method_handler(
+                    servicer.RunPingRequest,
+                    request_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.PingRequest.FromString,
+                    response_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.PingResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -397,5 +413,22 @@ class TaklerServer(object):
         return grpc.experimental.unary_unary(request, target, '/takler_protocol.TaklerServer/RunShowRequest',
             takler_dot_server_dot_protocol_dot_takler__pb2.ShowRequest.SerializeToString,
             takler_dot_server_dot_protocol_dot_takler__pb2.ShowResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def RunPingRequest(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/takler_protocol.TaklerServer/RunPingRequest',
+            takler_dot_server_dot_protocol_dot_takler__pb2.PingRequest.SerializeToString,
+            takler_dot_server_dot_protocol_dot_takler__pb2.PingResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

@@ -195,3 +195,6 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
         return takler_pb2.ShowResponse(
             output=output
         )
+
+    async def RunPingRequest(self, request, context):
+        return takler_pb2.PingResponse()

@@ -161,3 +161,8 @@ class TaklerServiceClient:
             takler_pb2.ShowRequest()
         )
         print(response.output)
+
+    def run_request_ping(self):
+        response = self.stub.RunPingRequest(
+            takler_pb2.PingResponse()
+        )
