@@ -1,6 +1,5 @@
 import os
 from typing import Optional, List, Union
-from datetime import datetime
 
 import typer
 
@@ -36,9 +35,7 @@ def init(
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
-    client.start()
-    client.run_command_init(node_path=node_path, task_id=task_id)
-    client.shutdown()
+    client.init(node_path=node_path, task_id=task_id)
 
 
 @app.command()
@@ -53,9 +50,7 @@ def complete(
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
-    client.start()
-    client.run_command_complete(node_path=node_path)
-    client.shutdown()
+    client.complete(node_path=node_path)
 
 
 @app.command()
@@ -71,9 +66,7 @@ def abort(
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
-    client.start()
-    client.run_command_abort(node_path=node_path, reason=reason)
-    client.shutdown()
+    client.abort(node_path=node_path, reason=reason)
 
 
 @app.command()
@@ -89,9 +82,7 @@ def event(
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
-    client.start()
-    client.run_command_event(node_path=node_path, event_name=event_name)
-    client.shutdown()
+    client.event(node_path=node_path, event_name=event_name)
 
 
 @app.command()
@@ -108,9 +99,7 @@ def meter(
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
-    client.start()
-    client.run_command_meter(node_path=node_path, meter_name=meter_name, meter_value=meter_value)
-    client.shutdown()
+    client.meter(node_path=node_path, meter_name=meter_name, meter_value=meter_value)
 
 
 # Control command --------------------------------------------------------
@@ -125,9 +114,7 @@ def requeue(
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
-    client.start()
-    client.run_command_requeue(node_path=node_path)
-    client.shutdown()
+    client.requeue(node_path=node_path)
 
 
 @app.command()
@@ -139,9 +126,7 @@ def suspend(
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
-    client.start()
-    client.run_command_suspend(node_path=node_path)
-    client.shutdown()
+    client.suspend(node_path=node_path)
 
 
 @app.command()
@@ -153,9 +138,7 @@ def resume(
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
-    client.start()
-    client.run_command_resume(node_path=node_path)
-    client.shutdown()
+    client.resume(node_path=node_path)
 
 
 @app.command()
@@ -168,9 +151,7 @@ def run(
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
-    client.start()
-    client.run_command_run(node_path=node_path, force=force)
-    client.shutdown()
+    client.run(node_path=node_path, force=force)
 
 
 @app.command()
@@ -184,9 +165,7 @@ def force(
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
-    client.start()
-    client.run_command_force(variable_paths=variable_path, state=state, recursive=recursive)
-    client.shutdown()
+    client.force(variable_paths=variable_path, state=state, recursive=recursive)
 
 
 # Show command --------------------------------------------------------
@@ -200,9 +179,7 @@ def show(
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
-    client.start()
-    client.run_request_show()
-    client.shutdown()
+    client.show()
 
 
 @app.command()
@@ -210,16 +187,10 @@ def ping(
         host: str = typer.Option(None, help=HOST_HELP_STRING),
         port: str = typer.Option(None, help=PORT_HELP_STRING),
 ):
-    start_time = datetime.now()
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
-    client.start()
-    client.run_request_ping()
-    end_time = datetime.now()
-    print(f"ping server ({host}:{port}) successed in {end_time - start_time}.")
-
-    client.shutdown()
+    client.ping()
 
 # ----------------------------
 

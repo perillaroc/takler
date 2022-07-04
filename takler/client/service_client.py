@@ -1,4 +1,5 @@
 from typing import Optional, Union, List
+from datetime import datetime
 
 import grpc
 
@@ -54,6 +55,11 @@ class TaklerServiceClient:
 
     # Child command -------------------------------------------------
 
+    def init(self, node_path: str, task_id: str):
+        self.start()
+        self.run_command_init(node_path=node_path, task_id=task_id)
+        self.shutdown()
+
     def run_command_init(self, node_path: str, task_id: str):
         response = self.stub.RunInitCommand(
             takler_pb2.InitCommand(
@@ -65,6 +71,11 @@ class TaklerServiceClient:
         )
         print(f"received: {response.flag}")
 
+    def complete(self, node_path: str):
+        self.start()
+        self.run_command_complete(node_path=node_path)
+        self.shutdown()
+
     def run_command_complete(self, node_path: str):
         response = self.stub.RunCompleteCommand(
             takler_pb2.CompleteCommand(
@@ -74,6 +85,11 @@ class TaklerServiceClient:
             )
         )
         print(f"received: {response.flag}")
+
+    def abort(self, node_path: str, reason: str):
+        self.start()
+        self.run_command_abort(node_path=node_path, reason=reason)
+        self.shutdown()
 
     def run_command_abort(self, node_path: str, reason: str):
         response = self.stub.RunAbortCommand(
@@ -86,6 +102,11 @@ class TaklerServiceClient:
         )
         print(f"received: {response.flag}")
 
+    def event(self, node_path: str, event_name: str):
+        self.start()
+        self.run_command_event(node_path=node_path, event_name=event_name)
+        self.shutdown()
+
     def run_command_event(self, node_path: str, event_name: str):
         response = self.stub.RunEventCommand(
             takler_pb2.EventCommand(
@@ -96,6 +117,11 @@ class TaklerServiceClient:
             )
         )
         print(f"received: {response.flag}")
+
+    def meter(self, node_path: str, meter_name: str, meter_value: str):
+        self.start()
+        self.run_command_meter(node_path=node_path, meter_name=meter_name, meter_value=meter_value)
+        self.shutdown()
 
     def run_command_meter(self, node_path: str, meter_name: str, meter_value: str):
         response = self.stub.RunMeterCommand(
@@ -111,6 +137,11 @@ class TaklerServiceClient:
 
     # Control command ----------------------------------------------------
 
+    def requeue(self, node_path: List[str]):
+        self.start()
+        self.run_command_requeue(node_path=node_path)
+        self.shutdown()
+
     def run_command_requeue(self, node_path: List[str]):
         response = self.stub.RunRequeueCommand(
             takler_pb2.RequeueCommand(
@@ -118,6 +149,11 @@ class TaklerServiceClient:
             )
         )
         print(f"received: {response.flag}")
+
+    def suspend(self, node_path: List[str]):
+        self.start()
+        self.run_command_suspend(node_path=node_path)
+        self.shutdown()
 
     def run_command_suspend(self, node_path: List[str]):
         response = self.stub.RunSuspendCommand(
@@ -127,6 +163,11 @@ class TaklerServiceClient:
         )
         print(f"received: {response.flag}")
 
+    def resume(self, node_path: List[str]):
+        self.start()
+        self.run_command_resume(node_path=node_path)
+        self.shutdown()
+
     def run_command_resume(self, node_path: List[str]):
         response = self.stub.RunResumeCommand(
             takler_pb2.SuspendCommand(
@@ -134,6 +175,11 @@ class TaklerServiceClient:
             )
         )
         print(f"received: {response.flag}")
+
+    def run(self, node_path: List[str], force: bool):
+        self.start()
+        self.run_command_run(node_path=node_path, force=force)
+        self.shutdown()
 
     def run_command_run(self, node_path: List[str], force: bool):
         response = self.stub.RunRunCommand(
@@ -143,6 +189,11 @@ class TaklerServiceClient:
             )
         )
         print(f"received: {response.flag}")
+
+    def force(self, variable_paths: List[str], state: str, recursive: bool):
+        self.start()
+        self.run_command_force(variable_paths=variable_paths, state=state, recursive=recursive)
+        self.shutdown()
 
     def run_command_force(self, variable_paths: List[str], state: str, recursive: bool):
         response = self.stub.RunForceCommand(
@@ -156,11 +207,24 @@ class TaklerServiceClient:
 
     # Query command ----------------------------------------------------
 
+    def show(self):
+        self.start()
+        self.run_request_show()
+        self.shutdown()
+
     def run_request_show(self):
         response = self.stub.RunShowRequest(
             takler_pb2.ShowRequest()
         )
         print(response.output)
+
+    def ping(self):
+        start_time = datetime.now()
+        self.start()
+        self.run_request_ping()
+        end_time = datetime.now()
+        print(f"ping server ({self.host}:{self.port}) successed in {end_time - start_time}.")
+        self.shutdown()
 
     def run_request_ping(self):
         response = self.stub.RunPingRequest(
