@@ -49,11 +49,19 @@ takler_client 使用如下方法确定 ``host`` 和 ``port`` 值：
 * 默认主机和端口号是 ``localhost:33083``
 * 默认值可以被环境变量 ``TAKLER_HOST`` 和 ``TAKLER_PORT`` 覆盖
 * 还可以使用 ``--host`` 和 ``--port`` 选项进一步覆盖。
-  例如在命令行 ping  Takler 服务：
 
-  .. code-block:: bash
+使用命令行 ping  Takler 服务：
 
-    takler_client ping --host=<host> --port=<port>
+.. code-block:: bash
+
+  takler_client ping --host=login_a06 --port=33083
+
+输出信息类似：
+
+.. code-block::
+
+  login_a06:33083 ping
+  ping server (login_a06:33083) succeeded in 3.292513ms
 
 
 客户端 Python 接口
@@ -67,8 +75,6 @@ Python 接口的 ``TaklerServiceClient`` 类提供默认的主机地址和端口
 
 .. code-block:: py
     :linenos:
-
-    import os
 
     from takler.client import TaklerServiceClient
 
@@ -86,11 +92,30 @@ Python 接口的 ``TaklerServiceClient`` 类提供默认的主机地址和端口
 
 逐行解释代码：
 
-- 3：导入 Takler 客户端类 ``TaklerServiceClient``
-- 7：创建 Takler 客户端对象 ``TaklerServiceClient``，使用默认的主机和端口号 (``localhost::33083``)
-- 8：执行 ``ping`` 操作
-- 10：设置主机和端口号 (本教程为 ``login_a06:33083``，根据实际情况修改)
-- 11：再次执行 ``ping`` 操作
+- 1：导入 Takler 客户端类 ``TaklerServiceClient``
+- 5：创建 Takler 客户端对象 ``TaklerServiceClient``，使用默认的主机和端口号 (``localhost::33083``)
+- 6：执行 ``ping`` 操作
+- 8：设置主机和端口号 (本教程为 ``login_a06:33083``，根据实际情况修改)
+
+  .. warning::
+
+      Takler 使用 gRPC Python 接口实现 RPC 功能。
+      如果运行出错，提示如下信息：
+
+      .. code-block::
+
+          DNS resolution failed for login_a06:33083
+
+      表示 gRPC 未识别 ``login_a06`` 域名。
+      需要在运行前设置环境变量 ``GRPC_DNS_RESOLVER`` 为 ``native``，使用本地 DNS 解析服务。
+
+      .. code-block:: bash
+
+          export GRPC_DNS_RESOLVER=native
+
+      使用 GOLANG 实现的 *takler_client* 无需设置环境变量。
+
+- 9：再次执行 ``ping`` 操作
 
 运行 **client.py**
 
@@ -98,12 +123,14 @@ Python 接口的 ``TaklerServiceClient`` 类提供默认的主机地址和端口
 
     python client.py
 
+
+
 输入结果类似：
 
 .. code-block::
 
-    ping server (localhost:33083) successed in 0:00:00.008180.
-    ping server (login_a06:33083) successed in 0:00:00.004481.
+    ping server (localhost:33083) succeeded in 0:00:00.008180.
+    ping server (login_a06:33083) succeeded in 0:00:00.004481.
 
 
 练习
