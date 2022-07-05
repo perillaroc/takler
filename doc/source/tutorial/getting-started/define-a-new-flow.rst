@@ -56,9 +56,9 @@
 - 15：定义 Shell 脚本任务 ``task1``
 - 16：为 ``task1`` 定义变量 ``TAKLER_SCRIPT``，该变量定义 Shell 脚本任务对应的脚本目录，本例中为
 
-.. code-block::
+  .. code-block::
 
-    /g11/wangdp/project/course/takler/tutorial/test/task1.takler
+     /g11/wangdp/project/course/takler/tutorial/test/task1.takler
 
 - 17：``create_flow()`` 函数返回工作流 ``flow`` 对象
 - 20：定义直接运行脚本会执行的代码
