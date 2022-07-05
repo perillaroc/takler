@@ -227,7 +227,7 @@ class TaklerServiceClient:
         self.start()
         self.run_request_ping()
         end_time = datetime.now()
-        print(f"ping server ({self.host}:{self.port}) successed in {end_time - start_time}.")
+        print(f"ping server ({self.host}:{self.port}) succeeded in {end_time - start_time}.")
         self.shutdown()
 
     def run_request_ping(self):
