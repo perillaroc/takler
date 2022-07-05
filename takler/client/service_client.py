@@ -28,6 +28,10 @@ class TaklerServiceClient:
         self.channel: Optional[grpc.Channel] = None
         self.stub: Optional[TaklerServerStub] = None
 
+    def set_host_port(self, host: str, port: Union[int, str]):
+        self.host = host
+        self.port = str(port)
+
     @property
     def listen_address(self) -> str:
         """
