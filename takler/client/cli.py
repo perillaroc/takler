@@ -180,10 +180,19 @@ def show(
         show_limit: bool = typer.Option(True, help="show limits"),
         show_event: bool = typer.Option(True, help="show events"),
         show_meter: bool = typer.Option(True, help="show meters"),
+        show_all: bool = typer.Option(False, help="show all items, ignore other options."),
 ):
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
+
+    if show_all:
+        show_parameter = True
+        show_trigger = True
+        show_limit = True
+        show_event = True
+        show_meter = True
+
     client.show(
         show_parameter=show_parameter,
         show_trigger=show_trigger,
