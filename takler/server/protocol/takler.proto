@@ -85,8 +85,8 @@ message ForceCommand {
 // query command
 
 message ShowRequest{
-  bool show_parameter = 1;
-  bool show_trigger = 2;
+  bool show_trigger = 1;
+  bool show_parameter = 2;
   bool show_limit = 3;
   bool show_event = 4;
   bool show_meter = 5;

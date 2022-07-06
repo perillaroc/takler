@@ -175,8 +175,8 @@ def force(
 def show(
         host: str = typer.Option(None, help=HOST_HELP_STRING),
         port: str = typer.Option(None, help=PORT_HELP_STRING),
-        show_parameter: bool = typer.Option(False, help="show parameters"),
         show_trigger: bool = typer.Option(False, help="show triggers"),
+        show_parameter: bool = typer.Option(False, help="show parameters"),
         show_limit: bool = typer.Option(True, help="show limits"),
         show_event: bool = typer.Option(True, help="show events"),
         show_meter: bool = typer.Option(True, help="show meters"),
@@ -187,15 +187,15 @@ def show(
     client = TaklerServiceClient(host=host, port=port)
 
     if show_all:
-        show_parameter = True
         show_trigger = True
+        show_parameter = True
         show_limit = True
         show_event = True
         show_meter = True
 
     client.show(
-        show_parameter=show_parameter,
         show_trigger=show_trigger,
+        show_parameter=show_parameter,
         show_limit=show_limit,
         show_event=show_event,
         show_meter=show_meter,
