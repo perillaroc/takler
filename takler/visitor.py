@@ -38,12 +38,23 @@ class SimplePrintVisitor(NodeVisitor):
 
 
 class PrintVisitor(NodeVisitor):
-    def __init__(self, stream: IO, show_trigger: bool = False):
+    def __init__(
+            self, stream: IO,
+            show_parameter: bool = False,
+            show_trigger: bool = False,
+            show_limit: bool = True,
+            show_event: bool = True,
+            show_meter: bool = True,
+    ):
         NodeVisitor.__init__(self)
         self.level: int = 0
         self.stream: IO = stream
 
+        self.show_parameter = show_parameter
         self.show_trigger = show_trigger
+        self.show_limit = show_limit
+        self.show_event = show_event
+        self.show_meter = show_meter
 
     def visit(self, node: Node):
         place_holder = "  " * self.level
@@ -57,14 +68,25 @@ class PrintVisitor(NodeVisitor):
         if self.show_trigger and node.trigger_expression is not None:
             self.stream.write(f"{pre_spaces} trigger {node.trigger_expression.expression_str}\n")
 
-        if len(node.limits) > 0:
+        if self.show_parameter:
+            user_params = node.user_parameters_only()
+            for name, param in user_params.items():
+                self.stream.write(f"{pre_spaces} param {name} '{param.value}'\n")
+
+            generate_params = node.generated_parameters_only()
+            for name, param in generate_params.items():
+                self.stream.write(f"{pre_spaces} # param {name} '{param.value}'\n")
+
+        if self.show_limit and len(node.limits) > 0:
             for limit in node.limits:
                 self.stream.write(f"{pre_spaces} limit {limit.name} [{limit.value}/{limit.limit}]\n")
-        if len(node.events) > 0:
+
+        if self.show_event and len(node.events) > 0:
             for event in node.events:
                 v = "set" if event.value else "unset"
                 self.stream.write(f"{pre_spaces} event {event.name} [{v}]\n")
-        if len(node.meters) > 0:
+
+        if self.show_meter and len(node.meters) > 0:
             for meter in node.meters:
                 self.stream.write(f"{pre_spaces} meter {meter.name} {meter.min_value} {meter.max_value} [{meter.value}]\n")
 

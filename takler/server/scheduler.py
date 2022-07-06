@@ -206,10 +206,24 @@ class Scheduler:
 
     # Query -------------------------------------------------
 
-    def handle_request_show(self) -> str:
+    def handle_request_show(
+            self,
+            show_parameter: bool,
+            show_trigger: bool,
+            show_limit: bool,
+            show_event: bool,
+            show_meter: bool,
+    ) -> str:
         stream = StringIO()
 
         for name, flow in self.bunch.flows.items():
-            pre_order_travel(flow, PrintVisitor(stream=stream))
+            pre_order_travel(flow, PrintVisitor(
+                stream=stream,
+                show_parameter=show_parameter,
+                show_trigger=show_trigger,
+                show_limit=show_limit,
+                show_event=show_event,
+                show_meter=show_meter,
+            ))
 
         return stream.getvalue()

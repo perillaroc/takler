@@ -190,8 +190,14 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
 
     # Query command -----------------------------------------------------
 
-    async def RunShowRequest(self, request, context):
-        output = self.scheduler.handle_request_show()
+    async def RunShowRequest(self, request: takler_pb2.ShowRequest, context):
+        output = self.scheduler.handle_request_show(
+            show_parameter=request.show_parameter,
+            show_trigger=request.show_trigger,
+            show_limit=request.show_limit,
+            show_event=request.show_event,
+            show_meter=request.show_meter,
+        )
         return takler_pb2.ShowResponse(
             output=output
         )

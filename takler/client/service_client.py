@@ -211,14 +211,40 @@ class TaklerServiceClient:
 
     # Query command ----------------------------------------------------
 
-    def show(self):
+    def show(
+            self,
+            show_parameter: bool = False,
+            show_trigger: bool = True,
+            show_limit: bool = True,
+            show_event: bool = True,
+            show_meter: bool = True,
+    ):
         self.start()
-        self.run_request_show()
+        self.run_request_show(
+            show_parameter=show_parameter,
+            show_trigger=show_trigger,
+            show_limit=show_limit,
+            show_event=show_event,
+            show_meter=show_meter,
+        )
         self.shutdown()
 
-    def run_request_show(self):
+    def run_request_show(
+            self,
+            show_parameter: bool,
+            show_trigger: bool,
+            show_limit: bool,
+            show_event: bool,
+            show_meter: bool
+    ):
         response = self.stub.RunShowRequest(
-            takler_pb2.ShowRequest()
+            takler_pb2.ShowRequest(
+                show_parameter=show_parameter,
+                show_trigger=show_trigger,
+                show_limit=show_limit,
+                show_event=show_event,
+                show_meter=show_meter,
+            )
         )
         print(response.output)
 
