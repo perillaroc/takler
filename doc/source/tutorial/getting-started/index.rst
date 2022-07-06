@@ -61,3 +61,4 @@
    starting-a-server
    understanding-the-client
    starting-the-flow
+   checking-the-results

@@ -68,22 +68,6 @@ Takler 目前没有专门用于启动工作流的 API，可以使用 ``requeue``
 * 脚本运行时会调用 ``takler_client init`` 通知服务任务已启动，随后调用 ``takler_client complete`` 通知服务任务已完成。
 * 在下一次 main loop 时，工作流 *test* 下所有任务已完成，处于 ``complete`` 状态，所以调度器不再提交任务。
 
-使用 takler_client 查询工作流运行情况：
-
-.. code-block:: bash
-
-    takler_client show
-
-输出如下所示：
-
-.. code-block::
-
-    localhost:33083 show
-    |- test [complete]
-      |- t1 [complete]
-
-工作流 *test* 已完成。
-
 练习
 ------
 
