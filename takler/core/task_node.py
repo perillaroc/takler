@@ -22,7 +22,6 @@ class Task(Node):
         self.aborted_reason: Optional[str] = None
 
         self.try_no = 0
-        self.tries = None
 
         self.generated_parameters: TaskNodeGeneratedParameters = TaskNodeGeneratedParameters(node=self)
 
@@ -195,7 +194,6 @@ class TaskNodeGeneratedParameters(BaseModel):
     takler_name: Parameter = Parameter(TAKLER_NAME, None)
     takler_rid: Parameter = Parameter(TAKLER_RID, None)
     takler_try_no: Parameter = Parameter(TAKLER_TRY_NO, None)
-    takler_tries: Parameter = Parameter(TAKLER_TRIES, None)
 
     class Config:
         arbitrary_types_allowed = True
@@ -208,7 +206,6 @@ class TaskNodeGeneratedParameters(BaseModel):
         self.takler_name.value = self.node.node_path
         self.takler_rid.value = self.node.task_id
         self.takler_try_no.value = self.node.try_no
-        self.takler_tries.value = self.node.tries
 
     def find_parameter(self, name: str) -> Optional[Parameter]:
         if name == TASK:
@@ -219,8 +216,6 @@ class TaskNodeGeneratedParameters(BaseModel):
             return self.takler_rid
         elif name == TAKLER_TRY_NO:
             return self.takler_try_no
-        elif name == TAKLER_TRIES:
-            return self.takler_tries
         else:
             return None
 
@@ -230,7 +225,6 @@ class TaskNodeGeneratedParameters(BaseModel):
             TAKLER_NAME: self.takler_name,
             TAKLER_RID: self.takler_rid,
             TAKLER_TRY_NO: self.takler_try_no,
-            TAKLER_TRIES: self.takler_tries,
         }
 
 
