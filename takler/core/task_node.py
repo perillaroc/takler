@@ -9,7 +9,7 @@ from .state import NodeStatus
 from .limit import Limit
 from .parameter import (
     Parameter,
-    TASK, TAKLER_NAME, TAKLER_RID
+    TASK, TAKLER_NAME, TAKLER_RID, TAKLER_TRY_NO, TAKLER_TRIES
 )
 from ._logger import logger
 
@@ -20,6 +20,9 @@ class Task(Node):
         self.task_id: Optional[str] = None
 
         self.aborted_reason: Optional[str] = None
+
+        self.try_no = 0
+        self.tries = None
 
         self.generated_parameters: TaskNodeGeneratedParameters = TaskNodeGeneratedParameters(node=self)
 
@@ -118,23 +121,46 @@ class Task(Node):
     # Node Operation ----------------------------------------------
     #   Node operation is used to control the flow.
 
-    def run(self):
+    def before_run(self):
         """
-        Run the task, set status to ``NodeStatus.submitted`` and handle status change.
+        Increment try no before actually run the task.
+        """
+        self.increment_try_no()
+
+    def do_run(self) -> bool:
+        """
+        Run the task, actually.
 
         Subclasses of ``Task`` should reimplement this method to do the real run operation and deal with errors.
         """
-        # change node status
+        return True
+
+    def after_run(self):
+        """
+        If task has been successfully run, change node status to ``NodeStatus.submitted`` and handle status change.
+        """
         self.set_node_status(node_status=NodeStatus.submitted)
-        self.aborted_reason = None
-        logger.info(f"run: {self.node_path}")
+        logger.info(f"run: {self.node_path} with try no {self.try_no}")
         self.handle_status_change()
 
+    def run(self):
+        """
+        Run the task, set status to ``NodeStatus.submitted`` and handle status change.
+        """
+        self.before_run()
+
+        if not self.do_run():
+            return
+
+        self.after_run()
+
     def requeue(self, reset_repeat: bool = True):
+        self.task_id = None
         self.aborted_reason = None
+        self.try_no = 0
         super(Task, self).requeue(reset_repeat=reset_repeat)
 
-    # Status update operation -------------------------------------
+    # Status update operation ---------------------------------------
     #   Status update operation is used in task's running period,
     #   in order to notify task's status change to takler server.
 
@@ -155,12 +181,21 @@ class Task(Node):
         logger.info(f"abort: {self.node_path} {reason}")
         self.handle_status_change()
 
+    # Util ------------------------------------
+    def increment_try_no(self):
+        self.try_no += 1
+        self.task_id = None
+        self.aborted_reason = None
+        self.update_generated_parameters()
+
 
 class TaskNodeGeneratedParameters(BaseModel):
     node: Task
     task: Parameter = Parameter(TASK, None)
     takler_name: Parameter = Parameter(TAKLER_NAME, None)
     takler_rid: Parameter = Parameter(TAKLER_RID, None)
+    takler_try_no: Parameter = Parameter(TAKLER_TRY_NO, None)
+    takler_tries: Parameter = Parameter(TAKLER_TRIES, None)
 
     class Config:
         arbitrary_types_allowed = True
@@ -172,6 +207,8 @@ class TaskNodeGeneratedParameters(BaseModel):
         self.task.value = self.node.name
         self.takler_name.value = self.node.node_path
         self.takler_rid.value = self.node.task_id
+        self.takler_try_no.value = self.node.try_no
+        self.takler_tries.value = self.node.tries
 
     def find_parameter(self, name: str) -> Optional[Parameter]:
         if name == TASK:
@@ -180,6 +217,10 @@ class TaskNodeGeneratedParameters(BaseModel):
             return self.takler_name
         elif name == TAKLER_RID:
             return self.takler_rid
+        elif name == TAKLER_TRY_NO:
+            return self.takler_try_no
+        elif name == TAKLER_TRIES:
+            return self.takler_tries
         else:
             return None
 
@@ -187,7 +228,9 @@ class TaskNodeGeneratedParameters(BaseModel):
         return {
             TASK: self.task,
             TAKLER_NAME: self.takler_name,
-            TAKLER_RID: self.takler_rid
+            TAKLER_RID: self.takler_rid,
+            TAKLER_TRY_NO: self.takler_try_no,
+            TAKLER_TRIES: self.takler_tries,
         }
 
 

@@ -65,14 +65,14 @@ class ShellScriptTask(Task):
 
     # Operation -------------------------------------------------
 
-    def run(self):
+    def do_run(self) -> bool:
         """
         run shell command
         """
         if not self.submit():
             self.abort()
-            return
-        super(ShellScriptTask, self).run()
+            return False
+        return True
 
     # Task specific ------------------------------------------------------------
 
@@ -135,10 +135,10 @@ class ShellScriptTaskGeneratedParameters(BaseModel):
         self.takler_script.value = self.node.script_path
 
         home_param = self.node.find_parent_parameter(TAKLER_HOME)
-        job_path = Path(f"{home_param.value}{self.node.node_path}.{JOB_SCRIPT_EXTENSION}")
+        job_path = Path(f"{home_param.value}{self.node.node_path}.{JOB_SCRIPT_EXTENSION}{self.node.try_no}")
         self.takler_job.value = job_path.absolute()
 
-        jobout_path = Path(f"{home_param.value}{self.node.node_path}.{JOB_OUTPUT_EXTENSION}")
+        jobout_path = Path(f"{home_param.value}{self.node.node_path}.{self.node.try_no}")
         self.takler_jobout.value = jobout_path.absolute()
 
     def find_parameter(self, name: str) -> Optional[Parameter]:

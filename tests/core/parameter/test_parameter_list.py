@@ -47,6 +47,8 @@ def test_get_flow1_task1_parameters(simple_bunch, simple_flow):
         "TASK",
         "TAKLER_NAME",
         "TAKLER_RID",
+        "TAKLER_TRY_NO",
+        "TAKLER_TRIES",
 
         # container1
         "CLASS",
@@ -67,6 +69,8 @@ def test_get_flow1_task1_parameters(simple_bunch, simple_flow):
     assert params["TASK"] == Parameter("TASK", "task1")
     assert params["TAKLER_NAME"] == Parameter("TAKLER_NAME", "/flow1/container1/task1")
     assert params["TAKLER_RID"] == Parameter("TAKLER_RID", None)
+    assert params["TAKLER_TRIES"] == Parameter("TAKLER_TRIES", None)
+    assert params["TAKLER_TRY_NO"] == Parameter("TAKLER_TRY_NO", 0)
 
     # container1
     assert params["CLASS"] == Parameter("CLASS", "serial_op")
@@ -93,6 +97,8 @@ def test_get_flow1_task3_parameters(simple_bunch, simple_flow):
         "TASK",
         "TAKLER_NAME",
         "TAKLER_RID",
+        "TAKLER_TRY_NO",
+        "TAKLER_TRIES",
 
         # container1
         "CLASS",
@@ -113,6 +119,8 @@ def test_get_flow1_task3_parameters(simple_bunch, simple_flow):
     assert params["TASK"] == Parameter("TASK", "task3")
     assert params["TAKLER_NAME"] == Parameter("TAKLER_NAME", "/flow1/container1/container2/task3")
     assert params["TAKLER_RID"] == Parameter("TAKLER_RID", None)
+    assert params["TAKLER_TRIES"] == Parameter("TAKLER_TRIES", None)
+    assert params["TAKLER_TRY_NO"] == Parameter("TAKLER_TRY_NO", 0)
 
     # container1
     assert params["CLASS"] == Parameter("CLASS", "serial_op")
