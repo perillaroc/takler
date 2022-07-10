@@ -9,7 +9,7 @@ from .state import NodeStatus
 from .limit import Limit
 from .parameter import (
     Parameter,
-    TASK, TAKLER_NAME, TAKLER_RID, TAKLER_TRY_NO, TAKLER_TRIES
+    TASK, TAKLER_NAME, TAKLER_RID, TAKLER_TRY_NO
 )
 from ._logger import logger
 
@@ -21,7 +21,7 @@ class Task(Node):
 
         self.aborted_reason: Optional[str] = None
 
-        self.try_no = 0
+        self.try_no: int = 0
 
         self.generated_parameters: TaskNodeGeneratedParameters = TaskNodeGeneratedParameters(node=self)
 
