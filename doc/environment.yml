@@ -6,3 +6,7 @@ dependencies:
   - python=3.10
   - sphinx[version='<5']
   - sphinx-book-theme
+  - sphinx-autodoc-typehints
+  - pip
+  - pip:
+      - ..

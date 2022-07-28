@@ -28,8 +28,9 @@ author = 'perillaroc'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    # 'sphinx_rtd_theme',
-    # 'sphinx_book_theme'
+    'sphinx.ext.napoleon',
+    'sphinx.ext.autodoc',
+    'sphinx_autodoc_typehints',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
