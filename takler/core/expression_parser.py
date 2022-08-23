@@ -20,9 +20,8 @@ class ExpressionTransformer(Transformer):
         variable_name = items[2]
         return AstVariablePath(node=node, variable_name=variable_name)
 
-    # def node_name(self, s: str) -> str:
-    #     (s, ) = s
-    #     return s
+    def pure_node_name(self, items) -> str:
+        return "".join(items)
 
     def dot(self, _) -> str:
         return "."
@@ -97,9 +96,10 @@ trigger_parser: Lark = Lark(r"""
     
     meter_value: NUMBER
 
-    ?node_name: CNAME | dot | double_dot
+    ?node_name: pure_node_name | dot | double_dot
     dot: "."
     double_dot: ".."
+    ?pure_node_name: (LETTER|DIGIT)("_"|LETTER|DIGIT)*
     ?variable_name: CNAME
 
     expression: (node_path operator status) 
@@ -108,6 +108,8 @@ trigger_parser: Lark = Lark(r"""
               | (expression logical_operator expression)
 
     %import common.CNAME
+    %import common.DIGIT
+    %import common.LETTER
     %import common.WORD
     %import common.WS
     %import common.NUMBER

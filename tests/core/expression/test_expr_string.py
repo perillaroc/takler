@@ -15,7 +15,8 @@ def test_node_path():
         "/flow1/task1 == complete",
         "./task1 == aborted",
         "../container1/task1 == complete",
-        "../../container1/task1 == complete"
+        "../../container1/task1 == complete",
+        "/flow1/00/container1/task1 == complete"
     ]
     for expr_string in expr_cases:
         ast = parse_trigger(expr_string)
