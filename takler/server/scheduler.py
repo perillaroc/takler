@@ -1,5 +1,6 @@
 import asyncio
 import time
+import datetime
 from io import StringIO
 from queue import Queue
 from typing import Optional
@@ -13,6 +14,9 @@ from takler.visitor import pre_order_travel, PrintVisitor
 logger = get_logger("server.scheduler")
 
 
+DEFAULT_INTERVAL_LOOP_SECONDS = 10.0
+
+
 class Scheduler:
     """
     定时调度器，定时遍历所有 Flow，运行满足依赖条件的任务，同时还负责执行 Flow 操作。
@@ -24,9 +28,9 @@ class Scheduler:
     interval_main_loop : float
         time interval to check flow dependencies, unit is seconds.
     """
-    def __init__(self, bunch: Bunch):
+    def __init__(self, bunch: Bunch, interval_main_loop: float = DEFAULT_INTERVAL_LOOP_SECONDS):
         self.bunch: Bunch = bunch
-        self.interval_main_loop: float = 10.0
+        self.interval_main_loop: float = interval_main_loop
         self.command_queue: Queue = Queue()
         self.should_stop: bool = False
 
@@ -55,6 +59,10 @@ class Scheduler:
         while not self.should_stop:
             logger.info("main loop...")
             start_time = time.time()
+
+            time_now = datetime.datetime.now()
+            for name, flow in self.bunch.flows.items():
+                flow.update_calendar(time_now)
 
             self.travel_bunch()
 
