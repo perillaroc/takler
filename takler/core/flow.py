@@ -56,6 +56,7 @@ class Flow(NodeContainer):
         """
         self.calendar.update(time)
         self.update_generated_parameters()
+        self.calendar_changed(self.calendar)
 
     # Parameter ---------------------------------------------------
 

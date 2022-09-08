@@ -5,6 +5,7 @@ from typing import Union
 from .node import Node, compute_most_significant_status
 from .state import NodeStatus
 from .task_node import Task
+from .calendar import Calendar
 
 
 class NodeContainer(Node):
@@ -104,6 +105,13 @@ class NodeContainer(Node):
             child.resolve_dependencies()
 
         return True
+
+    # Time Attribute --------------------------------------------
+
+    def calendar_changed(self, calendar: Calendar):
+        super(NodeContainer, self).calendar_changed(calendar)
+        for node in self.children:
+            node.calendar_changed(calendar)
 
     # Node operation -----------------------------------------
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 from typing import Union, List, Optional, Dict, TYPE_CHECKING, Set
 from pathlib import PurePosixPath
 from collections import defaultdict
@@ -12,9 +13,12 @@ from .meter import Meter
 from .limit import Limit, InLimit, InLimitManager
 from .expression import Expression
 from .repeat import Repeat, RepeatBase
+from .time_attr import TimeAttribute
 
 if TYPE_CHECKING:
     from .bunch import Bunch
+    from .calendar import Calendar
+    from .flow import Flow
 
 
 # def compute_node_status(node: Node, immediate: bool) -> NodeStatus:
@@ -108,6 +112,9 @@ class Node(ABC):
 
         # 重复
         self.repeat: Optional[Repeat] = None
+
+        # 时间
+        self.times: List[TimeAttribute] = list()
 
     def __enter__(self):
         return self
@@ -418,8 +425,13 @@ class Node(ABC):
 
         return self.trigger_expression.evaluate()
 
+    # Resolve -----------------------------------------------------------
+
     def resolve_dependencies(self) -> bool:
         if self.is_suspended():
+            return False
+
+        if not self.is_time_dependencies_free():
             return False
 
         if not self.evaluate_trigger():
@@ -769,6 +781,43 @@ class Node(ABC):
     def add_repeat(self, r: RepeatBase):
         self.repeat = Repeat(r)
 
+    # Time Attribute -----------------------------------------------------------
+
+    def add_time(self, time: datetime.time) -> TimeAttribute:
+        """
+        Add a ``TimeAttribute`` to Node.
+
+        Parameters
+        ----------
+        time
+
+        Returns
+        -------
+        TimeAttribute
+        """
+        time_attr = TimeAttribute(time)
+        self.times.append(time_attr)
+        return time_attr
+
+    def is_time_dependencies_free(self):
+        if len(self.times) == 0:
+            return True
+
+        flow = self.get_root()
+        if not hasattr(flow, "calendar"):
+            raise RuntimeError("node should be in a flow to check time dependencies.")
+
+        flow_calendar: Calendar = flow.calendar
+        for time_attr in self.times:
+            if time_attr.is_free(flow_calendar):
+                return True
+
+        return False
+
+    def calendar_changed(self, calendar: Calendar):
+        for time_attr in self.times:
+            time_attr.calendar_changed(calendar)
+
     # Node Operations ------------------------------------------------
 
     def requeue(self, reset_repeat: bool = True):
@@ -778,6 +827,9 @@ class Node(ABC):
         Requeue operation sets node's status to ``NodeStatus.queued``
         """
         self.set_node_status_only(NodeStatus.queued)
+
+        for time_attr in self.times:
+            time_attr.reset()
 
         for event in self.events:
             event.reset()
