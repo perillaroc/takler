@@ -68,6 +68,10 @@ class PrintVisitor(NodeVisitor):
         if self.show_trigger and node.trigger_expression is not None:
             self.stream.write(f"{pre_spaces} trigger {node.trigger_expression.expression_str}\n")
 
+        if self.show_trigger:
+            for time_attr in node.times:
+                self.stream.write(f"{pre_spaces} time {time_attr.time.hour:02}:{time_attr.time.minute:02}\n")
+
         if self.show_parameter:
             user_params = node.user_parameters_only()
             for name, param in user_params.items():
