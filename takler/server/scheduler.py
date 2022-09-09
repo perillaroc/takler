@@ -60,10 +60,12 @@ class Scheduler:
             logger.info("main loop...")
             start_time = time.time()
 
+            # update calendar for all flows.
             time_now = datetime.datetime.now()
             for name, flow in self.bunch.flows.items():
                 flow.update_calendar(time_now)
 
+            # travel the bunch.
             self.travel_bunch()
 
             elapsed = time.time() - start_time

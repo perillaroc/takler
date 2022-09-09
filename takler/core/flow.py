@@ -48,7 +48,7 @@ class Flow(NodeContainer):
 
     def update_calendar(self, time: datetime.datetime):
         """
-        Update calendar using given time. Used in scheduler.
+        Update calendar using given time. Used in scheduler's main loop.
 
         Parameters
         ----------

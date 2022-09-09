@@ -113,7 +113,7 @@ class Node(ABC):
         # 重复
         self.repeat: Optional[Repeat] = None
 
-        # 时间
+        # Time attributes
         self.times: List[TimeAttribute] = list()
 
     def __enter__(self):
@@ -428,12 +428,23 @@ class Node(ABC):
     # Resolve -----------------------------------------------------------
 
     def resolve_dependencies(self) -> bool:
+        """
+        Check all dependencies in the Node, and return True if all dependencies are satisfied.
+
+        Returns
+        -------
+        bool
+            True if node should be run, or False.
+        """
+        # check suspend
         if self.is_suspended():
             return False
 
+        # check time
         if not self.is_time_dependencies_free():
             return False
 
+        # check trigger
         if not self.evaluate_trigger():
             return False
 
@@ -785,11 +796,12 @@ class Node(ABC):
 
     def add_time(self, time: datetime.time) -> TimeAttribute:
         """
-        Add a ``TimeAttribute`` to Node.
+        Add a ``TimeAttribute`` to Node. Node can have multiply time attributes.
 
         Parameters
         ----------
         time
+            When to "run" the node.
 
         Returns
         -------
@@ -799,7 +811,14 @@ class Node(ABC):
         self.times.append(time_attr)
         return time_attr
 
-    def is_time_dependencies_free(self):
+    def is_time_dependencies_free(self) -> bool:
+        """
+        Check where time dependencies are satisfied.
+
+        Returns
+        -------
+        bool
+        """
         if len(self.times) == 0:
             return True
 
@@ -815,6 +834,14 @@ class Node(ABC):
         return False
 
     def calendar_changed(self, calendar: Calendar):
+        """
+        When Flow's calendar is changed, call this method to update time attributes.
+
+        Parameters
+        ----------
+        calendar
+            The calendar of a Flow.
+        """
         for time_attr in self.times:
             time_attr.calendar_changed(calendar)
 
