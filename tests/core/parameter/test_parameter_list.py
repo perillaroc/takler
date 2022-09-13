@@ -56,6 +56,8 @@ def test_get_flow1_task1_parameters(simple_bunch, simple_flow):
         "TAKLER_HOME",
         "HH",
         "FORECAST_INTERVAL",
+        "DATE",
+        "TIME",
 
         # bunch
         "TAKLER_HOST",
@@ -104,6 +106,8 @@ def test_get_flow1_task3_parameters(simple_bunch, simple_flow):
         "TAKLER_HOME",
         "HH",
         "FORECAST_INTERVAL",
+        "DATE",
+        "TIME",
 
         # bunch
         "TAKLER_HOST",
