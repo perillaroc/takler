@@ -50,6 +50,8 @@ class Flow(NodeContainer):
         """
         Update calendar using given time. Used in scheduler's main loop.
 
+        After generated parameters are updated, ``calendar_changed`` is called to update time attributes.
+
         Parameters
         ----------
         time

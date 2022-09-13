@@ -33,35 +33,71 @@ class Calendar:
     # generated variables
 
     @property
-    def year(self):
+    def year(self) -> int:
+        """
+        year of current flow time.
+
+        Returns
+        -------
+        int
+        """
         if self.flow_time is None:
             return -1
         else:
             return self.flow_time.year
 
     @property
-    def month(self):
+    def month(self) -> int:
+        """
+        month of current flow time.
+
+        Returns
+        -------
+        int
+        """
         if self.flow_time is None:
             return -1
         else:
             return self.flow_time.month
 
     @property
-    def day_of_month(self):
+    def day_of_month(self) -> int:
+        """
+        day of current flow time.
+
+        Returns
+        -------
+        int
+        """
         if self.flow_time is None:
             return -1
         else:
             return self.flow_time.day
 
     @property
-    def day_of_week(self):
+    def day_of_week(self) -> int:
+        """
+        week day number of current flow time.
+        Monday is 1, Sunday is 7
+
+        Returns
+        -------
+        int
+        """
         if self.flow_time is None:
             return -1
         else:
             return self.flow_time.isoweekday()
 
     @property
-    def day_of_year(self):
+    def day_of_year(self) -> int:
+        """
+        day number in year of current flow time
+
+        Returns
+        -------
+        int
+        """
         if self.flow_time is None:
             return -1
         else:

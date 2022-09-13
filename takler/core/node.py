@@ -813,7 +813,7 @@ class Node(ABC):
 
     def resolve_time_dependencies(self) -> bool:
         """
-        Check where time dependencies are satisfied.
+        Check if there has one time dependency which is satisfied.
 
         Returns
         -------
@@ -855,12 +855,15 @@ class Node(ABC):
         """
         self.set_node_status_only(NodeStatus.queued)
 
+        # reset time attributes
         for time_attr in self.times:
             time_attr.reset()
 
+        # reset event attributes
         for event in self.events:
             event.reset()
 
+        # reset repeat attributes
         # TODO: add requeue agrs.
         if reset_repeat and self.repeat is not None:
             self.repeat.reset()
