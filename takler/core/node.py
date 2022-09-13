@@ -441,7 +441,7 @@ class Node(ABC):
             return False
 
         # check time
-        if not self.is_time_dependencies_free():
+        if not self.resolve_time_dependencies():
             return False
 
         # check trigger
@@ -811,7 +811,7 @@ class Node(ABC):
         self.times.append(time_attr)
         return time_attr
 
-    def is_time_dependencies_free(self) -> bool:
+    def resolve_time_dependencies(self) -> bool:
         """
         Check where time dependencies are satisfied.
 
