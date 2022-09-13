@@ -15,6 +15,8 @@ from .expression import Expression
 from .repeat import Repeat, RepeatBase
 from .time_attr import TimeAttribute
 
+from ._logger import logger
+
 if TYPE_CHECKING:
     from .bunch import Bunch
     from .calendar import Calendar
@@ -881,3 +883,39 @@ class Node(ABC):
         Resume the node.
         """
         self.state.suspended = False
+
+    def free_dependencies(self, dep_type: Optional[str] = None):
+        """
+        Ignore some type of dependencies in Node.
+
+        Parameters
+        ----------
+        dep_type
+            dependency type:
+
+            * all
+            * time
+            * trigger
+        """
+        if dep_type is None:
+            dep_type = "all"
+
+        if dep_type not in ("all", "time", "trigger"):
+            raise ValueError(f"dependency type {dep_type} is not supported.")
+
+        free_time = False
+        free_trigger = False
+
+        if dep_type == "all" or dep_type == "time":
+            free_time = True
+        if dep_type == "all" or dep_type == "trigger":
+            free_trigger = True
+
+        if free_time:
+            for time_attr in self.times:
+                time_attr.set_free()
+
+        if free_trigger:
+            logger.error("Free trigger is not implemented yet.")
+
+        return

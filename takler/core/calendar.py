@@ -106,6 +106,7 @@ class Calendar:
     def begin(self, time: datetime.datetime):
         """
         Start to run calendar, set initial_time and clear duration.
+        Get current time and set it to initial_real_time and last_real_time.
 
         Parameters
         ----------
