@@ -188,6 +188,17 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
+    async def RunFreeDepCommand(self, request: takler_pb2.FreeDepCommand, context):
+        paths = request.path
+        dep_type = takler_pb2.FreeDepCommand.DepType.Name(request.dep_type)
+        for path in paths:
+            result = self.scheduler.run_command_free_dep(path, dep_type)
+            logger.info(f"Free Dep: {dep_type} {path}")
+        return takler_pb2.ServiceResponse(
+            flag=0,
+            message="",
+        )
+
     # Query command -----------------------------------------------------
 
     async def RunShowRequest(self, request: takler_pb2.ShowRequest, context):

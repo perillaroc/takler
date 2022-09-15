@@ -214,6 +214,12 @@ class Scheduler:
             return True
         return True
 
+    def run_command_free_dep(self, node_path: str, dep_type: str):
+        node: Node = self.bunch.find_node(node_path)
+        if node is None:
+            raise ValueError(f"node is not found: {node_path}")
+        node.free_dependencies(dep_type)
+
     # Query -------------------------------------------------
 
     def handle_request_show(

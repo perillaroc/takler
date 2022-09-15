@@ -168,6 +168,19 @@ def force(
     client.force(variable_paths=variable_path, state=state, recursive=recursive)
 
 
+@app.command()
+def free_dep(
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
+        dep_type: str = typer.Option(True, help="dependency type, [all, time, trigger]"),
+        node_path: List[str] = typer.Argument(..., help="variable paths"),
+):
+    host = get_host(host)
+    port = get_port(port)
+    client = TaklerServiceClient(host=host, port=port)
+    client.free_dep(node_paths=node_path, dep_type=dep_type)
+
+
 # Show command --------------------------------------------------------
 
 

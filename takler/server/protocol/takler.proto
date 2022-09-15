@@ -82,6 +82,16 @@ message ForceCommand {
   repeated string path = 3;
 }
 
+message FreeDepCommand {
+  enum DepType {
+    all = 0;
+    trigger = 1;
+    time = 2;
+  }
+  DepType dep_type = 1;
+  repeated string path = 2;
+}
+
 // query command
 
 message ShowRequest{
@@ -121,6 +131,9 @@ service TaklerServer {
   rpc RunRunCommand(RunCommand) returns (ServiceResponse) {}
 
   rpc RunForceCommand(ForceCommand) returns (ServiceResponse) {}
+
+  rpc RunFreeDepCommand(FreeDepCommand) returns (ServiceResponse) {}
+
 
   // query command
 

@@ -209,6 +209,20 @@ class TaklerServiceClient:
         )
         print(f"received: {response.flag}")
 
+    def free_dep(self, node_paths: List[str], dep_type: str):
+        self.start()
+        self.run_command_free_dep(node_paths=node_paths, dep_type=dep_type)
+        self.shutdown()
+
+    def run_command_free_dep(self, node_paths: List[str], dep_type: str):
+        response = self.stub.RunFreeDepCommand(
+            takler_pb2.FreeDepCommand(
+                dep_type=takler_pb2.FreeDepCommand.DepType.Value(dep_type),
+                path=node_paths,
+            )
+        )
+        print(f"received: {response.flag}")
+
     # Query command ----------------------------------------------------
 
     def show(
