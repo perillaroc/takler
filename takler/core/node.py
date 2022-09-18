@@ -796,7 +796,7 @@ class Node(ABC):
 
     # Time Attribute -----------------------------------------------------------
 
-    def add_time(self, time: datetime.time) -> TimeAttribute:
+    def add_time(self, time: Union[datetime.time, str]) -> TimeAttribute:
         """
         Add a ``TimeAttribute`` to Node. Node can have multiply time attributes.
 

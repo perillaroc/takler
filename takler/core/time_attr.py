@@ -1,4 +1,5 @@
 import datetime
+from typing import Union
 
 from .calendar import Calendar
 
@@ -16,7 +17,9 @@ class TimeAttribute:
     free
         if marked true, time attributes is ignored.
     """
-    def __init__(self, time: datetime.time):
+    def __init__(self, time: Union[datetime.time, str]):
+        if isinstance(time, str):
+            time = datetime.datetime.strptime(time, '%H:%M').time()
         self.time: datetime.time = time
         self.free: bool = False
 
