@@ -99,7 +99,7 @@ trigger_parser: Lark = Lark(r"""
     ?node_name: pure_node_name | dot | double_dot
     dot: "."
     double_dot: ".."
-    ?pure_node_name: (LETTER|DIGIT)("_"|LETTER|DIGIT)*
+    !pure_node_name: (LETTER|DIGIT)("_"|LETTER|DIGIT)*
     ?variable_name: CNAME
 
     expression: (node_path operator status) 
