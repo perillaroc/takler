@@ -45,6 +45,7 @@ class PrintVisitor(NodeVisitor):
             show_limit: bool = True,
             show_event: bool = True,
             show_meter: bool = True,
+            show_repeat: bool = True,
     ):
         NodeVisitor.__init__(self)
         self.level: int = 0
@@ -55,6 +56,7 @@ class PrintVisitor(NodeVisitor):
         self.show_limit = show_limit
         self.show_event = show_event
         self.show_meter = show_meter
+        self.show_repeat = show_repeat
 
     def visit(self, node: Node):
         place_holder = "  " * self.level
@@ -64,6 +66,9 @@ class PrintVisitor(NodeVisitor):
             node_state = f"suspend ({node_state})"
         self.stream.write(f"{place_holder}|- {node_name} [{node_state}]\n")
         pre_spaces = " " * len(f"{place_holder}|- ")
+
+        if self.show_repeat and node.repeat is not None:
+            self.stream.write(f"{pre_spaces} repeat {node.repeat.r.name} {node.repeat.value()} [{node.repeat.start()}, {node.repeat.end()}]\n")
 
         if self.show_trigger and node.trigger_expression is not None:
             self.stream.write(f"{pre_spaces} trigger {node.trigger_expression.expression_str}\n")
