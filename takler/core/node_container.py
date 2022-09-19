@@ -125,7 +125,7 @@ class NodeContainer(Node):
         -------
 
         """
-        super(NodeContainer, self).requeue()
+        super(NodeContainer, self).requeue(reset_repeat=reset_repeat)
 
         for child in self.children:
             child.requeue(reset_repeat=reset_repeat)
