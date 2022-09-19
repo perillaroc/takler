@@ -866,7 +866,7 @@ class Node(ABC):
             event.reset()
 
         # reset repeat attributes
-        # TODO: add requeue agrs.
+        # TODO: add requeue args.
         if reset_repeat and self.repeat is not None:
             self.repeat.reset()
 
