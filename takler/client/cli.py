@@ -225,6 +225,17 @@ def ping(
     client = TaklerServiceClient(host=host, port=port)
     client.ping()
 
+
+@app.command()
+def coroutine(
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
+):
+    host = get_host(host)
+    port = get_port(port)
+    client = TaklerServiceClient(host=host, port=port)
+    client.coroutine()
+
 # ----------------------------
 
 

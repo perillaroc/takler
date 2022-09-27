@@ -1,4 +1,5 @@
-from typing import Optional
+from typing import Optional, List, Dict
+import asyncio
 
 import grpc
 
@@ -215,3 +216,17 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
 
     async def RunPingRequest(self, request, context):
         return takler_pb2.PingResponse()
+
+    async def QueryCoroutine(self, request, context):
+        loop = asyncio.get_running_loop()
+        tasks = []
+        for t in asyncio.all_tasks(loop=loop):
+            task = takler_pb2.Coroutine(
+                name=t.get_name(),
+                description=repr(t.get_coro()),
+            )
+            tasks.append(task)
+        return takler_pb2.CoroutineResponse(
+            coroutines=tasks
+        )
+

@@ -1,4 +1,5 @@
 import asyncio
+from typing import List, Dict
 
 from takler.core import Bunch, NodeStatus
 from takler.logging import get_logger
@@ -45,9 +46,10 @@ class TaklerServer:
         * run scheduler
         """
         loop = asyncio.get_running_loop()
-        loop.create_task(self.network_service.run())
+        loop.create_task(self.network_service.run(), name="takler.server.network_service")
 
-        await self.scheduler.run()
+        scheduler_task = loop.create_task(self.scheduler.run(), name="takler.server.scheduler")
+        await scheduler_task
 
     async def stop(self):
         """
@@ -103,7 +105,8 @@ async def start_server(server: TaklerServer):
     """
     await server.start()
     loop = asyncio.get_running_loop()
-    loop.create_task(server.run())
+    task = loop.create_task(server.run(), name="takler.server")
+    return task
 
 
 async def wait_server_until_complete(server: TaklerServer, check_interval: int = 10):

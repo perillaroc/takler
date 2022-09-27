@@ -79,6 +79,11 @@ class TaklerServerStub(object):
                 request_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.PingRequest.SerializeToString,
                 response_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.PingResponse.FromString,
                 )
+        self.QueryCoroutine = channel.unary_unary(
+                '/takler_protocol.TaklerServer/QueryCoroutine',
+                request_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.CoroutineRequest.SerializeToString,
+                response_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.CoroutineResponse.FromString,
+                )
 
 
 class TaklerServerServicer(object):
@@ -167,6 +172,12 @@ class TaklerServerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def QueryCoroutine(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_TaklerServerServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -234,6 +245,11 @@ def add_TaklerServerServicer_to_server(servicer, server):
                     servicer.RunPingRequest,
                     request_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.PingRequest.FromString,
                     response_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.PingResponse.SerializeToString,
+            ),
+            'QueryCoroutine': grpc.unary_unary_rpc_method_handler(
+                    servicer.QueryCoroutine,
+                    request_deserializer=takler_dot_server_dot_protocol_dot_takler__pb2.CoroutineRequest.FromString,
+                    response_serializer=takler_dot_server_dot_protocol_dot_takler__pb2.CoroutineResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -463,5 +479,22 @@ class TaklerServer(object):
         return grpc.experimental.unary_unary(request, target, '/takler_protocol.TaklerServer/RunPingRequest',
             takler_dot_server_dot_protocol_dot_takler__pb2.PingRequest.SerializeToString,
             takler_dot_server_dot_protocol_dot_takler__pb2.PingResponse.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def QueryCoroutine(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/takler_protocol.TaklerServer/QueryCoroutine',
+            takler_dot_server_dot_protocol_dot_takler__pb2.CoroutineRequest.SerializeToString,
+            takler_dot_server_dot_protocol_dot_takler__pb2.CoroutineResponse.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)

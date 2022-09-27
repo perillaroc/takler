@@ -57,7 +57,7 @@ class Scheduler:
         Travel bunch until ``should_stop`` flag is set.
         """
         while not self.should_stop:
-            logger.info("main loop...")
+            # logger.debug("main loop...")
             start_time = time.time()
 
             # update calendar for all flows.

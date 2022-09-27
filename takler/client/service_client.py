@@ -274,3 +274,17 @@ class TaklerServiceClient:
         response = self.stub.RunPingRequest(
             takler_pb2.PingResponse()
         )
+
+    def coroutine(self):
+        self.start()
+        self.run_query_coroutine()
+        self.shutdown()
+
+    def run_query_coroutine(self):
+        response = self.stub.QueryCoroutine(
+            takler_pb2.CoroutineRequest()
+        )
+
+        for task in response.coroutines:
+            print(f"{task.name}\t{task.description}")
+

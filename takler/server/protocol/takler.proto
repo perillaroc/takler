@@ -112,6 +112,20 @@ message PingRequest {
 message PingResponse {
 }
 
+message Coroutine{
+  string name = 1;
+  string description = 2;
+}
+
+message CoroutineRequest {
+}
+
+message CoroutineResponse {
+  repeated Coroutine coroutines = 1;
+}
+
+
+
 service TaklerServer {
 
   // child command
@@ -140,4 +154,6 @@ service TaklerServer {
   rpc RunShowRequest(ShowRequest) returns (ShowResponse){}
 
   rpc RunPingRequest(PingRequest) returns (PingResponse){}
+
+  rpc QueryCoroutine(CoroutineRequest) returns (CoroutineResponse){}
 }
