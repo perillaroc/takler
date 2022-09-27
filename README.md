@@ -6,16 +6,16 @@
 
 > :construction: takler is under construction.
 
-A job scheduler tool for NWP.
+A task scheduler tool for Numerical Weather Prediction (NWP) workflows.
 
 ## Documentation
 
-中文文档：[https://takler.readthedocs.io/](https://takler.readthedocs.io/)
+Chinese documentation (中文文档)：[https://takler.readthedocs.io/](https://takler.readthedocs.io/)
 
 ## History
 
-Takler was a work project started from 2014, when I started the second work year at NWPC.
-I tried to implement a simple job scheduling software with basic features of ecFlow.
+Takler was a work project created at 2014, when I spend the second work year at NWPC/CMA.
+I tried to implement a simple task scheduling tool with basic features of ecFlow.
 
 Since 2022, takler project is totally rewritten with asyncio and gRPC.
 The purpose is to create a workflow tool for both operation and experiment users.

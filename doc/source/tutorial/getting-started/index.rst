@@ -21,7 +21,7 @@
 
     git clone https://github.com/perillaroc/takler
     cd takler
-    pip install takler
+    pip install .
 
 安装 Takler 客户端
 ^^^^^^^^^^^^^^^^^^^
