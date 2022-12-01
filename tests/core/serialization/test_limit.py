@@ -8,7 +8,7 @@ def test_limit():
         name="upload_limit",
         limit=10,
         value=0,
-        node_paths=set(),
+        node_paths=list(),
     )
 
     limit.increment(1, "/flow1/task1")
@@ -16,7 +16,7 @@ def test_limit():
         name="upload_limit",
         limit=10,
         value=1,
-        node_paths={"/flow1/task1",}
+        node_paths=["/flow1/task1"]
     )
 
     limit.increment(1, "/flow1/task2")
@@ -24,10 +24,10 @@ def test_limit():
         name="upload_limit",
         limit=10,
         value=2,
-        node_paths={
+        node_paths=[
             "/flow1/task1",
             "/flow1/task2",
-        }
+        ]
     )
 
     limit.decrement(1, "/flow1/task1")
@@ -35,9 +35,9 @@ def test_limit():
         name="upload_limit",
         limit=10,
         value=1,
-        node_paths={
+        node_paths=[
             "/flow1/task2"
-        }
+        ]
     )
 
 

@@ -72,7 +72,7 @@ def test_node(task_case):
             dict(name="meter1", min_value=0, max_value=10, value=0)
         ],
         limits=[
-            dict(name="limit1", limit=10, node_paths=set(), value=0)
+            dict(name="limit1", limit=10, node_paths=list(), value=0)
         ],
         in_limit_manager=dict(
             in_limit_list=[
