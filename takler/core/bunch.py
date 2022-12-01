@@ -22,6 +22,15 @@ class Bunch(NodeContainer):
         self.server_state: ServerState = ServerState(host=host, port=port)
         self.server_state.setup()
 
+    # Serialization
+
+    def to_dict(self) -> Dict:
+        result = super().to_dict()
+        result["flows"] = [flow.to_dict() for key, flow in self.flows.items()]
+        result["server_state"] = self.server_state.to_dict()
+
+        return result
+
     # Attr ------------------------------------------------
 
     def get_node_status(self) -> NodeStatus:
