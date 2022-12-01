@@ -154,7 +154,6 @@ class Node(ABC):
         result = dict(
             name=self.name,
             state=self.state.to_dict(),
-            in_limit_manager=self.in_limit_manager.to_dict(),
         )
         if len(self.children) != 0:
             result["children"] = [child.to_dict() for child in self.children]
@@ -168,6 +167,8 @@ class Node(ABC):
             result["meters"] = [meter.to_dict() for meter in self.meters]
         if len(self.limits) !=0:
             result["limits"] = [limit.to_dict() for limit in self.limits]
+        if len(self.in_limit_manager.in_limit_list) != 0:
+            result["in_limit_manager"] = self.in_limit_manager.to_dict()
         if self.repeat is not None:
             result["repeat"] = self.repeat.to_dict()
         if len(self.times) != 0:

@@ -8,7 +8,7 @@ class ObjectContainer:
 
 
 @pytest.fixture
-def child_case():
+def flow_case():
     """
 
     |- flow1
@@ -33,25 +33,31 @@ def child_case():
     return result
 
 
-def test_container_node(child_case):
-    container1 = child_case.container1
-    assert container1.to_dict() == dict(
-        name="container1",
+def test_flow_node(flow_case):
+    flow1 = flow_case.flow1
+    assert flow1.to_dict() == dict(
+        name="flow1",
         state=dict(status=3, suspended=False),
         children=[
             dict(
-                name="task1",
+                name="container1",
                 state=dict(status=3, suspended=False),
-                task_id=None,
-                aborted_reason=None,
-                try_no=0,
-            ),
-            dict(
-                name="task2",
-                state=dict(status=3, suspended=False),
-                task_id=None,
-                aborted_reason=None,
-                try_no=0,
+                children=[
+                    dict(
+                        name="task1",
+                        state=dict(status=3, suspended=False),
+                        task_id=None,
+                        aborted_reason=None,
+                        try_no=0,
+                    ),
+                    dict(
+                        name="task2",
+                        state=dict(status=3, suspended=False),
+                        task_id=None,
+                        aborted_reason=None,
+                        try_no=0,
+                    )
+                ]
             )
         ]
     )
