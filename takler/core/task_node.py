@@ -28,6 +28,18 @@ class Task(Node):
     def __repr__(self):
         return f"Task {self.name}"
 
+    # Serialization ----------------------------------------------
+
+    def to_dict(self) -> Dict:
+        result = super().to_dict()
+        result.update(dict(
+            task_id=self.task_id,
+            aborted_reason=self.aborted_reason,
+            try_no=self.try_no,
+        ))
+
+        return result
+
     # State management --------------------------------------------
 
     def computed_status(self, immediate: bool) -> NodeStatus:

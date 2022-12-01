@@ -148,6 +148,33 @@ class Node(ABC):
     def __str__(self):
         return f"{self.__class__.__name__} {self.name}"
 
+    # Serialization -----------------------------------------------------
+
+    def to_dict(self) -> Dict:
+        result = dict(
+            name=self.name,
+            state=self.state.to_dict(),
+            in_limit_manager=self.in_limit_manager.to_dict(),
+        )
+        if len(self.children) != 0:
+            result["children"] = [child.to_dict() for child in self.children]
+        if len(self.user_parameters) != 0:
+            result["user_parameters"] = [param.to_dict() for key, param in self.user_parameters.items()]
+        if self.trigger_expression is not None:
+            result["trigger"] = self.trigger_expression.expression_str
+        if len(self.events) != 0:
+            result["events"] = [event.to_dict() for event in self.events]
+        if len(self.meters) != 0:
+            result["meters"] = [meter.to_dict() for meter in self.meters]
+        if len(self.limits) !=0:
+            result["limits"] = [limit.to_dict() for limit in self.limits]
+        if self.repeat is not None:
+            result["repeat"] = self.repeat.to_dict()
+        if len(self.times) != 0:
+            result["times"] = [time_attr.to_dict() for time_attr in self.times]
+
+        return result
+
     # Children operation ------------------------------------------------
     #   These methods are for inner usage, and should not be used by Users.
 
