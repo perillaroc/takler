@@ -85,6 +85,24 @@ def compute_most_significant_status(nodes: List[Node], immediate: bool) -> NodeS
 
 
 class Node(ABC):
+    """
+    Node
+
+    Attributes
+    ----------
+    name
+    state
+    parent
+    children
+    user_parameters
+    trigger_expression
+    events
+    meters
+    limits
+    in_limit_manager
+    repeat
+    times
+    """
     def __init__(self, name: str):
         # 树形
         self.name: str = name

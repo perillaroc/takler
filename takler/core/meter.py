@@ -1,3 +1,4 @@
+from typing import Dict
 
 
 class Meter:
@@ -33,3 +34,12 @@ class Meter:
 
     def is_valid(self, value: int) -> bool:
         return value < self.min_value or value > self.max_value
+
+    def to_dict(self) -> Dict:
+        result = dict(
+            name=self.name,
+            min_value=self.min_value,
+            max_value=self.max_value,
+            value=self.value
+        )
+        return result

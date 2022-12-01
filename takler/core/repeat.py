@@ -99,6 +99,10 @@ class RepeatBase(ABC):
             Generated parameters.
         """
 
+    @abstractmethod
+    def to_dict(self) -> Dict:
+        ...
+
 
 class RepeatDate(RepeatBase):
     """
@@ -183,6 +187,17 @@ class RepeatDate(RepeatBase):
         return {
             self.name: Parameter(self.name, self.value)
         }
+
+    def to_dict(self) -> Dict:
+        result = dict(
+            name=self.name,
+            start_date=self.start_date.strftime(self.DATE_FORMAT),
+            end_date=self.end_date.strftime(self.DATE_FORMAT),
+            step=self.step,
+            value=self.value,
+            class_type=self.__class__.__name__
+        )
+        return result
 
 
 class Repeat:
@@ -272,3 +287,14 @@ class Repeat:
         Return generated parameters.
         """
         return self.r.generated_parameters()
+
+    def to_dict(self) -> Dict:
+        result = dict(
+            r=self.r.to_dict()
+        )
+        return result
+
+
+REPEAT_ATTR_MAP = dict(
+    RepeatDate=RepeatDate
+)

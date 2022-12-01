@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Union, Optional, Dict
 
 # Bunch level
 TAKLER_HOST = "TAKLER_HOST"
@@ -40,3 +40,10 @@ class Parameter(object):
     @value.setter
     def value(self, v: Optional[Union[str, int, float, bool]]):
         self._value = v
+
+    def to_dict(self) -> Dict:
+        result = dict(
+            name=self.name,
+            value=self._value
+        )
+        return result

@@ -1,5 +1,5 @@
 import datetime
-from typing import Union
+from typing import Union, Dict
 
 from .calendar import Calendar
 
@@ -85,3 +85,10 @@ class TimeAttribute:
             return
         if self.is_free(calendar):
             self.set_free()
+
+    def to_dict(self) -> Dict:
+        result = dict(
+            time=self.time.strftime("%H:%M"),
+            free=self.free,
+        )
+        return result

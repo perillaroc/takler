@@ -1,3 +1,4 @@
+from typing import Dict
 
 
 class Event:
@@ -29,3 +30,11 @@ class Event:
 
     def reset(self):
         self.value = self.initial_value
+
+    def to_dict(self) -> Dict:
+        result = dict(
+            name=self.name,
+            initial_value=self.initial_value,
+            value=self.value,
+        )
+        return result

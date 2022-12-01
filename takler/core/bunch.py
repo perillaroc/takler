@@ -166,3 +166,14 @@ class ServerState(BaseModel):
         for p in self.server_parameters:
             params[p.name] = p
         return params
+
+    def to_dict(self) -> Dict:
+        params = list()
+        for param in self.server_parameters:
+            params.append(param.to_dict())
+        result = dict(
+            parameters=params,
+            host=self.host,
+            port=self.port,
+        )
+        return result

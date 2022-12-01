@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional, Set, List
+from typing import TYPE_CHECKING, Optional, Set, List, Dict
 
 
 if TYPE_CHECKING:
@@ -87,6 +87,15 @@ class Limit:
         self.node_paths.clear()
         self.value = 0
 
+    def to_dict(self) -> Dict:
+        result = dict(
+            name=self.name,
+            limit=self.limit,
+            node_paths=self.node_paths,
+            value=self.value
+        )
+        return result
+
 
 class InLimit:
     """
@@ -114,6 +123,14 @@ class InLimit:
 
     def set_limit(self, limit: Limit):
         self.limit = limit
+
+    def to_dict(self) -> Dict:
+        result = dict(
+            limit_name=self.limit_name,
+            tokens=self.tokens,
+            node_path=self.node_path,
+        )
+        return result
 
 
 class InLimitManager:
@@ -280,3 +297,9 @@ class InLimitManager:
             if limit is not None:
                 in_limit.set_limit(limit)
             return
+
+    def to_dict(self) -> Dict:
+        result = dict(
+            in_limit_list=[in_limit.to_dict() for in_limit in self.in_limit_list]
+        )
+        return result

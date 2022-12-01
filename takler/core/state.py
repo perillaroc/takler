@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import Optional
+from typing import Optional, Dict
 
 
 class OrderedEnum(Enum):
@@ -72,3 +72,10 @@ class State:
             node_status = NodeStatus.unknown
         self.node_status: NodeStatus = node_status
         self.suspended: bool = False
+
+    def to_dict(self) -> Dict:
+        result = dict(
+            status=self.node_status.value,
+            suspended=self.suspended
+        )
+        return result
