@@ -1,5 +1,7 @@
 from typing import Dict
 
+from .util import SerializationType
+
 
 class Event:
     def __init__(self, name: str, initial_value: bool = False):
@@ -31,6 +33,8 @@ class Event:
     def reset(self):
         self.value = self.initial_value
 
+    # Serialization
+
     def to_dict(self) -> Dict:
         result = dict(
             name=self.name,
@@ -38,3 +42,15 @@ class Event:
             value=self.value,
         )
         return result
+
+    @classmethod
+    def from_dict(cls, d: Dict, method: SerializationType = SerializationType.Status) -> "Event":
+        name = d["name"]
+        initial_value = d["initial_value"]
+        event = Event(name=name, initial_value=initial_value)
+        if method == SerializationType.Status:
+            value = d["value"]
+            event.value = value
+
+        return event
+

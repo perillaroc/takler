@@ -1,5 +1,7 @@
 from typing import Union, Optional, Dict
 
+from .util import SerializationType
+
 # Bunch level
 TAKLER_HOST = "TAKLER_HOST"
 TAKLER_PORT = "TAKLER_PORT"
@@ -41,9 +43,45 @@ class Parameter(object):
     def value(self, v: Optional[Union[str, int, float, bool]]):
         self._value = v
 
+    # Serialization ---------------------------------------
+
     def to_dict(self) -> Dict:
+        """
+
+        Returns
+        -------
+        Dict
+            {
+                "name": parameter name,
+                "value": parameter value, str or int or float or boolean
+            }
+        """
         result = dict(
             name=self.name,
             value=self._value
         )
         return result
+
+    @classmethod
+    def from_dict(cls, d: Dict, method: SerializationType = SerializationType.Status) -> "Parameter":
+        """
+
+        Parameters
+        ----------
+        d
+            {
+                "name": parameter name,
+                "value": parameter value, str or int or float or boolean
+            }
+        method
+            - ``SerializationType.Status``
+            - ``SerializationType.Tree``
+
+        Returns
+        -------
+        Parameter
+        """
+        name = d["name"]
+        value = d["value"]
+        param = Parameter(name, value)
+        return param

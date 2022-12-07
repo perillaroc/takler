@@ -11,7 +11,7 @@ from .parameter import (
     Parameter,
     TASK, TAKLER_NAME, TAKLER_RID, TAKLER_TRY_NO
 )
-from ._logger import logger
+from .util import logger
 
 
 class Task(Node):

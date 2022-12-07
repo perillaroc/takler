@@ -1,5 +1,7 @@
 from typing import TYPE_CHECKING, Optional, Set, List, Dict
 
+from .util import SerializationType
+
 
 if TYPE_CHECKING:
     from .node import Node
@@ -30,6 +32,15 @@ class Limit:
         self.value: int = 0
         self.node: Optional["Node"] = None
         self.node_paths: Set[str] = set()
+
+    def __eq__(self, other):
+        return (
+            self.name == other.name
+            and self.limit == other.limit
+            and self.value == other.value
+            and self.node == other.node
+            and self.node_paths == other.node_paths
+        )
 
     def set_node(self, node: "Node"):
         """
@@ -87,6 +98,8 @@ class Limit:
         self.node_paths.clear()
         self.value = 0
 
+    # Serialization ----------------------------------------------------------
+
     def to_dict(self) -> Dict:
         result = dict(
             name=self.name,
@@ -95,6 +108,18 @@ class Limit:
             value=self.value
         )
         return result
+
+    @classmethod
+    def from_dict(cls, d: Dict, method: SerializationType = SerializationType.Status) -> "Limit":
+        name = d["name"]
+        limit = d["limit"]
+        limit = Limit(name=name, limit=limit)
+        if method == SerializationType.Status:
+            value = d["value"]
+            node_paths = d["node_paths"]
+            limit.value = value
+            limit.node_paths = set(node_paths)
+        return limit
 
 
 class InLimit:
@@ -121,8 +146,18 @@ class InLimit:
         self.node_path: Optional[str] = node_path
         self.limit: Optional[Limit] = None
 
+    def __eq__(self, other):
+        return (
+            self.limit_name == other.limit_name
+            and self.tokens == other.tokens
+            and self.node_path == other.node_path
+            and self.limit == other.limit
+        )
+
     def set_limit(self, limit: Limit):
         self.limit = limit
+
+    # Serialization -----------------------
 
     def to_dict(self) -> Dict:
         result = dict(
@@ -131,6 +166,14 @@ class InLimit:
             node_path=self.node_path,
         )
         return result
+
+    @classmethod
+    def from_dict(cls, d: Dict, method: SerializationType = SerializationType.Status) -> "InLimit":
+        limit_name = d["limit_name"]
+        tokens = d["tokens"]
+        node_path = d["node_path"]
+        in_limit = InLimit(limit_name=limit_name, node_path=node_path, tokens=tokens)
+        return in_limit
 
 
 class InLimitManager:
@@ -148,6 +191,9 @@ class InLimitManager:
         self.node: "Node" = node
 
         self.in_limit_list: List[InLimit] = list()
+
+    def __eq__(self, other):
+        return all([a == b for a,b in zip(self.in_limit_list, other.in_limit_list)])
 
     # Access ----------------------------------------
 
@@ -298,8 +344,21 @@ class InLimitManager:
                 in_limit.set_limit(limit)
             return
 
+    # Serialization ----------------------------------------
+
     def to_dict(self) -> Dict:
         result = dict(
             in_limit_list=[in_limit.to_dict() for in_limit in self.in_limit_list]
         )
         return result
+
+    @classmethod
+    def fill_from_dict(cls, d: Dict, node: "Node", method: SerializationType = SerializationType.Status) -> "InLimitManager":
+        in_limit_list = d["in_limit_list"]
+        for in_limit in in_limit_list:
+            node.add_in_limit(
+                limit_name=in_limit["limit_name"],
+                tokens=in_limit["tokens"],
+                node_path=in_limit["node_path"],
+            )
+        return node.in_limit_manager

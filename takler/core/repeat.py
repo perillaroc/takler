@@ -3,6 +3,7 @@ from typing import Union, Optional, Dict, TypeVar
 from datetime import datetime, date, timedelta
 
 from .parameter import Parameter
+from .util import SerializationType
 
 
 T = TypeVar("T")
@@ -103,6 +104,10 @@ class RepeatBase(ABC):
     def to_dict(self) -> Dict:
         ...
 
+    @staticmethod
+    def from_dict(cls, d: Dict, method: SerializationType = SerializationType.Status) -> "RepeatBase":
+        ...
+
 
 class RepeatDate(RepeatBase):
     """
@@ -127,6 +132,15 @@ class RepeatDate(RepeatBase):
         self.end_date: date = datetime.strptime(str(end_date), RepeatDate.DATE_FORMAT).date()
         self.step_day: timedelta = timedelta(days=step)
         self._value: date = self.start_date
+
+    def __eq__(self, other):
+        return (
+            self.name == other.name
+            and self.start_date == other.start_date
+            and self.end_date == other.end_date
+            and self.step_day == other.step_day
+            and self.value == other.value
+        )
 
     @property
     def start(self) -> int:
@@ -188,6 +202,8 @@ class RepeatDate(RepeatBase):
             self.name: Parameter(self.name, self.value)
         }
 
+    # Serialization ---------------------------------------
+
     def to_dict(self) -> Dict:
         result = dict(
             name=self.name,
@@ -198,6 +214,25 @@ class RepeatDate(RepeatBase):
             class_type=self.__class__.__name__
         )
         return result
+
+    @classmethod
+    def from_dict(cls, d: Dict, method: SerializationType = SerializationType.Status) -> "RepeatDate":
+        name = d["name"]
+        start_date = d["start_date"]
+        end_date = d["end_date"]
+        step = d["step"]
+        repeat_date = RepeatDate(
+            name=name,
+            start_date=start_date,
+            end_date=end_date,
+            step=step
+        )
+
+        if method == SerializationType.Status:
+            value = d["value"]
+            repeat_date.value = value
+
+        return repeat_date
 
 
 class Repeat:
@@ -211,6 +246,9 @@ class Repeat:
     """
     def __init__(self, r: Optional[RepeatBase] = None):
         self.r = r
+
+    def __eq__(self, other):
+        return other.r == self.r
 
     def empty(self) -> bool:
         """
@@ -288,11 +326,22 @@ class Repeat:
         """
         return self.r.generated_parameters()
 
+    # Serialization -----------------------------------------------------
+
     def to_dict(self) -> Dict:
         result = dict(
             r=self.r.to_dict()
         )
         return result
+
+    @classmethod
+    def from_dict(cls, d: Dict, method: SerializationType = SerializationType.Status) -> "Repeat":
+        r = d["r"]
+        class_name = r["class_type"]
+        class_type = REPEAT_ATTR_MAP[class_name]
+        repeat_r = class_type.from_dict(d=r, method=method)
+        repeat = Repeat(r=repeat_r)
+        return repeat
 
 
 REPEAT_ATTR_MAP = dict(

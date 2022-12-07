@@ -2,6 +2,7 @@ import datetime
 from typing import Union, Dict
 
 from .calendar import Calendar
+from .util import SerializationType
 
 
 class TimeAttribute:
@@ -22,6 +23,9 @@ class TimeAttribute:
             time = datetime.datetime.strptime(time, '%H:%M').time()
         self.time: datetime.time = time
         self.free: bool = False
+
+    def __eq__(self, other):
+        return other.time == self.time and other.free == self.free
 
     def is_free(self, calendar: Calendar) -> bool:
         """
@@ -86,9 +90,22 @@ class TimeAttribute:
         if self.is_free(calendar):
             self.set_free()
 
+    # Serialization ----------------------------------------------
+
     def to_dict(self) -> Dict:
         result = dict(
             time=self.time.strftime("%H:%M"),
             free=self.free,
         )
         return result
+
+    @classmethod
+    def from_dict(cls, d: Dict, method: SerializationType = SerializationType.Status) -> "TimeAttribute":
+        time_string = d["time"]
+        time_attr = TimeAttribute(time=time_string)
+        if method == SerializationType.Status:
+            is_free = d["free"]
+            if is_free:
+                time_attr.set_free()
+
+        return time_attr

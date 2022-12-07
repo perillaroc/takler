@@ -15,7 +15,7 @@ from .expression import Expression
 from .repeat import Repeat, RepeatBase
 from .time_attr import TimeAttribute
 
-from ._logger import logger
+from .util import logger
 
 if TYPE_CHECKING:
     from .bunch import Bunch
