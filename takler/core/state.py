@@ -3,6 +3,8 @@ from __future__ import annotations
 from enum import Enum
 from typing import Optional, Dict
 
+from .util import SerializationType
+
 
 class OrderedEnum(Enum):
     """
@@ -79,3 +81,11 @@ class State:
             suspended=self.suspended
         )
         return result
+
+    @classmethod
+    def from_dict(cls, d: Dict, method: SerializationType = SerializationType.Status) -> "State":
+        status = d["status"]
+        suspended = d["suspended"]
+        state = State(node_status=NodeStatus(status))
+        state.suspended = suspended
+        return state

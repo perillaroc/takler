@@ -42,6 +42,9 @@ class Limit:
             and self.node_paths == other.node_paths
         )
 
+    def __hash__(self):
+        return hash((self.name, self.limit, self.value, self.node, tuple(self.node_paths)))
+
     def set_node(self, node: "Node"):
         """
         set reference node for Limit.

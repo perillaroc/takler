@@ -2,7 +2,7 @@ import pprint
 
 import pytest
 
-from takler.core import Flow, RepeatDate
+from takler.core import Flow, RepeatDate, Task, SerializationType
 
 
 class ObjectContainer:
@@ -53,13 +53,17 @@ def task_case():
     return result
 
 
-def test_node(task_case):
+def test_node_to_dict(task_case):
     task2 = task_case.task2
     assert task2.to_dict() == dict(
         name="task2",
         state=dict(
             status=3,
             suspended=False,
+        ),
+        class_type=dict(
+            module="takler.core.task_node",
+            name="Task",
         ),
         user_parameters=[
             dict(name="param1", value="one"),
@@ -98,3 +102,56 @@ def test_node(task_case):
         aborted_reason=None,
         try_no=0,
     )
+
+
+def test_node_from_dict():
+    d = dict(
+        name="task2",
+        state=dict(
+            status=3,
+            suspended=False,
+        ),
+        class_type=dict(
+            module="takler.core.task_node",
+            name="Task",
+        ),
+        user_parameters=[
+            dict(name="param1", value="one"),
+        ],
+        trigger="./task1:event1 == set",
+        events=[
+            dict(name="event1", initial_value=False, value=False),
+        ],
+        meters=[
+            dict(name="meter1", min_value=0, max_value=10, value=0)
+        ],
+        limits=[
+            dict(name="limit1", limit=10, node_paths=list(), value=0)
+        ],
+        in_limit_manager=dict(
+            in_limit_list=[
+                dict(limit_name="limit1", tokens=1, node_path=None)
+            ]
+        ),
+        repeat=dict(
+            r=dict(
+                name="TAKLER_DATE",
+                start_date="20221201",
+                end_date="20221202",
+                step=1,
+                value=20221201,
+                class_type="RepeatDate",
+            )
+        ),
+        times=[
+            dict(time="12:00", free=False),
+        ],
+
+        # task
+        task_id="123456",
+        aborted_reason="trap",
+        try_no=1,
+    )
+
+    pprint.pprint(Task.from_dict(d, method=SerializationType.Status))
+    return

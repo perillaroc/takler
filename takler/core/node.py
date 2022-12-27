@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import importlib
 from typing import Union, List, Optional, Dict, TYPE_CHECKING, Set
 from pathlib import PurePosixPath
 from collections import defaultdict
@@ -15,7 +16,7 @@ from .expression import Expression
 from .repeat import Repeat, RepeatBase
 from .time_attr import TimeAttribute
 
-from .util import logger
+from .util import logger, SerializationType
 
 if TYPE_CHECKING:
     from .bunch import Bunch
@@ -154,6 +155,10 @@ class Node(ABC):
         result = dict(
             name=self.name,
             state=self.state.to_dict(),
+            class_type=dict(
+                module=self.__module__,
+                name=self.__class__.__name__
+            )
         )
         if len(self.children) != 0:
             result["children"] = [child.to_dict() for child in self.children]
@@ -175,6 +180,63 @@ class Node(ABC):
             result["times"] = [time_attr.to_dict() for time_attr in self.times]
 
         return result
+
+    @classmethod
+    def from_dict(cls, d: Dict,  method: SerializationType = SerializationType.Status) -> "Node":
+        class_type = d["class_type"]
+        class_module = class_type["module"]
+        class_name = class_type["name"]
+        class_module = importlib.import_module(class_module)
+        class_object = getattr(class_module, class_name)
+        node = class_object(name=d["name"])
+        node = class_object.fill_from_dict(d, node, method=method)
+        return node
+
+    @classmethod
+    def fill_from_dict(cls, d: Dict, node: "Node", method: SerializationType = SerializationType.Status) -> "Node":
+        name = d["name"]
+        node.name = name
+        if method == SerializationType.Status:
+            state = d["state"]
+            node.state = State.from_dict(state, method=method)
+
+        if "user_parameters" in d:
+            user_parameters = d["user_parameters"]
+            for param in user_parameters:
+                node.add_parameter(param["name"], param["value"])
+
+        if "trigger" in d:
+            trigger = d["trigger"]
+            node.add_trigger(trigger, parse=False)
+
+        if "events" in d:
+            events = d["events"]
+            for event in events:
+                node.events.append(Event.from_dict(event, method=method))
+        if "meters" in d:
+            meters = d["meters"]
+            for meter in meters:
+                node.meters.append(Meter.from_dict(meter, method=method))
+
+        if "limits" in d:
+            limits = d["limits"]
+            for limit in limits:
+                node.add_limit(limit["name"], limit=limit["limit"])
+
+        if "in_limit_manager" in d:
+            in_limit_manager = d["in_limit_manager"]
+            InLimitManager.fill_from_dict(in_limit_manager, node=node, method=method)
+
+        if "repeat" in d:
+            repeat = d["repeat"]
+            node.repeat = Repeat.from_dict(repeat, method=method)
+
+        if "times" in d:
+            times = d["times"]
+            for time_attr in times:
+                node.add_time(time_attr["time"])
+
+        return node
 
     # Children operation ------------------------------------------------
     #   These methods are for inner usage, and should not be used by Users.
@@ -445,7 +507,7 @@ class Node(ABC):
 
     # Trigger --------------------------------------------------------
 
-    def add_trigger(self, trigger: Union[str, Expression]):
+    def add_trigger(self, trigger: Union[str, Expression], parse: bool = False):
         if isinstance(trigger, str):
             self.trigger_expression = Expression(trigger)
         elif isinstance(trigger, Expression):
@@ -453,7 +515,8 @@ class Node(ABC):
         else:
             raise TypeError("trigger only supports str or Expression.")
 
-        self.trigger_expression.create_ast(self)
+        if parse:
+            self.trigger_expression.create_ast(self)
 
     def evaluate_trigger(self) -> bool:
         """

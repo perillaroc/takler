@@ -11,7 +11,7 @@ from .parameter import (
     Parameter,
     TASK, TAKLER_NAME, TAKLER_RID, TAKLER_TRY_NO
 )
-from .util import logger
+from .util import logger, SerializationType
 
 
 class Task(Node):
@@ -39,6 +39,19 @@ class Task(Node):
         ))
 
         return result
+
+    @classmethod
+    def fill_from_dict(cls, d: Dict, node: "Task", method: SerializationType = SerializationType.Status) -> "Task":
+        Node.fill_from_dict(d=d, node=node, method=method)
+
+        task_id = d["task_id"]
+        aborted_reason = d["aborted_reason"]
+        try_no = d["try_no"]
+        node.task_id = task_id
+        node.aborted_reason = aborted_reason
+        node.try_no = try_no
+
+        return node
 
     # State management --------------------------------------------
 
