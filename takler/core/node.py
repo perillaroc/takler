@@ -183,6 +183,19 @@ class Node(ABC):
 
     @classmethod
     def from_dict(cls, d: Dict,  method: SerializationType = SerializationType.Status) -> "Node":
+        """
+        Create ``Node`` based object from dictionary. Use ``d["class_type"]`` to determine which class is to be created.
+
+        Parameters
+        ----------
+        d
+        method
+
+        Returns
+        -------
+        Node
+            A ``Node`` based object created from dictionary.
+        """
         class_type = d["class_type"]
         class_module = class_type["module"]
         class_name = class_type["name"]
@@ -194,6 +207,21 @@ class Node(ABC):
 
     @classmethod
     def fill_from_dict(cls, d: Dict, node: "Node", method: SerializationType = SerializationType.Status) -> "Node":
+        """
+        Fill a ``Node`` based object from dictionary.
+
+        Subclasses of ``Node`` should override this method and call ``Node.file_from_dict`` in the override method.
+
+        Parameters
+        ----------
+        d
+        node
+        method
+
+        Returns
+        -------
+        Node
+        """
         name = d["name"]
         node.name = name
         if method == SerializationType.Status:
@@ -235,6 +263,11 @@ class Node(ABC):
             times = d["times"]
             for time_attr in times:
                 node.add_time(time_attr["time"])
+
+        if "children" in d:
+            for child in d["children"]:
+                child_node = cls.from_dict(child, method=method)
+                node.children.append(child_node)
 
         return node
 

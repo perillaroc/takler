@@ -1,8 +1,9 @@
-import pprint
-
 import pytest
 
 from takler.core import Flow, RepeatDate, Task, SerializationType
+from takler.visitor import pre_order_travel, PrintVisitor
+
+from .util import get_node_tree_print_string
 
 
 class ObjectContainer:
@@ -104,7 +105,7 @@ def test_node_to_dict(task_case):
     )
 
 
-def test_node_from_dict():
+def test_node_from_dict(task_case):
     d = dict(
         name="task2",
         state=dict(
@@ -153,5 +154,15 @@ def test_node_from_dict():
         try_no=1,
     )
 
-    pprint.pprint(Task.from_dict(d, method=SerializationType.Status))
+    task = Task.from_dict(d, method=SerializationType.Status)
+
+    expected_task = task_case.task2
+    expected_task.task_id = "123456"
+    expected_task.aborted_reason = "trap"
+    expected_task.try_no = 1
+
+    task_text = get_node_tree_print_string(task)
+    expected_task_text = get_node_tree_print_string(expected_task)
+    assert task_text == expected_task_text
+
     return

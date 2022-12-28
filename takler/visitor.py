@@ -20,6 +20,9 @@ class NodeVisitor(ABC):
 
 
 class SimplePrintVisitor(NodeVisitor):
+    """
+    Print node tree with state.
+    """
     def __init__(self):
         NodeVisitor.__init__(self)
         self.level = 0
@@ -38,6 +41,9 @@ class SimplePrintVisitor(NodeVisitor):
 
 
 class PrintVisitor(NodeVisitor):
+    """
+    Print node tree with attributes. Use ``show_*`` options to choose printed attrs.
+    """
     def __init__(
             self, stream: IO,
             show_parameter: bool = False,
