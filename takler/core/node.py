@@ -267,7 +267,7 @@ class Node(ABC):
         if "children" in d:
             for child in d["children"]:
                 child_node = cls.from_dict(child, method=method)
-                node.children.append(child_node)
+                node.append_child(child_node)
 
         return node
 
