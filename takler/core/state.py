@@ -75,7 +75,9 @@ class State:
         self.node_status: NodeStatus = node_status
         self.suspended: bool = False
 
-    def to_dict(self) -> Dict:
+    # Serialization --------------------------------------------------------------------
+
+    def to_dict(self, method: SerializationType = SerializationType.Status) -> Dict:
         result = dict(
             status=self.node_status.value,
             suspended=self.suspended
@@ -84,8 +86,11 @@ class State:
 
     @classmethod
     def from_dict(cls, d: Dict, method: SerializationType = SerializationType.Status) -> "State":
-        status = d["status"]
-        suspended = d["suspended"]
-        state = State(node_status=NodeStatus(status))
-        state.suspended = suspended
+        if method == SerializationType.Status:
+            status = d["status"]
+            suspended = d["suspended"]
+            state = State(node_status=NodeStatus(status))
+            state.suspended = suspended
+        else:
+            state = State()
         return state
