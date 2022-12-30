@@ -200,6 +200,15 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
+    async def RunLoadCommand(self, request: takler_pb2.LoadCommand, context):
+        flow_file_path = request.flow_file_path
+        logger.info(f"Load: {flow_file_path}")
+        self.scheduler.run_command_load(flow_file_path=flow_file_path)
+        return takler_pb2.ServiceResponse(
+            flag=0,
+            message="",
+        )
+
     # Query command -----------------------------------------------------
 
     async def RunShowRequest(self, request: takler_pb2.ShowRequest, context):

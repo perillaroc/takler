@@ -1,11 +1,12 @@
 import asyncio
 import time
 import datetime
+import json
 from io import StringIO
 from queue import Queue
 from typing import Optional
 
-from takler.core import Bunch, Task, NodeStatus, Event
+from takler.core import Bunch, Task, NodeStatus, Event, Flow, SerializationType
 from takler.core.node import Node
 from takler.logging import get_logger
 from takler.visitor import pre_order_travel, PrintVisitor
@@ -219,6 +220,14 @@ class Scheduler:
         if node is None:
             raise ValueError(f"node is not found: {node_path}")
         node.free_dependencies(dep_type)
+
+    def run_command_load(self, flow_file_path: str):
+        with open(flow_file_path, "r") as f:
+            flow_dict = json.load(f)
+            flow: Flow = Flow.from_dict(d=flow_dict, method=SerializationType.Tree)
+            self.bunch.add_flow(flow)
+            # TODO: should use begin to start flow running.
+            flow.requeue()
 
     # Query -------------------------------------------------
 

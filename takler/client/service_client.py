@@ -223,6 +223,19 @@ class TaklerServiceClient:
         )
         print(f"received: {response.flag}")
 
+    def load(self, flow_file_path: str):
+        self.start()
+        self.run_command_load(flow_file_path=flow_file_path)
+        self.shutdown()
+
+    def run_command_load(self, flow_file_path: str):
+        response = self.stub.RunLoadCommand(
+            takler_pb2.LoadCommand(
+                flow_file_path=flow_file_path
+            )
+        )
+        print(f"received: {response.flag}")
+
     # Query command ----------------------------------------------------
 
     def show(

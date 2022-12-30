@@ -92,6 +92,10 @@ message FreeDepCommand {
   repeated string path = 2;
 }
 
+message LoadCommand {
+  string flow_file_path = 1;
+}
+
 // query command
 
 message ShowRequest{
@@ -147,6 +151,8 @@ service TaklerServer {
   rpc RunForceCommand(ForceCommand) returns (ServiceResponse) {}
 
   rpc RunFreeDepCommand(FreeDepCommand) returns (ServiceResponse) {}
+
+  rpc RunLoadCommand(LoadCommand) returns (ServiceResponse) {}
 
 
   // query command
