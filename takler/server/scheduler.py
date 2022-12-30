@@ -221,13 +221,18 @@ class Scheduler:
             raise ValueError(f"node is not found: {node_path}")
         node.free_dependencies(dep_type)
 
-    def run_command_load(self, flow_file_path: str):
-        with open(flow_file_path, "r") as f:
-            flow_dict = json.load(f)
+    def run_command_load(self, flow_type: str, flow_bytes: bytes):
+        if flow_type == "json":
+            logger.info("load json flow...")
+            flow_dict = json.loads(flow_bytes)
             flow: Flow = Flow.from_dict(d=flow_dict, method=SerializationType.Tree)
             self.bunch.add_flow(flow)
             # TODO: should use begin to start flow running.
             flow.requeue()
+            logger.info(f"load json flow...done [flow name: {flow.name}]")
+        else:
+            logger.warning(f"flow type {flow_type} is not supported for command load.")
+            raise RuntimeError(f"flow type {flow_type} is not supported for command load.")
 
     # Query -------------------------------------------------
 

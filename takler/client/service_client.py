@@ -229,9 +229,13 @@ class TaklerServiceClient:
         self.shutdown()
 
     def run_command_load(self, flow_file_path: str):
+        flow_type = "json"
+        with open(flow_file_path, "rb") as f:
+            flow_bytes = f.read()
         response = self.stub.RunLoadCommand(
             takler_pb2.LoadCommand(
-                flow_file_path=flow_file_path
+                flow_type=flow_type,
+                flow=flow_bytes
             )
         )
         print(f"received: {response.flag}")

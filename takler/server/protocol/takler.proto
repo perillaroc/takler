@@ -93,7 +93,8 @@ message FreeDepCommand {
 }
 
 message LoadCommand {
-  string flow_file_path = 1;
+  string flow_type = 1;
+  bytes flow = 2;
 }
 
 // query command
