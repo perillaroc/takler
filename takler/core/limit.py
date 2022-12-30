@@ -107,7 +107,7 @@ class Limit:
         result = dict(
             name=self.name,
             limit=self.limit,
-            node_paths=list(self.node_paths),
+            node_paths=sorted(list(self.node_paths)),
             value=self.value
         )
         return result
