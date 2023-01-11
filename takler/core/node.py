@@ -105,7 +105,6 @@ class Node(ABC):
     times
     """
     def __init__(self, name: str):
-        # 树形
         self.name: str = name
 
         # 状态

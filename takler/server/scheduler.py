@@ -104,10 +104,24 @@ class Scheduler:
         for name, flow in self.bunch.flows.items():
             flow.resolve_dependencies()
 
-    # Child -------------------------------------------------
+    # Child command -------------------------------------------------
 
     async def run_command_init(self, node_path: str, task_id: str):
         """
+        Init the ``Task`` node, call child method ``init``.
+
+        Parameters
+        ----------
+        node_path
+            node path string of a task, starting with "/", such as /flow1/container1/task1.
+        task_id
+            An ID to identify the task, will be set into parameter ``TAKLER_RID``.
+
+        Raises
+        ------
+        ValueError
+            If node is not a ``Task``.
+
         Notes
         -----
         是否使用异步函数执行客户端命令？
@@ -122,6 +136,23 @@ class Scheduler:
             raise ValueError(f"node must be Task: {node_path}")
 
     def run_command_complete(self, node_path: str):
+        """
+        Set the node to complete status, call child method ``complete``.
+
+        Parameters
+        ----------
+        node_path
+            node path string of a task, staring with "/"
+
+        Raises
+        ------
+        ValueError
+            If node is not a ``Task``.
+
+        Returns
+        -------
+
+        """
         node = self.bunch.find_node(node_path)
         if node is None:
             raise ValueError(f"node is not found: {node_path}")
@@ -132,6 +163,25 @@ class Scheduler:
             raise ValueError(f"node must be Task: {node_path}")
 
     def run_command_abort(self, node_path: str, reason: Optional[str] = None):
+        """
+        Set task to aborted status with aborted reason
+
+        Parameters
+        ----------
+        node_path
+            node path string of a task, staring with "/"
+
+        reason
+            describe why task is aborted.
+        Raises
+        ------
+        ValueError
+            If node is not a ``Task``.
+
+        Returns
+        -------
+
+        """
         node = self.bunch.find_node(node_path)
         if node is None:
             raise ValueError(f"node is not found: {node_path}")
@@ -142,6 +192,20 @@ class Scheduler:
             raise ValueError(f"node must be Task: {node_path}")
 
     def run_command_event(self, node_path: str, event_name: str):
+        """
+        Set the event in a node, call child method ``set_event``.
+
+        Parameters
+        ----------
+        node_path
+            node path string of a task, staring with "/"
+        event_name
+            event name
+
+        Returns
+        -------
+
+        """
         node = self.bunch.find_node(node_path)
         if node is None:
             raise ValueError(f"node is not found: {node_path}")
@@ -149,6 +213,22 @@ class Scheduler:
         node.set_event(event_name, True)
 
     def run_command_meter(self, node_path: str, meter_name: str, meter_value: str):
+        """
+        Change meter value, call child method ``meter``.
+
+        Parameters
+        ----------
+        node_path
+            node path string of a task, staring with "/"
+        meter_name
+            meter name
+        meter_value
+            meter value
+
+        Returns
+        -------
+
+        """
         node = self.bunch.find_node(node_path)
         if node is None:
             raise ValueError(f"node is not found: {node_path}")
@@ -158,6 +238,23 @@ class Scheduler:
     # Control -------------------------------------------------
 
     def run_command_requeue(self, node_path: str):
+        """
+        Requeue the node.
+
+        Parameters
+        ----------
+        node_path
+            node path string.
+
+        Raises
+        ------
+        ValueError
+            If node is not found.
+
+        Returns
+        -------
+
+        """
         node = self.bunch.find_node(node_path)
         if node is None:
             raise ValueError(f"node is not found: {node_path}")
@@ -165,6 +262,23 @@ class Scheduler:
         node.requeue()
 
     def run_command_suspend(self, node_path: str):
+        """
+        Suspend a node.
+
+        Parameters
+        ----------
+        node_path
+            node path string.
+
+        Raises
+        ------
+        ValueError
+            If node is not found.
+
+        Returns
+        -------
+
+        """
         node = self.bunch.find_node(node_path)
         if node is None:
             raise ValueError(f"node is not found: {node_path}")
@@ -172,6 +286,23 @@ class Scheduler:
         node.suspend()
 
     def run_command_resume(self, node_path: str):
+        """
+        Resume a node from suspended status.
+
+        Parameters
+        ----------
+        node_path
+            node path string.
+
+        Raises
+        ------
+        ValueError
+            If node is not found.
+
+        Returns
+        -------
+
+        """
         node = self.bunch.find_node(node_path)
         if node is None:
             raise ValueError(f"node is not found: {node_path}")
@@ -179,6 +310,27 @@ class Scheduler:
         node.resume()
 
     def run_command_run(self, node_path: str, force: bool = False) -> bool:
+        """
+        Run the task when task node is not in submitted or active status.
+        If force is set, run the task regardless of task status.
+
+        Parameters
+        ----------
+        node_path
+            node path string of a task.
+        force
+            run in force mode.
+
+        Raises
+        ------
+        ValueError
+            If node is not a ``Task``.
+
+        Returns
+        -------
+        bool
+            return True if call task's run method.
+        """
         node = self.bunch.find_node(node_path)
         if not isinstance(node, Task):
             return False
@@ -192,6 +344,36 @@ class Scheduler:
         return True
 
     def run_command_force(self, variable_path: str, state: str, recursive: bool = False) -> bool:
+        """
+        Force node or event to some state.
+
+        For node:
+
+        Set node status to some state. If recursive is set, set all its children node also.
+
+        For event:
+
+        Set (``set``) or unset (``clear``) event.
+
+        Parameters
+        ----------
+        variable_path
+            Path for a ``Node`` or an ``Event``.
+        state
+            ``NodeState`` string if ``variable_path`` is a node, "clear" or "set" if event
+        recursive
+            If ``variable_path`` is a node, set state for the node and all its descendant nodes.
+
+
+        Raises
+        ------
+        ValueError
+            If variable path is an ``Event`` and state is not `set` or `clear`.
+
+        Returns
+        -------
+        bool
+        """
         variable = self.bunch.find_path(variable_path)
         if variable is None:
             return False
@@ -216,12 +398,42 @@ class Scheduler:
         return True
 
     def run_command_free_dep(self, node_path: str, dep_type: str):
+        """
+        Free dependencies of the node.
+
+        Parameters
+        ----------
+        node_path
+        dep_type
+            sell ``Node.free_dependencies``
+
+        Returns
+        -------
+
+        """
         node: Node = self.bunch.find_node(node_path)
         if node is None:
             raise ValueError(f"node is not found: {node_path}")
         node.free_dependencies(dep_type)
 
     def run_command_load(self, flow_type: str, flow_bytes: bytes):
+        """
+        Load a new flow into bunch from string bytes.
+
+        Parameters
+        ----------
+        flow_type
+            type of flow, support:
+
+                * json: json string
+
+        flow_bytes
+            string bytes of flow's definition.
+
+        Returns
+        -------
+        None
+        """
         if flow_type == "json":
             logger.info("load json flow...")
             flow_dict = json.loads(flow_bytes)

@@ -22,7 +22,7 @@ class Bunch(NodeContainer):
         self.server_state: ServerState = ServerState(host=host, port=port)
         self.server_state.setup()
 
-    # Serialization
+    # Serialization ---------------------------------------
 
     def to_dict(self) -> Dict:
         result = super().to_dict()
