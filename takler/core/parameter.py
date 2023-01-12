@@ -51,10 +51,13 @@ class Parameter(object):
         Returns
         -------
         Dict
-            {
-                "name": parameter name,
-                "value": parameter value, str or int or float or boolean
-            }
+            ::
+
+                {
+                    "name": parameter name,
+                    "value": parameter value, str or int or float or boolean
+                }
+
         """
         result = dict(
             name=self.name,
@@ -69,11 +72,15 @@ class Parameter(object):
         Parameters
         ----------
         d
-            {
-                "name": parameter name,
-                "value": parameter value, str or int or float or boolean
-            }
+            ::
+
+                {
+                    "name": parameter name,
+                    "value": parameter value, str or int or float or boolean
+                }
+
         method
+
             - ``SerializationType.Status``
             - ``SerializationType.Tree``
 

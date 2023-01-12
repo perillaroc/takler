@@ -878,12 +878,12 @@ class Node(ABC):
 
     def check_in_limit_up(self) -> bool:
         """
-        Check if all ``InLimit``s have enough tokens up along the tree.
+        Check if all ``InLimit`` have enough tokens up along the tree.
 
         Returns
         -------
         bool
-            If all ``InLimit``s have enough tokens, return True.
+            If all ``InLimit`` have enough tokens, return True.
         """
         if not self.in_limit_manager.in_limit():
             return False
@@ -903,7 +903,7 @@ class Node(ABC):
         Parameters
         ----------
         limit_set
-            A set to save changed ``Limit``s, to make sure one Limit is incremented only once.
+            A set to save changed ``Limit``, to make sure one Limit is incremented only once.
         """
         node_path = self.node_path
         self.in_limit_manager.increment_in_limit(limit_set, node_path)
@@ -920,7 +920,7 @@ class Node(ABC):
         Parameters
         ----------
         limit_set
-            A set to save changed ``Limit``s, to make sure one Limit is decremented only once.
+            A set to save changed ``Limit``, to make sure one Limit is decremented only once.
         """
         node_path = self.node_path
         self.in_limit_manager.decrement_in_limit(limit_set, node_path)

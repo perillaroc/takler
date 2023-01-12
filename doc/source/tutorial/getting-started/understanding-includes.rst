@@ -1,13 +1,13 @@
 理解头文件
 ============
 
-前面章节中创建一个 Shell 脚本类型 (``ShellScriptTask``) 的 task。
+前面章节中创建一个 Shell 脚本类型 (:py:class:`~takler.tasks.shell.ShellScriptTask`) 的 task。
 
-每个 ``ShellScriptTask`` 都有对应的 takler 脚本 (takler script)，定义需要执行哪些操作，脚本类似于 UNIX shell 脚本。
+每个 :py:class:`~takler.tasks.shell.ShellScriptTask` 都有对应的 takler 脚本 (takler script)，定义需要执行哪些操作，脚本类似于 UNIX shell 脚本。
 
 但 takler 脚本使用 `Jinja2 <https://jinja.palletsprojects.com/>`_ 提供的模板指令和预定义变量。
 
-工作流定义中的变量 (``Parameter``) 可以在 takler 脚本中使用，提供一种配置机制。
+工作流定义中的变量 (:py:class:`~takler.core.Parameter`) 可以在 takler 脚本中使用，提供一种配置机制。
 
 变量指令是 ``{{ some_var }}``：
 
@@ -33,6 +33,7 @@ head.takler 头文件放在 takler 脚本的开头，用于：
 应用在 CMA-PI 上的示例 head.takler
 
 .. code-block:: bash
+    :linenos:
 
     #!/bin/bash
 

@@ -147,3 +147,5 @@ jspm_packages
 #
 
 *.job
+
+generated/

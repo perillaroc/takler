@@ -43,6 +43,21 @@ class SimplePrintVisitor(NodeVisitor):
 class PrintVisitor(NodeVisitor):
     """
     Print node tree with attributes. Use ``show_*`` options to choose printed attrs.
+
+    Attributes
+    ----------
+    show_parameter
+        print parameters
+    show_trigger
+        print trigger expressing
+    show_limit
+        print limits
+    show_event
+        print events
+    show_meter
+        print meters
+    show_repeat
+        print repeat
     """
     def __init__(
             self, stream: IO,

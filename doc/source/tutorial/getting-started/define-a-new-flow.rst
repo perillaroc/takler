@@ -45,14 +45,14 @@
 
 - 1-2：导入 Python 自带包
 - 4-6：导入 takler 包中对象
-    - ``Flow``：工作流类
-    - ``Bunch``：工作流集合类，可以包含多个工作流 (``Flow``) 对象
-    - ``ShellScriptTask``：Shell 脚本任务类
-    - ``pre_order_travel()`` 函数：前序遍历工作流
-    - ``PrintVisitor`` 类：打印节点信息
+    - :py:class:`~takler.core.Flow`：工作流类
+    - :py:class:`~takler.core.Bunch`：工作流集合类，可以包含多个工作流 (``Flow``) 对象
+    - :py:class:`~takler.tasks.shell.ShellScriptTask`：Shell 脚本任务类
+    - :py:func:`~takler.visitor.pre_order_travel` 函数：前序遍历工作流
+    - :py:class:`~takler.visitor.PrintVisitor` 类：打印节点信息
 - 9：``create_flow()`` 函数创建只有一个任务 (task1) 的工作流 (flow1)
 - 13：定义工作流 ``flow``
-- 14：为 ``flow`` 定义变量 ``TAKLER_HOME``，该变量定义工作流生成的作业文件的保存目录
+- 14：为 ``flow`` 定义变量 ``TAKLER_HOME``，该变量定义工作流生成的作业文件的保存目录，本例中是脚本当前目录
 - 15：定义 Shell 脚本任务 ``task1``
 - 16：为 ``task1`` 定义变量 ``TAKLER_SCRIPT``，该变量定义 Shell 脚本任务对应的脚本目录，本例中为
 
@@ -63,7 +63,7 @@
 - 17：``create_flow()`` 函数返回工作流 ``flow`` 对象
 - 20：定义直接运行脚本会执行的代码
 - 21：创建工作流
-- 22：创建工作流集合 ``bunch`` 对象
+- 22：创建工作流集合对象``bunch``。:py:class:`~takler.core.Bunch` 对象用于保存 Takler 服务中的工作流。
 - 23：将工作流 ``flow`` 添加到 ``bunch`` 中
 - 24：``pre_order_travel`` 与 ``PrintVisitor`` 结合会打印工作流的树形结构
 
@@ -99,7 +99,7 @@
 
 .. note::
 
-    在大型工作流中推荐使用 ``with`` 方式合理缩进代码，方便后续修改维护。
+    在大型工作流中可以使用 ``with`` 方式合理缩进代码，方便后续修改维护。
 
 练习
 -----
