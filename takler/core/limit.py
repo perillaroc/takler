@@ -128,18 +128,19 @@ class Limit:
 class InLimit:
     """
     An attribution of Node to mark current Node and all its children to use some Limit.
-    One Node could have multiply ``InLimit``s. ``InLimit`` is managed by ``InLimitManager``.
+    One Node could have multiply :py:class:`~takler.core.limit.InLimit`s.
+    :py:class:`~takler.core.limit.InLimit` is managed by :py:class:`~takler.core.limit.InLimitManager`.
 
     Attributes
     ----------
     limit_name
-        name of the ``Limit``.
+        name of the Limit.
     tokens
         number of tokens for one node. Default is 1.
     node_path
-        reference node of the Limit. If None, ``InLimitManager`` will search up the node tree.
+        reference node of the Limit. If None, :py:class:`~takler.core.limit.InLimitManager` will search up the node tree.
     limit
-        the ``Limit`` object
+        the :py:class:`~takler.core.limit.Limit` object
     """
     def __init__(self, limit_name: str, node_path: Optional[str] = None, tokens: int = 1):
         self.limit_name: str = limit_name
@@ -181,14 +182,15 @@ class InLimit:
 
 class InLimitManager:
     """
-    Manager ``InLimit``s in one ``Node``. Deal with Limit increment and decrement.
+    Manager :py:class:`~takler.core.limit.InLimit`s in one :py:class:`~takler.core.node.Node`.
+    Deal with Limit increment and decrement.
 
     Attributes
     ----------
-    node
-        reference node who has the ``InLimitManager``
-    in_limit_list
-        list of ``InLimit`
+    node : Node
+        reference node who has the :py:class:`~takler.core.limit.InLimitManager`
+    in_limit_list : List[InLimit]
+        list of :py:class:`~takler.core.limit.InLimit`
     """
     def __init__(self, node: "Node"):
         self.node: "Node" = node

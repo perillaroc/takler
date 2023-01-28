@@ -30,7 +30,7 @@ author = 'perillaroc'
 extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.autodoc',
-    # 'sphinx.ext.autosummary',
+    'sphinx.ext.autosummary',
     'sphinx_autodoc_typehints',
 ]
 
@@ -71,4 +71,4 @@ html_title = "Takler文档"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-# autosummary_generate = True
+autosummary_generate = True
