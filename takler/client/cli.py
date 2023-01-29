@@ -29,6 +29,9 @@ def init(
         host: str = typer.Option(None, help=HOST_HELP_STRING),
         port: str = typer.Option(None, help=PORT_HELP_STRING),
 ):
+    """
+    [child] init the task.
+    """
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
         return
@@ -44,6 +47,9 @@ def complete(
         host: str = typer.Option(None, help=HOST_HELP_STRING),
         port: str = typer.Option(None, help=PORT_HELP_STRING),
 ):
+    """
+    [child] complete the task.
+    """
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
         return
@@ -60,6 +66,9 @@ def abort(
         port: str = typer.Option(None, help=PORT_HELP_STRING),
         reason: str = typer.Option("", help="abort reason")
 ):
+    """
+    [child] abort the task.
+    """
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
         return
@@ -76,6 +85,9 @@ def event(
         port: str = typer.Option(None, help=PORT_HELP_STRING),
         event_name: str = typer.Option(..., help="event name"),
 ):
+    """
+    [child] change Event.
+    """
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
         return
@@ -93,6 +105,9 @@ def meter(
         meter_name: str = typer.Option(..., help="meter name"),
         meter_value: str = typer.Option(..., help="meter value"),
 ):
+    """
+    [child] change Meter.
+    """
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
         return
@@ -111,6 +126,9 @@ def requeue(
         port: str = typer.Option(None, help=PORT_HELP_STRING),
         node_path: List[str] = typer.Argument(..., help="node paths"),
 ):
+    """
+    [control] requeue the node(s).
+    """
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
@@ -123,6 +141,9 @@ def suspend(
         port: str = typer.Option(None, help=PORT_HELP_STRING),
         node_path: List[str] = typer.Argument(..., help="node paths"),
 ):
+    """
+    [control] suspend the node(s). prevent job creation for the node and all its children nodes.
+    """
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
@@ -135,6 +156,9 @@ def resume(
         port: str = typer.Option(None, help=PORT_HELP_STRING),
         node_path: List[str] = typer.Argument(..., help="node paths"),
 ):
+    """
+    [control] resume the node(s) from suspended status.
+    """
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
@@ -148,6 +172,9 @@ def run(
         node_path: List[str] = typer.Argument(..., help="node paths"),
         force: bool = typer.Option(False, help="force run"),
 ):
+    """
+    [control] run the task.
+    """
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
@@ -162,6 +189,9 @@ def force(
         state: str = typer.Argument(..., help="state"),
         variable_path: List[str] = typer.Argument(..., help="variable paths"),
 ):
+    """
+    [control] change the node's state force, ignore whatever state it is now.
+    """
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
@@ -175,10 +205,29 @@ def free_dep(
         dep_type: str = typer.Option(True, help="dependency type, [all, time, trigger]"),
         node_path: List[str] = typer.Argument(..., help="variable paths"),
 ):
+    """
+    [control] free dependencies for the node(s).
+    """
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
     client.free_dep(node_paths=node_path, dep_type=dep_type)
+
+
+@app.command()
+def load(
+        host: str = typer.Option(None, help=HOST_HELP_STRING),
+        port: str = typer.Option(None, help=PORT_HELP_STRING),
+        flow_type: str = typer.Option("json", help="flow file type, [json]"),
+        flow_file_path: str = typer.Argument(..., help="flow file path"),
+):
+    """
+    [control] load flow from file to server.
+    """
+    host = get_host(host)
+    port = get_port(port)
+    client = TaklerServiceClient(host=host, port=port)
+    client.load(flow_file_path=flow_file_path)
 
 
 # Show command --------------------------------------------------------
@@ -195,6 +244,9 @@ def show(
         show_meter: bool = typer.Option(True, help="show meters"),
         show_all: bool = typer.Option(False, help="show all items, ignore other options."),
 ):
+    """
+    [show] print bunch tree.
+    """
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
@@ -220,6 +272,9 @@ def ping(
         host: str = typer.Option(None, help=HOST_HELP_STRING),
         port: str = typer.Option(None, help=PORT_HELP_STRING),
 ):
+    """
+    [show] check the server is running with given host and hort.
+    """
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
@@ -231,6 +286,9 @@ def coroutine(
         host: str = typer.Option(None, help=HOST_HELP_STRING),
         port: str = typer.Option(None, help=PORT_HELP_STRING),
 ):
+    """
+    [show] print current coroutine in server. for debug.
+    """
     host = get_host(host)
     port = get_port(port)
     client = TaklerServiceClient(host=host, port=port)
