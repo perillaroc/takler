@@ -8,17 +8,38 @@ if TYPE_CHECKING:
 
 
 class Expression:
+    """
+    An expression for trigger in nodes.
+
+    Attributes
+    ----------
+    free
+        expression with free set is always True.
+    ast
+        expression AST parsed from expression string.
+    expression_str
+        original expression string.
+    """
     def __init__(self, expression_str: str):
         self.free: bool = False
         self.ast: Optional[AstRoot] = None
         self.expression_str: str = expression_str
 
     def create_ast(self, parent_node: "Node"):
+        """
+        Create AST from expression string and set parent node for the AST.
+        """
         self.parse_expression()
         self.ast.set_parent_node(parent_node)
 
     def evaluate(self) -> bool:
+        """
+        Calculate the expression result.
+        """
         return self.ast.evaluate()
 
     def parse_expression(self):
+        """
+        Parse expression string and create an AST.
+        """
         self.ast = parse_trigger(self.expression_str)

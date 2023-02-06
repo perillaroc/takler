@@ -13,20 +13,35 @@ class ExpressionTransformer(Transformer):
     Transform Lark tokens into takler expression AST.
     """
     def node_path(self, items) -> AstNodePath:
+        """
+        path for a Node, including Flow, NodeContainer and Task
+        """
         return AstNodePath("".join(items))
 
     def variable_path(self, items) -> AstVariablePath:
+        """
+        path for a variable, include node and attribute
+        """
         node = items[0]
         variable_name = items[2]
         return AstVariablePath(node=node, variable_name=variable_name)
 
     def pure_node_name(self, items) -> str:
+        """
+        a "true" node name, excluding . and ..
+        """
         return "".join(items)
 
     def dot(self, _) -> str:
+        """
+        node name for current node.
+        """
         return "."
 
     def double_dot(self, _) -> str:
+        """
+        node name for parent node.
+        """
         return ".."
 
     def st_complete(self, _) -> AstNodeStatus:
@@ -38,35 +53,47 @@ class ExpressionTransformer(Transformer):
         return AstNodeStatus(NodeStatus.aborted)
 
     def op_eq(self, _) -> AstOpEq:
-        """Operation: equal (==)"""
+        """Operator: equal (==)"""
         return AstOpEq()
 
     def op_gt(self, _) -> AstOpGt:
-        """Operation: greater than (>)"""
+        """Operator: greater than (>)"""
         return AstOpGt()
 
     def op_ge(self, _) -> AstOpGe:
-        """Operation: greater equal than (>=)"""
+        """Operator: greater equal than (>=)"""
         return AstOpGe()
 
     def op_and(self, _) -> AstOpAnd:
-        """Operation: and"""
+        """Operator: and"""
         return AstOpAnd()
 
     def op_or(self, _) -> AstOpOr:
-        """Operation: or"""
+        """Operator: or"""
         return AstOpOr()
 
     def event_set(self, _) -> AstInteger:
+        """
+        event is set.
+        """
         return AstInteger(1)
 
     def event_unset(self, _) -> AstInteger:
+        """
+        event is unset
+        """
         return AstInteger(0)
 
     def meter_value(self, s):
+        """
+        value of meter
+        """
         return AstInteger(int(s[0]))
 
     def expression(self, s):
+        """
+        trigger expression, start from here.
+        """
         s[1].left = s[0]
         s[1].right = s[2]
         return s[1]
