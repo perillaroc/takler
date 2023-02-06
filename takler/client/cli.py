@@ -31,6 +31,8 @@ def init(
 ):
     """
     [child] init the task.
+
+    Mark the task as active. Used only in takler script.
     """
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
@@ -49,6 +51,8 @@ def complete(
 ):
     """
     [child] complete the task.
+
+    Mark the task as complete. Used only in takler script.
     """
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
@@ -68,6 +72,8 @@ def abort(
 ):
     """
     [child] abort the task.
+
+    Mark the task as complete and save abort reason into task node. Used only in takler script.
     """
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
@@ -87,6 +93,8 @@ def event(
 ):
     """
     [child] change Event.
+
+    Set the event.
     """
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
@@ -107,6 +115,8 @@ def meter(
 ):
     """
     [child] change Meter.
+
+    Update meter's value.
     """
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
@@ -127,7 +137,7 @@ def requeue(
         node_path: List[str] = typer.Argument(..., help="node paths"),
 ):
     """
-    [control] requeue the node(s).
+    [control] requeue given node(s).
     """
     host = get_host(host)
     port = get_port(port)
@@ -230,7 +240,7 @@ def load(
     client.load(flow_file_path=flow_file_path)
 
 
-# Show command --------------------------------------------------------
+# Query command --------------------------------------------------------
 
 
 @app.command()
@@ -245,7 +255,7 @@ def show(
         show_all: bool = typer.Option(False, help="show all items, ignore other options."),
 ):
     """
-    [show] print bunch tree.
+    [query] print bunch tree.
     """
     host = get_host(host)
     port = get_port(port)
@@ -273,7 +283,7 @@ def ping(
         port: str = typer.Option(None, help=PORT_HELP_STRING),
 ):
     """
-    [show] check the server is running with given host and hort.
+    [query] check the server is running with given host and hort.
     """
     host = get_host(host)
     port = get_port(port)
