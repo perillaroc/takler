@@ -1,3 +1,4 @@
+import os
 from typing import Union, List, Dict, Any, Optional, TYPE_CHECKING
 from pathlib import Path
 
@@ -90,7 +91,7 @@ class ShellRender(object):
             return list()
 
         include_string = include_param.value
-        include_paths = include_string.split(":")
+        include_paths = include_string.split(os.pathsep)
         return include_paths
 
     def template_params(self, force: bool = False) -> Dict[str, Union[str, int, float, bool]]:
