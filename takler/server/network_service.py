@@ -67,7 +67,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
 
     # Child command -----------------------------------------------------
 
-    async def RunInitCommand(self, request, context):
+    async def RunCommandInit(self, request, context):
         node_path = request.child_options.node_path
         task_id = request.task_id
 
@@ -78,7 +78,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
-    async def RunCompleteCommand(self, request, context):
+    async def RunCommandComplete(self, request, context):
         node_path = request.child_options.node_path
         logger.info(f"Complete: {node_path}")
         self.scheduler.run_command_complete(node_path)
@@ -88,7 +88,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
-    async def RunAbortCommand(self, request: takler_pb2.AbortCommand, context):
+    async def RunCommandAbort(self, request: takler_pb2.AbortCommand, context):
         node_path = request.child_options.node_path
         reason = request.reason
         logger.info(f"Abort: {node_path}")
@@ -99,7 +99,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
-    async def RunEventCommand(self, request, context):
+    async def RunCommandEvent(self, request, context):
         node_path = request.child_options.node_path
         event_name = request.event_name
         logger.info(f"Event set: {node_path}:{event_name}")
@@ -110,7 +110,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
-    async def RunMeterCommand(self, request: takler_pb2.MeterCommand, context):
+    async def RunCommandMeter(self, request: takler_pb2.MeterCommand, context):
         node_path = request.child_options.node_path
         meter = request.meter_name
         value = request.meter_value
@@ -124,7 +124,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
 
     # Control command -------------------------------------------------------------
 
-    async def RunRequeueCommand(self, request: takler_pb2.RequeueCommand, context):
+    async def RunCommandRequeue(self, request: takler_pb2.RequeueCommand, context):
         node_path_list = request.node_path
         for node_path in node_path_list:
             logger.info(f"Requeue: {node_path}")
@@ -135,7 +135,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
-    async def RunSuspendCommand(self, request: takler_pb2.SuspendCommand, context):
+    async def RunCommandSuspend(self, request: takler_pb2.SuspendCommand, context):
         node_paths = request.node_path
         for node_path in node_paths:
             logger.info(f"Suspend: {node_path}")
@@ -146,7 +146,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
-    async def RunResumeCommand(self, request: takler_pb2.SuspendCommand, context):
+    async def RunCommandResume(self, request: takler_pb2.SuspendCommand, context):
         node_paths = request.node_path
         for node_path in node_paths:
             logger.info(f"Resume: {node_path}")
@@ -157,7 +157,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
-    async def RunRunCommand(self, request, context):
+    async def RunCommandRun(self, request, context):
         node_paths = request.node_path
         force = request.force
         for node_path in node_paths:
@@ -172,7 +172,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
-    async def RunForceCommand(self, request: takler_pb2.ForceCommand, context):
+    async def RunCommandForce(self, request: takler_pb2.ForceCommand, context):
         paths = request.path
         state = takler_pb2.ForceCommand.ForceState.Name(request.state)
         recursive = request.recursive
@@ -189,7 +189,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
-    async def RunFreeDepCommand(self, request: takler_pb2.FreeDepCommand, context):
+    async def RunCommandFreeDep(self, request: takler_pb2.FreeDepCommand, context):
         paths = request.path
         dep_type = takler_pb2.FreeDepCommand.DepType.Name(request.dep_type)
         for path in paths:
@@ -200,7 +200,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             message="",
         )
 
-    async def RunLoadCommand(self, request: takler_pb2.LoadCommand, context):
+    async def RunCommandLoad(self, request: takler_pb2.LoadCommand, context):
         flow_type = request.flow_type
         flow_bytes = request.flow
         logger.info(f"Load flow from bytes...")
@@ -212,7 +212,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
 
     # Query command -----------------------------------------------------
 
-    async def RunShowRequest(self, request: takler_pb2.ShowRequest, context):
+    async def RunRequestShow(self, request: takler_pb2.ShowRequest, context):
         output = self.scheduler.handle_request_show(
             show_parameter=request.show_parameter,
             show_trigger=request.show_trigger,
@@ -224,7 +224,7 @@ class TaklerService(takler_pb2_grpc.TaklerServerServicer):
             output=output
         )
 
-    async def RunPingRequest(self, request, context):
+    async def RunRequestPing(self, request, context):
         return takler_pb2.PingResponse()
 
     async def QueryCoroutine(self, request, context):

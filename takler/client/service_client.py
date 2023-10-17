@@ -65,7 +65,7 @@ class TaklerServiceClient:
         self.shutdown()
 
     def run_command_init(self, node_path: str, task_id: str):
-        response = self.stub.RunInitCommand(
+        response = self.stub.RunCommandInit(
             takler_pb2.InitCommand(
                 child_options=takler_pb2.ChildCommandOptions(
                     node_path=node_path,
@@ -81,7 +81,7 @@ class TaklerServiceClient:
         self.shutdown()
 
     def run_command_complete(self, node_path: str):
-        response = self.stub.RunCompleteCommand(
+        response = self.stub.RunCommandComplete(
             takler_pb2.CompleteCommand(
                 child_options=takler_pb2.ChildCommandOptions(
                     node_path=node_path,
@@ -96,7 +96,7 @@ class TaklerServiceClient:
         self.shutdown()
 
     def run_command_abort(self, node_path: str, reason: str):
-        response = self.stub.RunAbortCommand(
+        response = self.stub.RunCommandAbort(
             takler_pb2.AbortCommand(
                 child_options=takler_pb2.ChildCommandOptions(
                     node_path=node_path,
@@ -112,7 +112,7 @@ class TaklerServiceClient:
         self.shutdown()
 
     def run_command_event(self, node_path: str, event_name: str):
-        response = self.stub.RunEventCommand(
+        response = self.stub.RunCommandEvent(
             takler_pb2.EventCommand(
                 child_options=takler_pb2.ChildCommandOptions(
                     node_path=node_path,
@@ -128,7 +128,7 @@ class TaklerServiceClient:
         self.shutdown()
 
     def run_command_meter(self, node_path: str, meter_name: str, meter_value: str):
-        response = self.stub.RunMeterCommand(
+        response = self.stub.RunCommandMeter(
             takler_pb2.MeterCommand(
                 child_options=takler_pb2.ChildCommandOptions(
                     node_path=node_path,
@@ -147,7 +147,7 @@ class TaklerServiceClient:
         self.shutdown()
 
     def run_command_requeue(self, node_path: List[str]):
-        response = self.stub.RunRequeueCommand(
+        response = self.stub.RunCommandRequeue(
             takler_pb2.RequeueCommand(
                 node_path=node_path
             )
@@ -160,7 +160,7 @@ class TaklerServiceClient:
         self.shutdown()
 
     def run_command_suspend(self, node_path: List[str]):
-        response = self.stub.RunSuspendCommand(
+        response = self.stub.RunCommandSuspend(
             takler_pb2.SuspendCommand(
                 node_path=node_path
             )
@@ -173,7 +173,7 @@ class TaklerServiceClient:
         self.shutdown()
 
     def run_command_resume(self, node_path: List[str]):
-        response = self.stub.RunResumeCommand(
+        response = self.stub.RunCommandResume(
             takler_pb2.SuspendCommand(
                 node_path=node_path
             )
@@ -186,7 +186,7 @@ class TaklerServiceClient:
         self.shutdown()
 
     def run_command_run(self, node_path: List[str], force: bool):
-        response = self.stub.RunRunCommand(
+        response = self.stub.RunCommandRun(
             takler_pb2.RunCommand(
                 force=force,
                 node_path=node_path
@@ -200,7 +200,7 @@ class TaklerServiceClient:
         self.shutdown()
 
     def run_command_force(self, variable_paths: List[str], state: str, recursive: bool):
-        response = self.stub.RunForceCommand(
+        response = self.stub.RunCommandForce(
             takler_pb2.ForceCommand(
                 state=takler_pb2.ForceCommand.ForceState.Value(state),
                 recursive=recursive,
@@ -215,7 +215,7 @@ class TaklerServiceClient:
         self.shutdown()
 
     def run_command_free_dep(self, node_paths: List[str], dep_type: str):
-        response = self.stub.RunFreeDepCommand(
+        response = self.stub.RunCommandFreeDep(
             takler_pb2.FreeDepCommand(
                 dep_type=takler_pb2.FreeDepCommand.DepType.Value(dep_type),
                 path=node_paths,
@@ -232,7 +232,7 @@ class TaklerServiceClient:
         flow_type = "json"
         with open(flow_file_path, "rb") as f:
             flow_bytes = f.read()
-        response = self.stub.RunLoadCommand(
+        response = self.stub.RunCommandLoad(
             takler_pb2.LoadCommand(
                 flow_type=flow_type,
                 flow=flow_bytes
@@ -268,7 +268,7 @@ class TaklerServiceClient:
             show_event: bool,
             show_meter: bool
     ):
-        response = self.stub.RunShowRequest(
+        response = self.stub.RunRequestShow(
             takler_pb2.ShowRequest(
                 show_trigger=show_trigger,
                 show_parameter=show_parameter,
@@ -288,7 +288,7 @@ class TaklerServiceClient:
         self.shutdown()
 
     def run_request_ping(self):
-        response = self.stub.RunPingRequest(
+        response = self.stub.RunRequestPing(
             takler_pb2.PingResponse()
         )
 

@@ -19,6 +19,7 @@ message ServiceResponse{
   string message = 2;
 }
 
+//------------------------------------------
 // child command
 
 message ChildCommandOptions {
@@ -50,7 +51,7 @@ message MeterCommand {
   string meter_value = 3;
 }
 
-
+//------------------------------------------
 // control command
 
 message RequeueCommand {
@@ -97,6 +98,7 @@ message LoadCommand {
   bytes flow = 2;
 }
 
+//----------------------------------------
 // query command
 
 message ShowRequest{
@@ -129,38 +131,38 @@ message CoroutineResponse {
   repeated Coroutine coroutines = 1;
 }
 
-
+//------------------------------------------
 
 service TaklerServer {
 
   // child command
-  rpc RunInitCommand(InitCommand) returns (ServiceResponse){}
-  rpc RunCompleteCommand(CompleteCommand) returns (ServiceResponse){}
-  rpc RunAbortCommand(AbortCommand) returns (ServiceResponse){}
-  rpc RunEventCommand(EventCommand) returns (ServiceResponse){}
-  rpc RunMeterCommand(MeterCommand) returns (ServiceResponse){}
+  rpc RunCommandInit(InitCommand) returns (ServiceResponse){}
+  rpc RunCommandComplete(CompleteCommand) returns (ServiceResponse){}
+  rpc RunCommandAbort(AbortCommand) returns (ServiceResponse){}
+  rpc RunCommandEvent(EventCommand) returns (ServiceResponse){}
+  rpc RunCommandMeter(MeterCommand) returns (ServiceResponse){}
 
   // control command
 
-  rpc RunRequeueCommand(RequeueCommand) returns (ServiceResponse){}
+  rpc RunCommandRequeue(RequeueCommand) returns (ServiceResponse){}
 
-  rpc RunSuspendCommand(SuspendCommand) returns (ServiceResponse){}
-  rpc RunResumeCommand(SuspendCommand) returns (ServiceResponse){}
+  rpc RunCommandSuspend(SuspendCommand) returns (ServiceResponse){}
+  rpc RunCommandResume(SuspendCommand) returns (ServiceResponse){}
 
-  rpc RunRunCommand(RunCommand) returns (ServiceResponse) {}
+  rpc RunCommandRun(RunCommand) returns (ServiceResponse) {}
 
-  rpc RunForceCommand(ForceCommand) returns (ServiceResponse) {}
+  rpc RunCommandForce(ForceCommand) returns (ServiceResponse) {}
 
-  rpc RunFreeDepCommand(FreeDepCommand) returns (ServiceResponse) {}
+  rpc RunCommandFreeDep(FreeDepCommand) returns (ServiceResponse) {}
 
-  rpc RunLoadCommand(LoadCommand) returns (ServiceResponse) {}
+  rpc RunCommandLoad(LoadCommand) returns (ServiceResponse) {}
 
 
   // query command
 
-  rpc RunShowRequest(ShowRequest) returns (ShowResponse){}
+  rpc RunRequestShow(ShowRequest) returns (ShowResponse){}
 
-  rpc RunPingRequest(PingRequest) returns (PingResponse){}
+  rpc RunRequestPing(PingRequest) returns (PingResponse){}
 
   rpc QueryCoroutine(CoroutineRequest) returns (CoroutineResponse){}
 }

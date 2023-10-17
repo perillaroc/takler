@@ -311,7 +311,7 @@ class Scheduler:
 
     def run_command_run(self, node_path: str, force: bool = False) -> bool:
         """
-        Run the task when task node is not in submitted or active status.
+        Run the ``Task`` node when task node is not in submitted or active status.
         If force is set, run the task regardless of task status.
 
         Parameters
