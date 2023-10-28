@@ -1,6 +1,6 @@
 from typing import Optional, Dict, Union, List
 
-from pydantic import BaseModel, validator
+from pydantic import BaseModel, field_validator
 
 from takler import constant
 
@@ -143,13 +143,13 @@ class ServerState(BaseModel):
         arbitrary_types_allowed = True
         validate_assignment = True
 
-    @validator("host")
+    @field_validator("host")
     def set_host(cls, h: Optional[str]):
         if h is None:
             h = constant.DEFAULT_HOST
         return h
 
-    @validator("port")
+    @field_validator("port")
     def set_port(cls, p: Optional[str]):
         if p is None:
             p = constant.DEFAULT_PORT
