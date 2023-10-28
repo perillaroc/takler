@@ -94,9 +94,14 @@ class ExpressionTransformer(Transformer):
         """
         trigger expression, start from here.
         """
-        s[1].left = s[0]
-        s[1].right = s[2]
-        return s[1]
+        if len(s) == 3:
+            s[1].left = s[0]
+            s[1].right = s[2]
+            return s[1]
+        elif len(s) == 1:
+            return s[0]
+        else:
+            raise ValueError(f"value is not supported: {s}")
 
 
 # Lark version of expression trigger parser.
@@ -129,7 +134,8 @@ trigger_parser: Lark = Lark(r"""
     !pure_node_name: (LETTER|DIGIT)("_"|LETTER|DIGIT)*
     ?variable_name: CNAME
 
-    expression: (node_path operator status) 
+    expression: "(" expression ")"
+              | (node_path operator status) 
               | (variable_path operator event_value)
               | (variable_path operator meter_value)
               | (expression logical_operator expression)
