@@ -51,6 +51,7 @@ setup(
         'jinja2',
         'pydantic>=2.0',
         'typer',
+        'pyyaml',
     ],
 
     extras_require={

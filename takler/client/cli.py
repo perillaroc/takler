@@ -1,9 +1,11 @@
 import os
-from typing import Optional, List, Union
+import warnings
+from typing import Optional, List, Union, Tuple
 
 import typer
 
 from takler.client.service_client import TaklerServiceClient
+from takler.server.connect_config import ConnectConfig, load_connect_config, TAKLER_CONNECT_FILE
 from takler.constant import DEFAULT_HOST, DEFAULT_PORT
 
 
@@ -37,8 +39,7 @@ def init(
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
         return
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
     client.init(node_path=node_path, task_id=task_id)
 
@@ -57,8 +58,7 @@ def complete(
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
         return
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
     client.complete(node_path=node_path)
 
@@ -78,8 +78,7 @@ def abort(
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
         return
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
     client.abort(node_path=node_path, reason=reason)
 
@@ -99,8 +98,7 @@ def event(
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
         return
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
     client.event(node_path=node_path, event_name=event_name)
 
@@ -121,8 +119,7 @@ def meter(
     if NO_TAKLER in os.environ:
         typer.echo("ignore because NO_TAKLER is set.")
         return
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
     client.meter(node_path=node_path, meter_name=meter_name, meter_value=meter_value)
 
@@ -139,8 +136,7 @@ def requeue(
     """
     [control] requeue given node(s).
     """
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
     client.requeue(node_path=node_path)
 
@@ -154,8 +150,7 @@ def suspend(
     """
     [control] suspend the node(s). prevent job creation for the node and all its children nodes.
     """
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
     client.suspend(node_path=node_path)
 
@@ -169,8 +164,7 @@ def resume(
     """
     [control] resume the node(s) from suspended status.
     """
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
     client.resume(node_path=node_path)
 
@@ -185,8 +179,7 @@ def run(
     """
     [control] run the task.
     """
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
     client.run(node_path=node_path, force=force)
 
@@ -202,8 +195,7 @@ def force(
     """
     [control] change the node's state force, ignore whatever state it is now.
     """
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
     client.force(variable_paths=variable_path, state=state, recursive=recursive)
 
@@ -218,8 +210,7 @@ def free_dep(
     """
     [control] free dependencies for the node(s).
     """
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
     client.free_dep(node_paths=node_path, dep_type=dep_type)
 
@@ -234,8 +225,7 @@ def load(
     """
     [control] load flow from file to server.
     """
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
     client.load(flow_file_path=flow_file_path)
 
@@ -257,8 +247,7 @@ def show(
     """
     [query] print bunch tree.
     """
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
 
     if show_all:
@@ -285,8 +274,7 @@ def ping(
     """
     [query] check the server is running with given host and hort.
     """
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
     client.ping()
 
@@ -299,12 +287,53 @@ def coroutine(
     """
     [show] print current coroutine in server. for debug.
     """
-    host = get_host(host)
-    port = get_port(port)
+    host, port = get_host_and_prot(host, port)
     client = TaklerServiceClient(host=host, port=port)
     client.coroutine()
 
+
 # ----------------------------
+def get_host_and_prot(
+        host: Optional[str] = None,
+        port: Optional[Union[str, int]] = None
+) -> Tuple[Optional[str], Optional[str]]:
+    """
+    get host and port.
+
+    Priority:
+    * function options: host, port
+    * connect config file, TAKLER_CONNECT_FILE
+    * env variables for host and port, TAKLER_HOST and TAKLER_PORT
+
+    Parameters
+    ----------
+    host
+    port
+
+    Returns
+    -------
+    (Optional[str], Optional[str])
+    """
+    result_host = DEFAULT_HOST
+    result_port = DEFAULT_PORT
+
+    if TAKLER_HOST in os.environ:
+        result_host = os.environ[TAKLER_HOST]
+
+    if TAKLER_PORT in os.environ:
+        result_port = os.environ[TAKLER_PORT]
+
+    if TAKLER_CONNECT_FILE in os.environ:
+        connect_config = load_connect_config(os.environ[TAKLER_CONNECT_FILE])
+        result_host = connect_config.server.address.hostname
+        result_port = connect_config.server.address.port
+
+    if host is not None:
+        result_host = host
+    if port is not None:
+        result_port = port
+
+    return result_host, result_port
 
 
 def get_host(host: Optional[str] = None) -> Optional[str]:
@@ -319,6 +348,7 @@ def get_host(host: Optional[str] = None) -> Optional[str]:
     -------
     Optional[str]
     """
+    warnings.warn('The `get_host` method is deprecated; use `get_host_and_port` instead.', DeprecationWarning)
     if host is not None:
         return host
     if TAKLER_HOST in os.environ:
@@ -338,6 +368,7 @@ def get_port(port: Optional[Union[str, int]] = None) -> Optional[str]:
     -------
     Optional[str]
     """
+    warnings.warn('The `get_port` method is deprecated; use `get_host_and_port` instead.', DeprecationWarning)
     if port is not None:
         return str(port)
     if TAKLER_PORT in os.environ:
