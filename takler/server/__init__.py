@@ -1,5 +1,5 @@
 import asyncio
-from typing import List, Dict
+from typing import Union, Optional
 
 from takler.core import Bunch, NodeStatus
 from takler.logging import get_logger
@@ -19,8 +19,9 @@ class TaklerServer:
     * scheduler: A scheduler to check dependencies in loop.
     * network service: A gRPC server to receive client command.
     """
-    def __init__(self, host: str = None, port: int = None):
-        self.bunch: Bunch = Bunch(host=host, port=port)
+    def __init__(self, host: Optional[str] = None, port: Optional[Union[str, int]] = None):
+        port_str = str(port)
+        self.bunch: Bunch = Bunch(host=host, port=port_str)
         self.scheduler: Scheduler = Scheduler(bunch=self.bunch)
         self.network_service: TaklerService = TaklerService(
             scheduler=self.scheduler, host="[::]", port=port
