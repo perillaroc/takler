@@ -22,7 +22,7 @@ The purpose is to create a workflow tool for both operation and experiment users
 
 ## LICENSE
 
-Copyright &copy; 2022, perillaroc at cemc-oper.
+Copyright &copy; 2022-2024, developers at cemc-oper.
 
 *takler* is licensed under [Apache License, Version 2.0](./LICENSE)
 
