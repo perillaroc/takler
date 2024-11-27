@@ -149,3 +149,5 @@ jspm_packages
 *.job
 
 generated/
+
+takler/_version.py
