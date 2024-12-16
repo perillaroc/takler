@@ -84,7 +84,7 @@ class ExpressionTransformer(Transformer):
         """
         return AstInteger(0)
 
-    def meter_value(self, s):
+    def meter_value(self, s) -> AstInteger:
         """
         value of meter
         """

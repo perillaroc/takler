@@ -611,6 +611,8 @@ class Node(ABC):
     def add_parameter(self, name: str, value: Union[str, float, int, bool]):
         """
         Add a ``Parameter`` to this node.
+
+        TODO: add_parameter([dict]) / add_parameter([list[Parameter]])
         """
         p = Parameter(name=name, value=value)
         self.user_parameters[name] = p
