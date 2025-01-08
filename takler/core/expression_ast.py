@@ -53,6 +53,18 @@ class AstOpGe(AstRoot):
 
 
 @dataclass
+class AstOpLt(AstRoot):
+    def evaluate(self) -> bool:
+        return self.left.value() < self.right.value()
+
+
+@dataclass
+class AstOpLe(AstRoot):
+    def evaluate(self) -> bool:
+        return self.left.value() <= self.right.value()
+
+
+@dataclass
 class AstOpAnd(AstRoot):
     def evaluate(self) -> bool:
         return self.left.evaluate() and self.right.evaluate()
@@ -63,6 +75,10 @@ class AstOpOr(AstRoot):
     def evaluate(self) -> bool:
         return self.left.evaluate() or self.right.evaluate()
 
+@dataclass
+class AstMathAdd(AstRoot):
+    def evaluate(self) -> bool:
+        return self.left.value() + self.right.value()
 
 @dataclass
 class AstNodePath(AstBase):

@@ -1,7 +1,10 @@
 from lark import Lark, Transformer
 
 from .expression_ast import (
-    AstNodePath, AstOpEq, AstOpAnd, AstOpOr, AstOpGt, AstOpGe,
+    AstNodePath,
+    AstOpEq, AstOpAnd,
+    AstOpOr, AstOpGt, AstOpGe, AstOpLt, AstOpLe,
+    AstMathAdd,
     AstNodeStatus, AstRoot,
     AstVariablePath, AstInteger,
 )
@@ -64,6 +67,14 @@ class ExpressionTransformer(Transformer):
         """Operator: greater equal than (>=)"""
         return AstOpGe()
 
+    def op_lt(self, _) -> AstOpLt:
+        """Operator: greater equal than (>=)"""
+        return AstOpLt()
+
+    def op_le(self, _) -> AstOpLe:
+        """Operator: greater equal than (>=)"""
+        return AstOpLe()
+
     def op_and(self, _) -> AstOpAnd:
         """Operator: and"""
         return AstOpAnd()
@@ -71,6 +82,10 @@ class ExpressionTransformer(Transformer):
     def op_or(self, _) -> AstOpOr:
         """Operator: or"""
         return AstOpOr()
+
+    def math_add(self, _) -> AstMathAdd:
+        """Math: add"""
+        return AstMathAdd()
 
     def event_set(self, _) -> AstInteger:
         """
@@ -113,10 +128,15 @@ trigger_parser: Lark = Lark(r"""
     op_eq: "==" | "eq"i
     op_gt: ">"
     op_ge: ">="
+    op_lt: "<"
+    op_le: "<="
     op_and: "and"i
     op_or: "or"i
-    ?operator: op_eq | op_gt | op_ge
+    ?operator: op_eq | op_gt | op_ge | op_lt | op_le
     ?logical_operator: op_and | op_or
+    
+    math_add: "+"
+    ?math_operator: math_add
 
     st_complete: "complete"i
     st_aborted: "aborted"i
@@ -136,9 +156,13 @@ trigger_parser: Lark = Lark(r"""
 
     expression: "(" expression ")"
               | (node_path operator status) 
+              | (variable_path) 
               | (variable_path operator event_value)
               | (variable_path operator meter_value)
+              | (variable_path operator variable_path)
+              | (expression operator expression)
               | (expression logical_operator expression)
+              | (variable_path math_operator variable_path)
 
     %import common.CNAME
     %import common.DIGIT
