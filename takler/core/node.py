@@ -97,6 +97,8 @@ class Node(ABC):
     children
     user_parameters
     trigger_expression
+        触发器表达式，一个节点只有一个触发器表达式。
+        触发器在添加时默认不解析。在评估触发器时，会自动解析没有被解析的触发器，触发器只会被解析一次。
     events
     meters
     limits
@@ -540,6 +542,16 @@ class Node(ABC):
     # Trigger --------------------------------------------------------
 
     def add_trigger(self, trigger: Union[str, Expression], parse: bool = False):
+        """
+        Add trigger to node.
+
+        Parameters
+        ----------
+        trigger
+        parse
+            If set, trigger is parsed to create an AST immediately.
+            If not set, trigger is just store as a string in expression and is not parsed.
+        """
         if isinstance(trigger, str):
             self.trigger_expression = Expression(trigger)
         elif isinstance(trigger, Expression):
@@ -553,6 +565,13 @@ class Node(ABC):
     def evaluate_trigger(self) -> bool:
         """
         Evaluate trigger expression of this node.
+
+        If trigger is not parsed, an AST is created first before the expression is evaluated.
+
+        Returns
+        -------
+        bool
+            true if trigger is satisfied.
 
         Notes
         -----
@@ -603,6 +622,10 @@ class Node(ABC):
         m = self.find_meter(name)
         if m is not None:
             return m
+
+        p = self.find_parameter(name)
+        if p is not None:
+            return p
 
         return None
 
