@@ -1,4 +1,4 @@
-from typing import IO
+from typing import IO, Optional
 from abc import ABC, abstractmethod
 
 from takler.core.node import Node
@@ -62,6 +62,8 @@ class PrintVisitor(NodeVisitor):
     def __init__(
             self, stream: IO,
             show_parameter: bool = False,
+            show_user_parameter: Optional[bool] = None,
+            show_generated_parameter: Optional[bool] = None,
             show_trigger: bool = False,
             show_limit: bool = True,
             show_event: bool = True,
@@ -73,6 +75,14 @@ class PrintVisitor(NodeVisitor):
         self.stream: IO = stream
 
         self.show_parameter = show_parameter
+        if show_user_parameter is None:
+            self.show_user_parameter = self.show_parameter
+        else:
+            self.show_user_parameter = show_user_parameter
+        if show_generated_parameter is None:
+            self.show_generated_parameter = self.show_parameter
+        else:
+            self.show_generated_parameter = show_generated_parameter
         self.show_trigger = show_trigger
         self.show_limit = show_limit
         self.show_event = show_event
@@ -98,11 +108,12 @@ class PrintVisitor(NodeVisitor):
             for time_attr in node.times:
                 self.stream.write(f"{pre_spaces} time {time_attr.time.hour:02}:{time_attr.time.minute:02}\n")
 
-        if self.show_parameter:
+        if self.show_user_parameter:
             user_params = node.user_parameters_only()
             for name, param in user_params.items():
                 self.stream.write(f"{pre_spaces} param {name} '{param.value}'\n")
 
+        if self.show_generated_parameter:
             generate_params = node.generated_parameters_only()
             for name, param in generate_params.items():
                 self.stream.write(f"{pre_spaces} # param {name} '{param.value}'\n")
