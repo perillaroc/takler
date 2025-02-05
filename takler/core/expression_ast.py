@@ -4,6 +4,7 @@ from typing import Optional, TYPE_CHECKING, TypeVar
 from .state import NodeStatus
 from .event import Event
 from .meter import Meter
+from .parameter import Parameter
 
 if TYPE_CHECKING:
     from .node import Node
@@ -18,10 +19,10 @@ class AstBase:
         ...
 
     def value(self) -> T:
-        raise NotImplementedError("Method not implemented")
+        raise NotImplementedError("AstBase.value is not implemented")
 
     def evaluate(self) -> bool:
-        raise NotImplementedError("Method not implemented")
+        raise NotImplementedError("AstBase.evaluate is not implemented")
 
 
 @dataclass
@@ -77,7 +78,7 @@ class AstOpOr(AstRoot):
 
 @dataclass
 class AstMathAdd(AstRoot):
-    def evaluate(self) -> bool:
+    def value(self) -> bool:
         return self.left.value() + self.right.value()
 
 @dataclass
@@ -136,6 +137,8 @@ class AstVariablePath(AstBase):
             else:
                 return 0
         if isinstance(v, Meter):
+            return v.value
+        elif isinstance(v, Parameter):
             return v.value
         else:
             raise NotImplementedError(f"{v} is not support")
