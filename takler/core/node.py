@@ -631,15 +631,27 @@ class Node(ABC):
 
     # Parameter ------------------------------------------------------
 
-    def add_parameter(self, name: str, value: Union[str, float, int, bool]):
+    def add_parameter(self, param: Union[dict, str], value: Optional[Union[str, float, int, bool]] = None):
         """
         Add a ``Parameter`` to this node.
 
         TODO: add_parameter([dict]) / add_parameter([list[Parameter]])
         """
-        p = Parameter(name=name, value=value)
-        self.user_parameters[name] = p
-        return p
+        if isinstance(param, dict):
+            if value is not None:
+                raise ValueError("value must be None if param is dict.")
+            for k, v in param.items():
+                p = Parameter(name=k, value=v)
+                self.user_parameters[k] = p
+        elif isinstance(param, str):
+            if value is None:
+                raise ValueError("value cannot be None if param is str.")
+            name = param
+            p = Parameter(name=name, value=value)
+            self.user_parameters[name] = p
+            return p
+        else:
+            raise ValueError(f"{param} is str or dict.")
 
     def find_parameter(self, name: str) -> Optional[Parameter]:
         """

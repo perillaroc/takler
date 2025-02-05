@@ -38,6 +38,21 @@ def test_add_parameter(simple_flow):
     assert task1.user_parameters["FLAG"] == Parameter(name="FLAG", value=True)
 
 
+def test_add_parameter_dict(simple_flow):
+    flow1 = simple_flow.flow1
+    flow1.add_parameter(
+        dict(
+            ECF_HOME="/home/johndoe",
+            NODES=4,
+            TIME_INTERVAL=0.1,
+        )
+    )
+
+    assert flow1.user_parameters["ECF_HOME"] == Parameter(name="ECF_HOME", value="/home/johndoe")
+    assert flow1.user_parameters["NODES"] == Parameter(name="NODES", value=4)
+    assert flow1.user_parameters["TIME_INTERVAL"] == Parameter(name="TIME_INTERVAL", value=0.1)
+
+
 def test_find_parameter(simple_flow_with_parameter):
     flow1 = simple_flow_with_parameter.flow1
 
