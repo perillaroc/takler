@@ -5,11 +5,13 @@ from .state import NodeStatus
 from .event import Event
 from .meter import Meter
 from .parameter import Parameter
+from takler.logging import get_logger
 
 if TYPE_CHECKING:
     from .node import Node
 
 
+logger = get_logger(__name__)
 T = TypeVar("T")
 
 
@@ -144,8 +146,11 @@ class AstVariablePath(AstBase):
             raise NotImplementedError(f"{v} is not support")
 
     def get_variable(self) -> Optional[Event]:
-        if self._node_variable is not None:
-            return self._node_variable
+        # NOTE: delete following codes to retrieve variable when trigger is evaluated,
+        # because variable's location and even itself may be changed during workflow running.
+
+        # if self._node_variable is not None:
+        #     return self._node_variable
 
         self._node_variable = self.node.get_reference_node().find_variable(self.variable_name)
         return self._node_variable
