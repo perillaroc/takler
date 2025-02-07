@@ -1043,6 +1043,10 @@ class Node(ABC):
         for event in self.events:
             event.reset()
 
+        # reset meter attributes
+        for meter in self.meters:
+            meter.reset()
+
         # reset repeat attributes
         # TODO: add requeue args.
         if reset_repeat and self.repeat is not None:
