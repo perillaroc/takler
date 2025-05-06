@@ -333,6 +333,7 @@ class Scheduler:
         """
         node = self.bunch.find_node(node_path)
         if not isinstance(node, Task):
+            logger.warning(f"node path is not a Task: {node_path}")
             return False
         if not force:
             status = node.state.node_status
