@@ -300,7 +300,10 @@ class Node(ABC):
                 return child_index
         return -1
 
-    def update_child(self, child: Union[str, Node], new_child_node) -> Node:
+    def update_child(self, child: Union[str, Node], new_child_node: Node) -> Node:
+        if not isinstance(new_child_node, Node):
+            raise TypeError("new_child_node must be a Node")
+
         child_index = self.find_child_index(child)
         if child_index == -1:
             raise Exception(f"child {child} is not found")
@@ -310,12 +313,14 @@ class Node(ABC):
         self.children[child_index] = new_child_node
         return old_child
 
-    def delete_child(self, child: Node) -> Node:
-        if child in self.children:
-            child.delete_children()
-            return self.children.pop(self.children.index(child))
-        else:
+    def delete_child(self, child: Union[str, Node]) -> Node:
+        child_node_index = self.find_child_index(child)
+        if child_node_index == -1:
             raise Exception(f"{child} does not exist")
+        child_node = self.children.pop(child_node_index)
+        child_node.delete_children()
+        return child_node
+
 
     def delete_children(self):
         while len(self.children) > 0:
@@ -379,9 +384,11 @@ class Node(ABC):
         a_path
             type of node path
 
-                1. node1: relative to currently level
-                2. ../node1/node2
-                3. /node1/node2
+                1. node3: relative to currently level
+                2. /flow1/node1/node2
+                3. node1/node2
+                4. ./node3
+                5. ../node1/node2
 
         Returns
         -------
@@ -434,6 +441,7 @@ class Node(ABC):
                 return False
             else:
                 return True
+        return False
 
     # State management -----------------------------------------------------
 

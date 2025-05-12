@@ -24,26 +24,27 @@ def simple_flow():
           |- task6 [unknown]
 
     """
-    flow = ObjectContainer()
     flow1 = Flow("flow1")
-    flow.flow1 = flow1
     container1 = flow1.add_container("container1")
-    flow.container1 = container1
     task1 = container1.add_task("task1")
-    flow.task1 = task1
     container2 = container1.add_container("container2")
-    flow.container2 = container2
     task2 = container2.add_task("task2")
-    flow.task2 = task2
     task3 = container2.add_task("task3")
-    flow.task3 = task3
     task4 = flow1.add_task("task4")
-    flow.task4 = task4
     container3 = flow1.add_container("container3")
-    flow.container3 = container3
     task5 = container3.add_task("task5")
-    flow.task5 = task5
     task6 = flow1.add_task("task6")
+
+    flow = ObjectContainer()
+    flow.flow1 = flow1
+    flow.container1 = container1
+    flow.task1 = task1
+    flow.container2 = container2
+    flow.task2 = task2
+    flow.task3 = task3
+    flow.task4 = task4
+    flow.container3 = container3
+    flow.task5 = task5
     flow.task6 = task6
     return flow
 
@@ -66,28 +67,37 @@ def simple_flow_2():
           |- task7 [unknown]
 
     """
-    result = ObjectContainer()
     with Flow("flow2") as flow2:
-        result.flow2 = flow2
         with flow2.add_task("task1") as task1:
-            result.task1 = task1
+            pass
         with flow2.add_container("container1") as container1:
-            result.container1 = container1
             with container1.add_task("task2") as task2:
-                result.task2 = task2
+                pass
         with flow2.add_container("container2") as container2:
-            result.container2 = container2
             with container2.add_task("task3") as task3:
-                result.task3 = task3
+                pass
             with container2.add_container("container3") as container3:
-                result.container3 = container3
+
                 with container3.add_task("task4") as task4:
-                    result.task4 = task4
+                    pass
                 with container3.add_task("task5") as task5:
-                    result.task5 = task5
+                    pass
             with container2.add_task("task6") as task6:
-                result.task6 = task6
+                pass
         with flow2.add_task("task7") as task7:
-            result.task7 = task7
+            pass
+
+    result = ObjectContainer()
+    result.flow2 = flow2
+    result.task1 = task1
+    result.container1 = container1
+    result.task2 = task2
+    result.container2 = container2
+    result.task3 = task3
+    result.container3 = container3
+    result.task4 = task4
+    result.task5 = task5
+    result.task6 = task6
+    result.task7 = task7
 
     return result
