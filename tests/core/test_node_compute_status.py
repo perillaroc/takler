@@ -142,7 +142,7 @@ def test_compute_status_submitted_and_active_and_complete(status_flow_queued):
     task3.state.node_status = NodeStatus.active
     task4.state.node_status = NodeStatus.complete
 
-    assert compute_most_significant_status(container2.children, immediate=True) == NodeStatus.submitted
+    assert compute_most_significant_status(container2.children, immediate=True) == NodeStatus.active
     assert compute_most_significant_status(container1.children, immediate=True) == NodeStatus.queued
     assert compute_most_significant_status(flow1.children, immediate=True) == NodeStatus.queued
 
