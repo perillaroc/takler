@@ -639,21 +639,35 @@ class Node(ABC):
 
     # Parameter ------------------------------------------------------
 
-    def add_parameter(self, param: Union[dict, str], value: Optional[Union[str, float, int, bool]] = None):
+    def add_parameter(
+            self,
+            param: Union[dict[str, Union[str, float, int, bool]], list[Parameter], str],
+            value: Optional[Union[str, float, int, bool]] = None
+    ) -> Optional[Parameter]:
         """
-        Add a ``Parameter`` to this node.
+        Add ``Parameter``(s) to this node.
 
-        TODO: add_parameter([dict]) / add_parameter([list[Parameter]])
+        If ``param` is a dict or list, ``value`` must be None.
+        If ``param`` is a str, ``value`` must not be None.
+
+        TODO: add_parameter([dict])
         """
         if isinstance(param, dict):
             if value is not None:
-                raise ValueError("value must be None if param is dict.")
+                raise TypeError("value must be None if param is dict.")
             for k, v in param.items():
                 p = Parameter(name=k, value=v)
                 self.user_parameters[k] = p
+        elif isinstance(param, list):
+            if value is not None:
+                raise TypeError("value must be None if param is list.")
+            for p in param:
+                if not isinstance(p, Parameter):
+                    raise TypeError("param must be a list of Parameter.")
+                self.user_parameters[p.name] = p
         elif isinstance(param, str):
-            if value is None:
-                raise ValueError("value cannot be None if param is str.")
+            if value is None or isinstance(value, list) or isinstance(value, dict):
+                raise TypeError("value cannot be None/list/dict if param is str.")
             name = param
             p = Parameter(name=name, value=value)
             self.user_parameters[name] = p
@@ -663,19 +677,18 @@ class Node(ABC):
 
     def find_parameter(self, name: str) -> Optional[Parameter]:
         """
-        Find a ``parameter`` only in this node.
+        Find a ``parameter`` only in this node, first in user parameters, then in generated parameters.
         """
         p = self.find_user_parameter(name)
         if p is not None:
             return p
 
         p = self.find_generated_parameter(name)
-        if p is not None:
-            return p
+        return p
 
     def find_user_parameter(self, name: str) -> Optional[Parameter]:
         """
-        Find user  ``parameter`` only in this node.
+        Find user ``parameter`` only in this node.
         """
         return self.user_parameters.get(name, None)
 
@@ -715,9 +728,11 @@ class Node(ABC):
         """
         Update generated parameters for this node.
         """
-        pass
+        # NOTE: repeat generated parameters are updated on time, so this code seem to be no effect.
+        if self.repeat is not None:
+            self.repeat.generated_parameters()
 
-    def parameters(self) -> Dict[str, Parameter]:
+    def parameters(self) -> dict[str, Parameter]:
         """
         Return all parameters accessible to this Node up the node tree.
         """
@@ -743,6 +758,8 @@ class Node(ABC):
     def parameters_only(self) -> Dict[str, Parameter]:
         """
         Return all parameters only in this Node.
+
+        If generated parameter has same name as user parameter, user parameter will be used.
         """
         user_params = self.user_parameters_only()
         generated_params = self.generated_parameters_only()
@@ -764,7 +781,11 @@ class Node(ABC):
 
     def generated_parameters_only(self) -> Dict[str, Parameter]:
         """
-        Return generated parameters
+        Return a dict containerd generated parameters in this Node
+
+        Notes
+        -----
+        Return value is dict of reference of ``Parameter``s, so it's value will be updated automatically.
         """
         p = dict()
         if self.repeat is not None:

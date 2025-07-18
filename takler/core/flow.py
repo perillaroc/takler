@@ -109,7 +109,7 @@ class FlowGeneratedParameters(BaseModel):
         Update generated parameters from Flow node's attrs.
         """
         flow_time = self.flow.calendar.flow_time
-        self.date.value = flow_time.strftime("%Y-%d-%m")
+        self.date.value = flow_time.strftime("%Y-%m-%d")
         self.time.value = flow_time.strftime("%H:%M")
 
     def find_parameter(self, name: str) -> Optional[Parameter]:

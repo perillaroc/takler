@@ -1,90 +1,101 @@
 import pytest
 
-from takler.core import Parameter
+from takler.core import Parameter, Flow, NodeContainer, Task
+from takler.core.node import Node
 
 
-@pytest.fixture
-def simple_flow_with_parameter(simple_flow):
-    flow1 = simple_flow.flow1
-    flow1.add_parameter("ECF_HOME", "/home/johndoe")
-    flow1.add_parameter("NODES", 4)
-    flow1.add_parameter("TIME_INTERVAL", 0.1)
+def test_add_parameter_with_single_value():
+    node = Node("node1")
 
-    container1 = simple_flow.container1
-    container1.add_parameter("TASKS", 32)
+    param = node.add_parameter("ECF_HOME", "/home/johndoe")
+    assert param.name == "ECF_HOME"
+    assert param.value == "/home/johndoe"
+    assert param == Parameter(name="ECF_HOME", value="/home/johndoe")
+    assert len(node.user_parameters) == 1
+    assert node.user_parameters["ECF_HOME"] == Parameter(name="ECF_HOME", value="/home/johndoe")
 
-    task1 = simple_flow.task1
-    task1.add_parameter("FLAG", True)
+    node.add_parameter("NODES", 4)
+    assert node.user_parameters["NODES"] == Parameter(name="NODES", value=4)
 
-    return simple_flow
+    node.add_parameter("TIME_INTERVAL", 0.1)
+    assert node.user_parameters["TIME_INTERVAL"] == Parameter(name="TIME_INTERVAL", value=0.1)
 
-
-def test_add_parameter(simple_flow):
-    flow1 = simple_flow.flow1
-    flow1.add_parameter("ECF_HOME", "/home/johndoe")
-    flow1.add_parameter("NODES", 4)
-    flow1.add_parameter("TIME_INTERVAL", 0.1)
-
-    assert flow1.user_parameters["ECF_HOME"] == Parameter(name="ECF_HOME", value="/home/johndoe")
-    assert flow1.user_parameters["NODES"] == Parameter(name="NODES", value=4)
-    assert flow1.user_parameters["TIME_INTERVAL"] == Parameter(name="TIME_INTERVAL", value=0.1)
-
-    container1 = simple_flow.container1
-    container1.add_parameter("TASKS", 32)
-    assert container1.user_parameters["TASKS"] == Parameter(name="TASKS", value=32)
-
-    task1 = simple_flow.task1
-    task1.add_parameter("FLAG", True)
-    assert task1.user_parameters["FLAG"] == Parameter(name="FLAG", value=True)
+    node.add_parameter("FLAG_UPLOAD", True)
+    assert node.user_parameters["FLAG_UPLOAD"] == Parameter(name="FLAG_UPLOAD", value=True)
 
 
-def test_add_parameter_dict(simple_flow):
-    flow1 = simple_flow.flow1
-    flow1.add_parameter(
-        dict(
-            ECF_HOME="/home/johndoe",
-            NODES=4,
-            TIME_INTERVAL=0.1,
-        )
+def test_add_parameter_with_invalid_value_type():
+    node = Node("node1")
+    with pytest.raises(TypeError):
+        node.add_parameter("TYPHOON_ID", None)
+
+    with pytest.raises(TypeError):
+        node.add_parameter("TYPHOON_INFO", dict(typhoon_id="W2501", typhoon_name="TYPH1"))
+
+    with pytest.raises(TypeError):
+        node.add_parameter("TYPHOON_INFO", ["W2501", "TYPH1"])
+
+
+def test_add_parameter_dict():
+    node = Node("node1")
+    node.add_parameter(
+        {
+            "ECF_HOME": "/home/johndoe",
+            "NODES": 4,
+            "TIME_INTERVAL": 0.1,
+            "FLAG_UPLOAD": True,
+        }
     )
 
-    assert flow1.user_parameters["ECF_HOME"] == Parameter(name="ECF_HOME", value="/home/johndoe")
-    assert flow1.user_parameters["NODES"] == Parameter(name="NODES", value=4)
-    assert flow1.user_parameters["TIME_INTERVAL"] == Parameter(name="TIME_INTERVAL", value=0.1)
+    assert len(node.user_parameters) == 4
+    assert node.user_parameters["ECF_HOME"] == Parameter(name ="ECF_HOME", value="/home/johndoe")
+    assert node.user_parameters["NODES"] == Parameter(name="NODES", value=4)
+    assert node.user_parameters["TIME_INTERVAL"] == Parameter(name="TIME_INTERVAL", value=0.1)
+    assert node.user_parameters["FLAG_UPLOAD"] == Parameter(name="FLAG_UPLOAD", value=True)
 
 
-def test_find_parameter(simple_flow_with_parameter):
-    flow1 = simple_flow_with_parameter.flow1
-
-    assert flow1.find_parameter("ECF_HOME") == Parameter("ECF_HOME", "/home/johndoe")
-    assert flow1.find_parameter("NO_EXIST") is None
-
-    container1 = simple_flow_with_parameter.container1
-    assert container1.find_parameter("TASKS") == Parameter("TASKS", 32)
-    assert container1.find_parameter("NO_EXIST") is None
-    assert container1.find_parameter("ECF_HOME") is None
-
-    task1 = simple_flow_with_parameter.task1
-    assert task1.find_parameter("FLAG") == Parameter("FLAG", True)
-    assert task1.find_parameter("NO_EXIST") is None
-    assert task1.find_parameter("TASKS") is None
-    assert task1.find_parameter("ECF_HOME") is None
+def test_add_parameter_dict_with_value():
+    node = Node("node1")
+    with pytest.raises(TypeError):
+        node.add_parameter(
+            {
+                "ECF_HOME": "/home/johndoe",
+                "NODES": 4,
+                "TIME_INTERVAL": 0.1,
+                "FLAG_UPLOAD": True,
+            },
+            "value",
+        )
 
 
-def test_find_parent_parameter(simple_flow_with_parameter):
-    flow1 = simple_flow_with_parameter.flow1
+def test_add_parameter_list():
+    node = Node("node1")
+    node.add_parameter(
+        [
+            Parameter(name="ECF_HOME", value="/home/johndoe"),
+            Parameter(name="NODES", value=4),
+            Parameter(name="TIME_INTERVAL", value=0.1),
+            Parameter(name="FLAG_UPLOAD", value=True),
+        ]
+    )
 
-    assert flow1.find_parent_parameter("ECF_HOME") == Parameter("ECF_HOME", "/home/johndoe")
-    assert flow1.find_parent_parameter("NO_EXIST") is None
+    assert len(node.user_parameters) == 4
+    assert node.user_parameters["ECF_HOME"] == Parameter(name="ECF_HOME", value="/home/johndoe")
+    assert node.user_parameters["NODES"] == Parameter(name="NODES", value=4)
+    assert node.user_parameters["TIME_INTERVAL"] == Parameter(name="TIME_INTERVAL", value=0.1)
+    assert node.user_parameters["FLAG_UPLOAD"] == Parameter(name="FLAG_UPLOAD", value=True)
 
-    container1 = simple_flow_with_parameter.container1
-    assert container1.find_parent_parameter("TASKS") == Parameter("TASKS", 32)
-    assert container1.find_parent_parameter("NO_EXIST") is None
-    assert container1.find_parent_parameter("ECF_HOME") == Parameter("ECF_HOME", "/home/johndoe")
 
-    task1 = simple_flow_with_parameter.task1
-    assert task1.find_parent_parameter("FLAG") == Parameter("FLAG", True)
-    assert task1.find_parent_parameter("NO_EXIST") is None
-    assert task1.find_parent_parameter("TASKS") == Parameter("TASKS", 32)
-    assert task1.find_parent_parameter("ECF_HOME") == Parameter("ECF_HOME", "/home/johndoe")
+def test_add_parameter_list_with_value():
+    node = Node("node1")
 
+    with pytest.raises(TypeError):
+        node.add_parameter(
+            [
+                Parameter(name="ECF_HOME", value="/home/johndoe"),
+                Parameter(name="NODES", value=4),
+                Parameter(name="TIME_INTERVAL", value=0.1),
+                Parameter(name="FLAG_UPLOAD", value=True),
+            ],
+            "value",
+        )
