@@ -44,7 +44,7 @@ class Meter:
 
     @value.setter
     def value(self, value: int):
-        if self.is_valid(value):
+        if self.is_invalid(value):
             raise ValueError(f"value must be in [{self.min_value}, {self.max_value}]")
         self._value = value
 
@@ -54,7 +54,7 @@ class Meter:
         """
         self.value = self.min_value
 
-    def is_valid(self, value: int) -> bool:
+    def is_invalid(self, value: int) -> bool:
         """
         Check whether some value is in the range.
 

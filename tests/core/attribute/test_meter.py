@@ -3,7 +3,57 @@ import pytest
 from takler.core import Meter
 
 
-def test_create_meter(simple_flow):
+#-----------------------
+# Meter
+#-----------------------
+
+def test_meter_create():
+    meter = Meter("forecast_hour", -1, 240)
+    assert meter.name == "forecast_hour"
+    assert meter.min_value == -1
+    assert meter.max_value == 240
+    assert meter._value == -1
+
+
+def test_meter_value():
+    meter = Meter("forecast_hour", -1, 240)
+    assert meter.value == -1
+
+    meter.value = 10
+    assert meter.value == 10
+
+    meter.value = 240
+    assert meter.value == 240
+
+    meter.value = -1
+    assert meter.value == -1
+
+
+def test_meter_value_invalid():
+    meter = Meter("forecast_hour", -1, 240)
+
+    with pytest.raises(ValueError):
+        meter.value = -2
+
+    with pytest.raises(ValueError):
+        meter.value = 241
+
+
+def test_meter_reset():
+    meter = Meter("forecast_hour", -1, 240)
+    assert meter.value == -1
+    meter.value = 10
+    assert meter.value == 10
+    meter.reset()
+    assert meter.value == -1
+
+
+#-----------------------
+# Flow
+#-----------------------
+
+
+def test_create_meter_in_task(simple_flow):
     task1 = simple_flow.task1
     meter = task1.add_meter("forecast_hour", 0, 240)
     assert task1.meters == [Meter("forecast_hour", 0, 240)]
@@ -12,7 +62,7 @@ def test_create_meter(simple_flow):
     assert meter.value == 0
 
 
-def test_set_meter(simple_flow):
+def test_set_meter_in_task(simple_flow):
     task1 = simple_flow.task1
     meter1 = task1.add_meter("meter1", 0, 24)
     meter2 = task1.add_meter("meter2", 10, 100)
@@ -33,10 +83,27 @@ def test_set_meter(simple_flow):
     assert task1.set_meter("meter2", 100)
     assert meter2.value == 100
 
+
+def test_set_meter_on_non_exist_meter_in_task(simple_flow):
+    task1 = simple_flow.task1
+    meter1 = task1.add_meter("meter1", 0, 24)
+    meter2 = task1.add_meter("meter2", 10, 100)
+
     assert not task1.set_meter("not_exist_meter", 10)
 
 
-def test_reset_event(simple_flow):
+def test_find_meter_in_task(simple_flow):
+    task1 = simple_flow.task1
+    meter1 = task1.add_meter("meter1", 0, 24)
+    meter2 = task1.add_meter("meter2", 10, 100)
+
+    assert task1.find_meter("meter1") == meter1
+    assert task1.find_meter("meter2") == meter2
+
+    assert task1.find_meter("not_exist_meter") is None
+
+
+def test_reset_event_in_task(simple_flow):
     task1 = simple_flow.task1
     meter1 = task1.add_meter("meter1", 0, 24)
     meter2 = task1.add_meter("meter2", 10, 100)
@@ -52,3 +119,8 @@ def test_reset_event(simple_flow):
     assert meter2.value == 10
 
 
+def test_reset_event_on_non_exist_meter_in_task(simple_flow):
+    task1 = simple_flow.task1
+    meter1 = task1.add_meter("meter1", 0, 24)
+    meter2 = task1.add_meter("meter2", 10, 100)
+    assert not task1.reset_meter("not_exist_meter")

@@ -7,7 +7,7 @@ from .parameter import Parameter
 from .event import Event
 from .meter import Meter
 from .state import State, NodeStatus
-from .limit import Limit
+from .limit import Limit, InLimit
 from .repeat import Repeat, RepeatDate
 from .time_attr import TimeAttribute
 

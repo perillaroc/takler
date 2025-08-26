@@ -34,16 +34,18 @@ class Limit:
         self.node_paths: Set[str] = set()
 
     def __eq__(self, other):
+        if not isinstance(other, Limit):
+            return False
         return (
             self.name == other.name
             and self.limit == other.limit
-            and self.value == other.value
-            and self.node == other.node
-            and self.node_paths == other.node_paths
         )
 
     def __hash__(self):
-        return hash((self.name, self.limit, self.value, self.node, tuple(self.node_paths)))
+        return hash((self.name, self.limit))
+
+    def __repr__(self):
+        return f"Limit(name='{self.name}', limit={self.limit}, value={self.value}, node_paths={sorted(self.node_paths)})"
 
     def set_node(self, node: "Node"):
         """
@@ -157,6 +159,9 @@ class InLimit:
             and self.node_path == other.node_path
             and self.limit == other.limit
         )
+
+    def __repr__(self):
+        return f"InLimit(limit_name='{self.limit_name}', tokens={self.tokens}, node_path={self.node_path!r})"
 
     def set_limit(self, limit: Limit):
         self.limit = limit

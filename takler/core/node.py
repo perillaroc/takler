@@ -938,7 +938,7 @@ class Node(ABC):
             item = the_parent.find_limit(name)
             if item is not None:
                 return item
-            the_parent = self.parent
+            the_parent = the_parent.parent
 
         return None
 
