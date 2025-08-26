@@ -114,8 +114,8 @@ def test_server_state_find_parameter():
 #----------------------------
 
 
-def test_bunch_generated_parameter(simple_bunch_default_port):
-    bunch = simple_bunch_default_port.bunch
+def test_bunch_generated_parameter(bunch_with_parameter):
+    bunch = bunch_with_parameter.bunch1
     assert bunch.find_generated_parameter(parameter.TAKLER_HOST) == \
            Parameter(parameter.TAKLER_HOST, "localhost")
     assert bunch.find_generated_parameter(parameter.TAKLER_PORT) == \
@@ -126,19 +126,19 @@ def test_bunch_generated_parameter(simple_bunch_default_port):
     assert bunch.find_parent_parameter("NOT_EXIST") is None
 
 
-def test_task_find_bunch_parameter(simple_bunch_default_port):
-    task1 = simple_bunch_default_port.task1
+def test_task_find_bunch_parameter(bunch_with_parameter):
+    task1 = bunch_with_parameter.task1
     assert task1.find_parent_parameter(parameter.TAKLER_PORT) == Parameter(parameter.TAKLER_PORT, "33083")
     assert task1.find_parameter(parameter.TAKLER_PORT) is None
 
 
-def test_container_find_bunch_parameter(simple_bunch_default_port):
-    container1 = simple_bunch_default_port.container1
+def test_container_find_bunch_parameter(bunch_with_parameter):
+    container1 = bunch_with_parameter.container1
     assert container1.find_parent_parameter(parameter.TAKLER_HOME) == Parameter(parameter.TAKLER_HOME, ".")
     assert container1.find_parameter(parameter.TAKLER_HOME) is None
 
 
-def test_flow_find_bunch_parameter(simple_bunch_default_port):
-    flow1 = simple_bunch_default_port.flow1
+def test_flow_find_bunch_parameter(bunch_with_parameter):
+    flow1 = bunch_with_parameter.flow1
     assert flow1.find_parent_parameter(parameter.TAKLER_HOME) == Parameter(parameter.TAKLER_HOME, ".")
     assert flow1.find_parameter(parameter.TAKLER_HOME) is None
