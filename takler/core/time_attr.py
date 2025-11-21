@@ -33,7 +33,7 @@ class TimeAttribute:
 
         Time attribute is satisfied when:
 
-        (1) Flow calendar's time is equal to time attribute's time.
+        (1) Flow calendar's time (HH:MM) is equal to time attribute's time (HH:MM).
         (2) Or free flag is marked.
 
         Parameters

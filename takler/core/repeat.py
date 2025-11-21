@@ -167,7 +167,7 @@ class RepeatDate(RepeatBase):
         self._value = value
 
     def valid(self) -> bool:
-        return self._value <= self.end_date
+        return self.start_date <= self._value <= self.end_date
 
     def increment(self) -> bool:
         value = self._value + self.step_day
@@ -178,6 +178,15 @@ class RepeatDate(RepeatBase):
             return False
 
     def change(self, value: Union[str, int, date]):
+        """
+        change RepeatDate with valid value.
+        If value is not valid, raise ValueError.
+
+        Parameters
+        ----------
+        value
+
+        """
         if isinstance(value, int):
             value = str(value)
         if isinstance(value, str):

@@ -1,10 +1,7 @@
-import sys
-
 import pytest
 
 from takler.core import Limit, InLimit, Flow, Task
 from takler.core.limit import InLimitManager
-from takler.visitor import pre_order_travel, PrintVisitor
 
 
 #------------------
@@ -397,75 +394,88 @@ def test_node_decrement_in_limit(flow_with_limit):
     assert section_limit.value == 0
 
 
-# def test_manual_run(flow_with_limit):
-#     # pre_order_travel(flow_with_limit.flow1, SimplePrintVisitor())
-#     flow1: Flow = flow_with_limit.flow1
-#     task1: Task = flow_with_limit.task1
-#     task2: Task = flow_with_limit.task2
-#     task3: Task = flow_with_limit.task3
-#     task4: Task = flow_with_limit.task4
-#
-#     limit1 = flow1.find_limit("limit1")
-#     assert limit1 is not None
-#     limit2 = flow1.find_limit("limit2")
-#     assert limit2 is not None
-#
-#     flow1.requeue()
-#
-#     assert limit1.value == 0
-#     assert limit2.value == 0
-#
-#     # Task1 run
-#     assert task1.check_in_limit_up()
-#     task1.run()
-#     assert limit1.value == 1
-#     assert limit2.value == 0
-#     task1.init("1001")
-#     assert limit1.value == 1
-#     assert limit2.value == 0
-#
-#     # Task2 run
-#     assert task2.check_in_limit_up()
-#     task2.run()
-#     assert limit1.value == 2
-#     assert limit2.value == 0
-#
-#     assert not task3.check_in_limit_up()
-#
-#     # Task1 finish
-#     task1.complete()
-#     assert limit1.value == 1
-#     assert limit2.value == 0
-#
-#     assert task3.check_in_limit_up()
-#
-#     # Task3 run
-#     task3.run()
-#     assert limit1.value == 2
-#     assert limit2.value == 1
-#
-#     assert not task4.check_in_limit_up()
-#
-#     # Task2 complete
-#     task2.complete()
-#     assert limit1.value == 1
-#     assert limit2.value == 1
-#
-#     assert not task4.check_in_limit_up()
-#
-#     # Task3 complete
-#     task3.complete()
-#     assert limit1.value == 0
-#     assert limit2.value == 0
-#
-#     assert task4.check_in_limit_up()
-#
-#     # Task4 run
-#     task4.run()
-#     assert limit1.value == 1
-#     assert limit2.value == 1
-#
-#     # Task4 complete
-#     task4.complete()
-#     assert limit1.value == 0
-#     assert limit2.value == 0
+def test_limit_for_flow(flow_with_limit):
+    flow1: Flow = flow_with_limit.flow1
+    task1: Task = flow_with_limit.task1
+    task2: Task = flow_with_limit.task2
+    task3: Task = flow_with_limit.task3
+    task4: Task = flow_with_limit.task4
+    task5: Task = flow_with_limit.task5
+    task6: Task = flow_with_limit.task6
+    total_limit: Limit = flow_with_limit.total_limit
+    section_limit: Limit = flow_with_limit.section_limit
+
+    flow1.requeue()
+
+    assert total_limit.value == 0
+    assert section_limit.value == 0
+
+    # Task1 run
+    assert task1.check_in_limit_up()
+    task1.run()
+    assert total_limit.value == 1
+    assert section_limit.value == 1
+    task1.init("1001")
+    assert total_limit.value == 1
+    assert section_limit.value == 1
+
+    # Task2 run
+    task2.check_in_limit_up()
+    task2.run()
+    assert total_limit.value == 2
+    assert section_limit.value == 2
+
+    assert not task3.check_in_limit_up()
+
+    # Task4 run
+    assert task4.check_in_limit_up()
+    task4.run()
+    assert total_limit.value == 3
+    assert section_limit.value == 2
+
+    assert not task5.check_in_limit_up()
+
+    # Task1 finish
+    task1.complete()
+    assert total_limit.value == 2
+    assert section_limit.value == 1
+
+    assert task3.check_in_limit_up()
+
+    # Task5 run
+    task5.run()
+    assert total_limit.value == 3
+    assert section_limit.value == 1
+
+    assert not task3.check_in_limit_up()
+    assert not task6.check_in_limit_up()
+
+    # Task2 complete
+    task2.complete()
+    assert total_limit.value == 2
+    assert section_limit.value == 0
+
+    assert task3.check_in_limit_up()
+    assert task6.check_in_limit_up()
+
+    # Task3 run
+    task3.run()
+    assert total_limit.value == 3
+    assert section_limit.value == 1
+
+    assert not task6.check_in_limit_up()
+
+    # Task4 complete
+    task4.complete()
+    assert total_limit.value == 2
+    assert section_limit.value == 1
+
+    # Task3 complete
+    task3.complete()
+    assert total_limit.value == 1
+    assert section_limit.value == 0
+
+    # Task5 complete
+    task5.complete()
+    assert total_limit.value == 0
+    assert section_limit.value == 0

@@ -9,9 +9,9 @@ class Calendar:
     Attributes
     ----------
     initial_time
-        工作流启动时间
+        工作流启动时间，逻辑时间
     flow_time
-        工作流当前时间
+        工作流当前时间，逻辑时间
     duration
         从 initial_real_time 到当前的时间间隔
     increment

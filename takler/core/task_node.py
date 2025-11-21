@@ -82,6 +82,9 @@ class Task(Node):
     # Limit -------------------------------------------------------
 
     def update_limits(self):
+        """
+        Update limits according task status, only used when task status is changed.
+        """
         status = self.state.node_status
         limit_set: Set[Limit] = set()
         if status == NodeStatus.complete:
@@ -91,6 +94,7 @@ class Task(Node):
         elif status == NodeStatus.submitted:
             self.increment_in_limit(limit_set)
         elif status == NodeStatus.active:
+            # TODO: When submitted is absent, active should increment limit
             pass
         else:
             self.decrement_in_limit(limit_set)
