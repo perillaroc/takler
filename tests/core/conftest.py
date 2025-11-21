@@ -1,14 +1,26 @@
+from pydantic import BaseModel, ConfigDict
 import pytest
 
-from takler.core import Flow
+from takler.core import Flow, NodeContainer, Task
 
 
-class ObjectContainer:
-    pass
+class SimpleFlow(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    flow1: Flow
+    container1: NodeContainer
+    task1: Task
+    container2: NodeContainer
+    task2: Task
+    task3: Task
+    task4: Task
+    container3: NodeContainer
+    task5: Task
+    task6: Task
 
 
 @pytest.fixture
-def simple_flow():
+def simple_flow() -> SimpleFlow:
     """
     Flow:
 
@@ -35,22 +47,39 @@ def simple_flow():
     task5 = container3.add_task("task5")
     task6 = flow1.add_task("task6")
 
-    flow = ObjectContainer()
-    flow.flow1 = flow1
-    flow.container1 = container1
-    flow.task1 = task1
-    flow.container2 = container2
-    flow.task2 = task2
-    flow.task3 = task3
-    flow.task4 = task4
-    flow.container3 = container3
-    flow.task5 = task5
-    flow.task6 = task6
+    flow = SimpleFlow(
+        flow1=flow1,
+        container1=container1,
+        task1=task1,
+        container2=container2,
+        task2=task2,
+        task3=task3,
+        task4=task4,
+        container3=container3,
+        task5=task5,
+        task6=task6,
+    )
     return flow
 
 
+class SimpleFlow2(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    flow2: Flow
+    task1: Task
+    container1: NodeContainer
+    task2: Task
+    container2: NodeContainer
+    task3: Task
+    container3: NodeContainer
+    task4: Task
+    task5: Task
+    task6: Task
+    task7: Task
+
+
 @pytest.fixture
-def simple_flow_2():
+def simple_flow_2() -> SimpleFlow2:
     """
     Flow:
 
@@ -87,17 +116,18 @@ def simple_flow_2():
         with flow2.add_task("task7") as task7:
             pass
 
-    result = ObjectContainer()
-    result.flow2 = flow2
-    result.task1 = task1
-    result.container1 = container1
-    result.task2 = task2
-    result.container2 = container2
-    result.task3 = task3
-    result.container3 = container3
-    result.task4 = task4
-    result.task5 = task5
-    result.task6 = task6
-    result.task7 = task7
+    result = SimpleFlow2(
+        flow2=flow2,
+        task1=task1,
+        container1=container1,
+        task2=task2,
+        container2=container2,
+        task3=task3,
+        container3=container3,
+        task4=task4,
+        task5=task5,
+        task6=task6,
+        task7=task7,
+    )
 
     return result

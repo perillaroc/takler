@@ -1,8 +1,10 @@
+from pydantic import ConfigDict
 import pytest
 
 from takler.core import Limit, InLimit, Flow, Task
 from takler.core.limit import InLimitManager
 
+from ..conftest import SimpleFlow
 
 #------------------
 # Limit
@@ -262,9 +264,13 @@ def test_in_limit_manager_decrement_in_limit():
 # Flow
 #-------------------------------
 
+class FlowWithLimit(SimpleFlow):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
-class ObjectContainer:
-    pass
+    total_limit: Limit
+    section_limit: Limit
+    total_limit_in_limit: InLimit
+    section_limit_in_limit: InLimit
 
 
 @pytest.fixture
@@ -288,19 +294,24 @@ def flow_with_limit(simple_flow):
           |- task6
 
     """
+
     flow1 = simple_flow.flow1
     total_limit = flow1.add_limit("total_limit", 3)
-    simple_flow.total_limit = total_limit
     section_limit = flow1.add_limit("section_limit", 2)
-    simple_flow.section_limit = section_limit
 
     total_limit_in_limit = flow1.add_in_limit("total_limit")
-    simple_flow.total_limit_in_limit = total_limit_in_limit
     container1 = simple_flow.container1
     section_limit_in_limit = container1.add_in_limit("section_limit")
-    simple_flow.section_limit_in_limit = section_limit_in_limit
 
-    return simple_flow
+    flow = FlowWithLimit(
+        **simple_flow.model_dump(),
+        total_limit=total_limit,
+        section_limit=section_limit,
+        total_limit_in_limit=total_limit_in_limit,
+        section_limit_in_limit=section_limit_in_limit,
+    )
+
+    return flow
 
 
 def test_node_find_limit(flow_with_limit):
