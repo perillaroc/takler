@@ -1,9 +1,8 @@
-from dataclasses import dataclass
-
+from pydantic import BaseModel, ConfigDict
 import pytest
 
 
-from takler.core import Flow, NodeStatus
+from takler.core import Flow, NodeContainer, Task, NodeStatus
 from takler.core.expression import Expression
 from takler.core.expression_ast import (
     AstNodePath, AstNodeStatus, AstVariablePath, AstInteger,
@@ -11,12 +10,23 @@ from takler.core.expression_ast import (
 )
 
 
-class ObjectContainer:
-    pass
+class SimpleFlow(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    flow1: Flow
+    container1: NodeContainer
+    task1: Task
+    container2: NodeContainer
+    task2: Task
+    task3: Task
+    task4: Task
+    container3: NodeContainer
+    task5: Task
+    task6: Task
 
 
 @pytest.fixture
-def simple_flow() -> ObjectContainer:
+def simple_flow() -> SimpleFlow:
     """
     A simple flow with event, meter and trigger:
 
@@ -36,37 +46,43 @@ def simple_flow() -> ObjectContainer:
           |- task6 [unknown]
 
     """
-    oc = ObjectContainer()
     with Flow("flow1") as flow1:
-        oc.flow1 = flow1
         with flow1.add_container("container1") as container1:
-            oc.container1 = container1
             with container1.add_task("task1") as task1:
-                oc.task1 = task1
                 task1.add_meter("meter1", 0, 10)
                 task1.add_event("event1")
             with container1.add_container("container2") as container2:
-                oc.container2 = container2
                 # container2.add_trigger("./task1 == complete")
                 with container2.add_task("task2") as task2:
-                    oc.task2 = task2
                     task2.add_event("event2")
                 with container2.add_task("task3") as task3:
-                    oc.task3 = task3
+                    pass
         with flow1.add_task("task4") as task4:
-            oc.task4 = task4
             task4.add_meter("meter2", 0, 10)
             # task4.add_trigger("./container1/container2 == complete")
         with flow1.add_container("container3") as container3:
-            oc.container3 = container3
             with container3.add_task("task5") as task5:
-                oc.task5 = task5
                 # task5.add_trigger("../task4 == complete")
+                pass
         with flow1.add_task("task6") as task6:
-            oc.task6 = task6
             # task6.add_trigger("./container3 == complete")
+            pass
         flow1.requeue()
-    return oc
+
+        f = SimpleFlow(
+            flow1=flow1,
+            task1=task1,
+            container1=container1,
+            task2=task2,
+            task3=task3,
+            container2=container2,
+            task4=task4,
+            task5=task5,
+            task6=task6,
+            container3=container3,
+        )
+
+    return f
 
 
 def test_node_status_expr(simple_flow):
