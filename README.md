@@ -2,7 +2,7 @@
 
 [![Documentation Status](https://readthedocs.org/projects/takler/badge/?version=latest)](https://takler.readthedocs.io/zh_CN/latest/?badge=latest)
 ![test](https://github.com/perillaroc/takler/actions/workflows/test.yml/badge.svg)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/0b6a58c078cb4af8a8745d034d456eaf)](https://www.codacy.com/gh/perillaroc/takler/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=perillaroc/takler&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/0b6a58c078cb4af8a8745d034d456eaf)](https://app.codacy.com/gh/perillaroc/takler/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 > :construction: takler is under construction.
 
@@ -14,15 +14,16 @@ Chinese documentation (中文文档)：[https://takler.readthedocs.io/](https://
 
 ## History
 
-Takler was a work project created at 2014, when I spend the second work year at NWPC/CMA.
-I tried to implement a simple task scheduling tool with basic features of ecFlow.
+Takler was initially developed in 2014 during perillaroc's second year at NWPC/CMA as a work project 
+aimed at implementing a lightweight task scheduling tool inspired by the basic features of [ecFlow](https://github.com/ecmwf/ecflow).
 
-Since 2022, takler project is totally rewritten with asyncio and gRPC.
-The purpose is to create a workflow tool for both operation and experiment users.
+Since 2022, the project has undergone a complete redesign, 
+now built on [asyncio](https://docs.python.org/3/library/asyncio.html) and [gRPC](https://grpc.io/). 
+The current objective is to provide a workflow management system that supports both operational and experimental use cases.
 
 ## LICENSE
 
-Copyright &copy; 2022-2024, developers at cemc-oper.
+Copyright &copy; 2022-2025, developers at cemc-oper.
 
 *takler* is licensed under [Apache License, Version 2.0](./LICENSE)
 

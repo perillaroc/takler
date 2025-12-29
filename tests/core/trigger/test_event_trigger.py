@@ -1,10 +1,16 @@
 import pytest
+from pydantic import BaseModel, ConfigDict
 
-from takler.core import Flow, Event, Task
+from takler.core import Flow, Task
 
 
-class ObjectContainer:
-    pass
+class EventSimpleFlow(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    flow1: Flow
+    task1: Task
+    task2: Task
+    task3: Task
 
 
 @pytest.fixture
@@ -21,27 +27,28 @@ def event_simple_case_1():
         |- task3
             trigger task1:event2 == set
     """
-    result = ObjectContainer()
-
     flow1 = Flow("flow1")
-    result.flow1 = flow1
 
     with flow1.add_task("task1") as task1:
-        result.task1 = task1
         task1.add_event("event1")
         task1.add_event("event2")
 
     with flow1.add_task("task2") as task2:
-        result.task2 = task2
         task2.add_trigger("./task1:event1 == set")
 
     with flow1.add_task("task3") as task3:
-        result.task3 = task3
         task3.add_trigger("./task1:event2==set")
 
     flow1.requeue()
 
-    return result
+    flow = EventSimpleFlow(
+        flow1=flow1,
+        task1=task1,
+        task2=task2,
+        task3=task3,
+    )
+
+    return flow
 
 
 def test_evaluate_event(event_simple_case_1):
