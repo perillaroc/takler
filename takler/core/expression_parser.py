@@ -55,6 +55,10 @@ class ExpressionTransformer(Transformer):
         """Node status: complete"""
         return AstNodeStatus(NodeStatus.aborted)
 
+    def st_active(self, _) -> AstNodeStatus:
+        """Node status: active"""
+        return AstNodeStatus(NodeStatus.active)
+
     def op_eq(self, _) -> AstOpEq:
         """Operator: equal (==)"""
         return AstOpEq()
@@ -140,7 +144,8 @@ trigger_parser: Lark = Lark(r"""
 
     st_complete: "complete"i
     st_aborted: "aborted"i
-    ?status: st_complete | st_aborted
+    st_active: "active"i
+    ?status: st_complete | st_aborted | st_active
     
     event_set: "set"i
     event_unset: "unset"i
