@@ -122,6 +122,9 @@ class Node(ABC):
         # 触发器
         self.trigger_expression: Optional[Expression] = None
 
+        self.complete_trigger_expression: Optional[Expression] = None
+        self.is_complete_triggered: bool = False
+
         # 事件
         self.events: List[Event] = list()
 
@@ -167,6 +170,8 @@ class Node(ABC):
             result["user_parameters"] = [param.to_dict() for key, param in self.user_parameters.items()]
         if self.trigger_expression is not None:
             result["trigger"] = self.trigger_expression.expression_str
+        if self.complete_trigger_expression is not None:
+            result['complete_trigger'] = self.complete_trigger_expression.expression_str
         if len(self.events) != 0:
             result["events"] = [event.to_dict() for event in self.events]
         if len(self.meters) != 0:
@@ -237,6 +242,10 @@ class Node(ABC):
         if "trigger" in d:
             trigger = d["trigger"]
             node.add_trigger(trigger, parse=False)
+
+        if "complete_trigger" in d:
+            trigger = d["complete_trigger"]
+            node.add_complete_trigger(trigger, parse=False)
 
         if "events" in d:
             events = d["events"]
@@ -595,6 +604,26 @@ class Node(ABC):
 
         return self.trigger_expression.evaluate()
 
+    def add_complete_trigger(self, trigger: Union[str, Expression], parse: bool = False):
+        if isinstance(trigger, str):
+            self.complete_trigger_expression = Expression(trigger)
+        elif isinstance(trigger, Expression):
+            self.complete_trigger_expression = trigger
+        else:
+            raise TypeError("trigger only supports str or Expression.")
+
+        if parse:
+            self.complete_trigger_expression.create_ast(self)
+
+    def evaluate_complete_trigger(self) -> bool:
+        if self.complete_trigger_expression is None:
+            return False
+
+        if self.complete_trigger_expression.ast is None:
+            self.complete_trigger_expression.create_ast(self)
+
+        return self.complete_trigger_expression.evaluate()
+
     # Resolve -----------------------------------------------------------
 
     def resolve_dependencies(self) -> bool:
@@ -612,6 +641,12 @@ class Node(ABC):
 
         # check time
         if not self.resolve_time_dependencies():
+            return False
+
+        # check complete
+        if self.evaluate_complete_trigger():
+            self.is_complete_triggered = True
+            self.set_node_status(NodeStatus.complete)
             return False
 
         # check trigger
@@ -1063,6 +1098,9 @@ class Node(ABC):
         Requeue operation sets node's status to ``NodeStatus.queued``
         """
         self.set_node_status_only(NodeStatus.queued)
+
+        # reset complete trigger
+        self.is_complete_triggered = False
 
         # reset time attributes
         for time_attr in self.times:
