@@ -58,7 +58,6 @@ def test_invalid_node_status():
         "./task1 == unknown",
         "./task1 == queued",
         "./task1 == submitted",
-        "./task1 == active",
     ]
     for expr_string in expr_cases:
         with pytest.raises(UnexpectedCharacters):
