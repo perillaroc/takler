@@ -20,6 +20,23 @@ def test_complete_trigger_on_task(trigger_simple_flow):
     assert task2.evaluate_complete_trigger()
 
 
+def test_complete_trigger_on_container(trigger_simple_flow):
+    flow1 = trigger_simple_flow.flow1
+    task1 = trigger_simple_flow.task1
+    container1 = trigger_simple_flow.container1
+
+    container1.add_complete_trigger("./task1 == complete")
+    container1.add_trigger("./task1 == aborted")
+
+    flow1.requeue()
+    assert not container1.evaluate_complete_trigger()
+    assert not container1.evaluate_trigger()
+
+    task1.complete()
+    assert container1.evaluate_complete_trigger()
+    assert not container1.evaluate_trigger()
+
+
 def test_complete_trigger_in_run_mode(trigger_simple_flow):
     flow1 = trigger_simple_flow.flow1
     task1 = trigger_simple_flow.task1
@@ -51,7 +68,6 @@ def test_complete_trigger_and_trigger_in_run_mode(trigger_simple_flow):
     task2.add_complete_trigger("./task1:event_a == set")
 
     flow1.requeue()
-
     assert not task2.is_complete_triggered
     assert task2.state.node_status == NodeStatus.queued
 
@@ -61,3 +77,14 @@ def test_complete_trigger_and_trigger_in_run_mode(trigger_simple_flow):
 
     assert task2.is_complete_triggered
     assert task2.state.node_status == NodeStatus.complete
+
+    # complete trigger is evaluated before normal trigger.
+    flow1.requeue()
+    assert not task2.is_complete_triggered
+    assert task2.state.node_status == NodeStatus.queued
+
+    task1.complete()
+    flow1.resolve_dependencies()
+
+    assert not task2.is_complete_triggered
+    assert not task2.state.node_status == NodeStatus.complete
