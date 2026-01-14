@@ -625,16 +625,7 @@ class Node(ABC):
         return self.complete_trigger_expression.evaluate()
 
     # Resolve -----------------------------------------------------------
-
-    def resolve_dependencies(self) -> bool:
-        """
-        Check all dependencies in the Node, and return True if all dependencies are satisfied.
-
-        Returns
-        -------
-        bool
-            True if node should be run, or False.
-        """
+    def check_dependencies(self) -> bool:
         # check suspend
         if self.is_suspended():
             return False
@@ -655,9 +646,32 @@ class Node(ABC):
 
         return True
 
+    def resolve_dependencies(self) -> bool:
+        """
+        Check all dependencies in the Node, and return True if all dependencies are satisfied.
+
+        Returns
+        -------
+        bool
+            True if node should be run, or False.
+        """
+        return self.check_dependencies()
+
     # Variable (Parameter, Event, Meter) -----------------------------
 
     def find_variable(self, name: str) -> Optional[Union[Event, Parameter, Meter]]:
+        """
+        Find variable (event, meter, parameter) by name.
+
+        Parameters
+        ----------
+        name
+
+        Returns
+        -------
+        Optional[Union[Event, Parameter, Meter]]
+            The variable found, or None if not found.
+        """
         e = self.find_event(name)
         if e is not None:
             return e

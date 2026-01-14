@@ -100,20 +100,19 @@ class Task(Node):
             self.decrement_in_limit(limit_set)
 
     # Trigger -----------------------------------------------------
-
-    def resolve_dependencies(self) -> bool:
+    def check_dependencies(self) -> bool:
         # check node status
         node_status = self.state.node_status
         if node_status in (
-            NodeStatus.complete,
-            NodeStatus.active,
-            NodeStatus.submitted,
-            NodeStatus.unknown,
+                NodeStatus.complete,
+                NodeStatus.active,
+                NodeStatus.submitted,
+                NodeStatus.unknown,
         ):
             return False
 
         # resolve node dependencies
-        if not Node.resolve_dependencies(self):
+        if not Node.check_dependencies(self):
             return False
 
         # don't run when task is aborted. See :github:issue:`27`
@@ -123,10 +122,23 @@ class Task(Node):
         if not self.check_in_limit_up():
             return False
 
-        # run jobs
-        self.run()
-
         return True
+
+    def resolve_dependencies(self) -> bool:
+        """
+        Check dependencies and run the task if all dependencies are met.
+
+        Returns
+        -------
+        bool
+            True if all dependencies are met and the task is run, False otherwise.
+        """
+        if self.check_dependencies():
+            # run jobs
+            self.run()
+            return True
+        else:
+            return False
 
     # Parameter ---------------------------------------------------
 

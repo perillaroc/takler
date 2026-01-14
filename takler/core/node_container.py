@@ -98,7 +98,7 @@ class NodeContainer(Node):
     # Trigger ------------------------------------------------
 
     def resolve_dependencies(self) -> bool:
-        if not Node.resolve_dependencies(self):
+        if not self.check_dependencies():
             return False
 
         for child in self.children:
