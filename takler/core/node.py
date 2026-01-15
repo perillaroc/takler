@@ -1047,8 +1047,9 @@ class Node(ABC):
 
     # Repeat ---------------------------------------------------------
 
-    def add_repeat(self, r: RepeatBase):
+    def add_repeat(self, r: RepeatBase) -> RepeatBase:
         self.repeat = Repeat(r)
+        return r
 
     # Time Attribute -----------------------------------------------------------
 

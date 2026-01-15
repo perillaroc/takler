@@ -1,7 +1,7 @@
 import pytest
 from pydantic import BaseModel, ConfigDict
 
-from takler.core import Flow, NodeContainer, Task
+from takler.core import Flow, NodeContainer, Task, RepeatDate, Meter, Event
 
 
 class SimpleFlow(BaseModel):
@@ -91,3 +91,53 @@ def simple_flow_for_operation() -> SimpleFlow:
     )
 
     return flow
+
+
+class ComplexFlow(SimpleFlow):
+    ymd: RepeatDate
+    event1: Event
+    meter1: Meter
+
+
+@pytest.fixture
+def complex_flow_for_requeue(simple_flow_for_operation):
+    """
+    Flow:
+
+        |- flow1 [queued]
+           YMD 20260101 20260131
+          |- task1 [queued]
+            event event1
+          |- container1 [queued]
+            |- task2 [queued]
+               meter meter1 0 100
+            |- container2 [queued]
+              |- task3 [queued]
+              |- task4 [queued]
+            |- container3 [queued]
+              |- task5 [queued]
+              |- task6 [queued]
+          |- task7 [queued]
+          |- container4 [queued]
+            |- task8 [queued]
+            |- task9 [queued]
+          |- task10 [queued]
+
+    """
+    flow1 = simple_flow_for_operation.flow1
+    task1 = simple_flow_for_operation.task1
+    task2 = simple_flow_for_operation.task2
+
+    ymd = flow1.add_repeat(RepeatDate('YMD', '20260101', '20260131'))
+    event1 = task1.add_event('event1')
+    meter1 = task2.add_meter('meter1', 0, 100)
+
+    flow1.requeue()
+
+    return ComplexFlow(
+        **simple_flow_for_operation.model_dump(),
+        ymd=ymd,
+        event1=event1,
+        meter1=meter1,
+    )
+

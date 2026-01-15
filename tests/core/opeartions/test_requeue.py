@@ -66,3 +66,24 @@ def test_requeue_on_container(simple_flow_for_operation):
     assert container3.state.node_status == NodeStatus.queued
     assert task5.state.node_status == NodeStatus.queued
     assert task6.state.node_status == NodeStatus.queued
+
+
+def test_requeue_on_complex_flow(complex_flow_for_requeue):
+    flow1 = complex_flow_for_requeue.flow1
+    ymd = complex_flow_for_requeue.ymd
+    task1 = complex_flow_for_requeue.task1
+    event1 = complex_flow_for_requeue.event1
+    task2 = complex_flow_for_requeue.task2
+    meter1 = complex_flow_for_requeue.meter1
+
+    ymd.change('20260110')
+    task1.set_event('event1', True)
+    task2.set_meter('meter1', 50)
+    assert event1.value
+    assert meter1.value == 50
+    assert ymd.value == 20260110
+
+    flow1.requeue()
+    assert ymd.value == 20260101
+    assert not event1.value
+    assert meter1.value == 0
