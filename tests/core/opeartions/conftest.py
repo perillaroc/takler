@@ -25,7 +25,7 @@ class SimpleFlow(BaseModel):
 
 
 @pytest.fixture
-def simple_flow_1() -> SimpleFlow:
+def simple_flow_for_operation() -> SimpleFlow:
     """
     Flow:
 

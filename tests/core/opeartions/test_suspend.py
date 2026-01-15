@@ -1,8 +1,8 @@
 
 
-def test_suspend_on_task(simple_flow_1):
-    task1 = simple_flow_1.task1
-    flow1 = simple_flow_1.flow1
+def test_suspend_on_task(simple_flow_for_operation):
+    task1 = simple_flow_for_operation.task1
+    flow1 = simple_flow_for_operation.flow1
 
     flow1.requeue()
     assert task1.check_dependencies()
@@ -17,9 +17,9 @@ def test_suspend_on_task(simple_flow_1):
     assert not task1.state.suspended
 
 
-def test_suspend_on_container(simple_flow_1):
-    flow1 = simple_flow_1.flow1
-    container1 = simple_flow_1.container1
+def test_suspend_on_container(simple_flow_for_operation):
+    flow1 = simple_flow_for_operation.flow1
+    container1 = simple_flow_for_operation.container1
 
     flow1.requeue()
     assert container1.check_dependencies()
@@ -34,8 +34,8 @@ def test_suspend_on_container(simple_flow_1):
     assert container1.check_dependencies()
 
 
-def test_suspend_on_flow(simple_flow_1):
-    flow1 = simple_flow_1.flow1
+def test_suspend_on_flow(simple_flow_for_operation):
+    flow1 = simple_flow_for_operation.flow1
     flow1.requeue()
     assert flow1.check_dependencies()
     assert not flow1.state.suspended
