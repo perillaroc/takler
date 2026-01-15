@@ -6,7 +6,6 @@ def test_requeue_on_flow(simple_flow_for_operation):
     flow1.requeue()
 
     for name, node in vars(simple_flow_for_operation).items():
-        print(vars(simple_flow_for_operation))
         assert node.state.node_status == NodeStatus.queued
 
 

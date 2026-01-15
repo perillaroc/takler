@@ -53,7 +53,7 @@ def simple_flow_for_operation() -> SimpleFlow:
             with container1.add_task("task2") as task2:
                 pass
             with container1.add_container("container2") as container2:
-                with container1.add_task("task3") as task3:
+                with container2.add_task("task3") as task3:
                     pass
                 with container2.add_task("task4") as task4:
                     pass
