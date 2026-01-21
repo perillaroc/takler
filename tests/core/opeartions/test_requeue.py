@@ -10,9 +10,6 @@ def test_requeue_on_flow(simple_flow_for_operation):
 
 
 def test_requeue_on_container(simple_flow_for_operation):
-    flow1 = simple_flow_for_operation.flow1
-    flow1.requeue()
-
     """
     |- flow1 [queued]
       |- task1 [queued]
@@ -30,6 +27,9 @@ def test_requeue_on_container(simple_flow_for_operation):
         |- task9 [queued]
       |- task10 [queued]
     """
+
+    flow1 = simple_flow_for_operation.flow1
+    flow1.requeue()
 
     container1 = simple_flow_for_operation.container1
     task2 = simple_flow_for_operation.task2
