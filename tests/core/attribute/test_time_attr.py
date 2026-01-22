@@ -1,7 +1,7 @@
 import datetime
-from dataclasses import dataclass
 
 import pytest
+from pydantic import BaseModel, ConfigDict
 
 from takler.core import Flow, Task
 
@@ -10,27 +10,28 @@ from takler.core import Flow, Task
 # Flow
 #-------------------
 
-@dataclass
-class ObjectContainer:
-    flow1: Flow = None
-    task1: Task = None
+class OneTaskFlow(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    flow1: Flow
+    task1: Task
 
 
 @pytest.fixture
-def one_task_time_flow() -> ObjectContainer:
+def one_task_time_flow() -> OneTaskFlow:
     """
     |- flow1
         |- task1
             time 12:00
     """
-    oc = ObjectContainer()
     with Flow("flow1") as flow1:
-        oc.flow1 = flow1
         with flow1.add_task("task1") as task1:
             task1.add_time(datetime.time(12, 0))
-            oc.task1 = task1
 
-    return oc
+    flow1 = OneTaskFlow(
+        flow1=flow1,
+        task1=task1
+    )
+    return flow1
 
 
 TEST_TIME = datetime.datetime(2022, 9, 12, 10, 0, 0)

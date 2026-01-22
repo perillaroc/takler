@@ -25,6 +25,15 @@ class Expression:
         self.ast: Optional[AstRoot] = None
         self.expression_str: str = expression_str
 
+    def reset(self):
+        self.clear_free()
+
+    def set_free(self):
+        self.free = True
+
+    def clear_free(self):
+        self.free = False
+
     def create_ast(self, parent_node: "Node"):
         """
         Create AST from expression string and set parent node for the AST.
@@ -34,8 +43,10 @@ class Expression:
 
     def evaluate(self) -> bool:
         """
-        Calculate the expression result.
+        Calculate the expression result. If free flag is set, always return True.
         """
+        if self.free:
+            return True
         return self.ast.evaluate()
 
     def parse_expression(self):

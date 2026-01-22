@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import datetime
 import importlib
-from typing import Union, List, Optional, Dict, TYPE_CHECKING, Set
+from typing import Union, List, Optional, Dict, TYPE_CHECKING, Set, Literal
 from pathlib import PurePosixPath
 from collections import defaultdict
 from abc import ABC
@@ -121,7 +121,6 @@ class Node(ABC):
 
         # 触发器
         self.trigger_expression: Optional[Expression] = None
-
         self.complete_trigger_expression: Optional[Expression] = None
         self.is_complete_triggered: bool = False
 
@@ -1134,6 +1133,10 @@ class Node(ABC):
         if reset_repeat and self.repeat is not None:
             self.repeat.reset()
 
+        # reset trigger
+        if self.trigger_expression is not None:
+            self.trigger_expression.reset()
+
     def suspend(self):
         """
         Suspend the node.
@@ -1148,9 +1151,12 @@ class Node(ABC):
         """
         self.state.suspended = False
 
-    def free_dependencies(self, dep_type: Optional[str] = None):
+    def free_dependencies(self, dep_type: Optional[Literal["all", "time", "trigger"]] = None):
         """
-        Ignore some type of dependencies in Node.
+        Ignore some type of dependencies in Node. Including:
+
+            * time
+            * trigger
 
         Parameters
         ----------
@@ -1180,6 +1186,6 @@ class Node(ABC):
                 time_attr.set_free()
 
         if free_trigger:
-            logger.error("Free trigger is not implemented yet.")
+            self.trigger_expression.set_free()
 
         return
