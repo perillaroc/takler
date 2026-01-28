@@ -38,6 +38,7 @@ def task_case():
         result.task2 = task2
         task2.add_parameter("param1", "one")
         task2.add_trigger("./task1:event1 == set")
+        task2.add_complete_trigger('./task2:event2 == set')
         task2.add_event("event1")
         task2.add_meter("meter1", 0, 10)
         task2.add_limit("limit1", 10)
@@ -70,6 +71,7 @@ def test_node_to_dict(task_case):
             dict(name="param1", value="one"),
         ],
         trigger="./task1:event1 == set",
+        complete_trigger="./task2:event2 == set",
         events=[
             dict(name="event1", initial_value=False, value=False),
         ],
@@ -120,6 +122,7 @@ def test_node_from_dict(task_case):
             dict(name="param1", value="one"),
         ],
         trigger="./task1:event1 == set",
+        complete_trigger="./task2:event2 == set",
         events=[
             dict(name="event1", initial_value=False, value=False),
         ],

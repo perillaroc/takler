@@ -69,7 +69,7 @@ def test_delete_flow(simple_bunch, simple_flow, simple_flow_2):
     }
 
 
-def get_bunch(simple_bunch, simple_flow, simple_flow_2):
+def test_get_bunch(simple_bunch, simple_flow, simple_flow_2):
     bunch = simple_bunch
     flow1 = simple_flow.flow1
     flow2 = simple_flow_2.flow2

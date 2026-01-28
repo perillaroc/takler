@@ -1,6 +1,6 @@
 
 
-def test_event_trigger_on_task(trigger_simple_flow):
+def test_task_add_trigger_event(trigger_simple_flow):
     flow1 = trigger_simple_flow.flow1
     task1 = trigger_simple_flow.task1
     task2 = trigger_simple_flow.task2
@@ -25,7 +25,7 @@ def test_event_trigger_on_task(trigger_simple_flow):
     assert task3.evaluate_trigger()
 
 
-def test_event_trigger_on_container(trigger_simple_flow):
+def test_container_add_trigger_event(trigger_simple_flow):
     flow1 = trigger_simple_flow.flow1
     task1 = trigger_simple_flow.task1
     container1 = trigger_simple_flow.container1

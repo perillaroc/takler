@@ -1,6 +1,6 @@
 
 
-def test_status_trigger_complete_on_task(trigger_simple_flow):
+def test_task_add_trigger_status_complete(trigger_simple_flow):
     task1 = trigger_simple_flow.task1
     task2 = trigger_simple_flow.task2
 
@@ -11,7 +11,7 @@ def test_status_trigger_complete_on_task(trigger_simple_flow):
     assert task2.evaluate_trigger()
 
 
-def test_status_trigger_complete_on_container(trigger_simple_flow):
+def test_container_add_trigger_status_complete(trigger_simple_flow):
     container1 = trigger_simple_flow.container1
     task9 = trigger_simple_flow.task9
     task3 = trigger_simple_flow.task3
@@ -33,7 +33,7 @@ def test_status_trigger_complete_on_container(trigger_simple_flow):
     assert task3.evaluate_trigger()
 
 
-def test_status_trigger_aborted_on_task(trigger_simple_flow):
+def test_task_add_trigger_status_aborted(trigger_simple_flow):
     flow1 = trigger_simple_flow.flow1
     task1 = trigger_simple_flow.task1
     task2 = trigger_simple_flow.task2
@@ -50,7 +50,7 @@ def test_status_trigger_aborted_on_task(trigger_simple_flow):
     assert not task2.evaluate_trigger()
 
 
-def test_status_trigger_active_on_task(trigger_simple_flow):
+def test_task_add_trigger_status_active(trigger_simple_flow):
     flow1 = trigger_simple_flow.flow1
     task1 = trigger_simple_flow.task1
     task2 = trigger_simple_flow.task2

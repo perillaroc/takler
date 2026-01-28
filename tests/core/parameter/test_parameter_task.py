@@ -1,88 +1,128 @@
 import pytest
 
-from takler.core import Parameter, Task, Flow
-from takler.core.task_node import TaskNodeGeneratedParameters
+from takler.core import Parameter, Task
 from takler.core.parameter import (
     TASK, TAKLER_NAME, TAKLER_RID, TAKLER_TRY_NO
 )
 
 
-#-------------------------------
-# TaskNodeGeneratedParameters
-#-------------------------------
+def test_task_add_parameter_single():
+    task1 = Task('task1')
+
+    int_param = task1.add_parameter("int_param", 1)
+    assert int_param is not None
+    assert int_param.value == 1
+    assert task1.user_parameters["int_param"] == int_param
+    float_param = task1.add_parameter("float_param", -1.5)
+    assert float_param is not None
+    assert float_param.value == -1.5
+    assert task1.user_parameters["float_param"] == float_param
+    string_param = task1.add_parameter("string_param", "this is a param")
+    assert string_param is not None
+    assert string_param.value == 'this is a param'
+    assert task1.user_parameters["string_param"] == string_param
+    bool_param = task1.add_parameter('bool_param', True)
+    assert bool_param is not None
+    assert bool_param.value
+    assert task1.user_parameters["bool_param"] == bool_param
 
 
-def test_task_node_generated_parameters_create():
-    task_node = Task("task1")
-    
-    gen_params = TaskNodeGeneratedParameters(node=task_node)
-    assert gen_params.node == task_node
-    assert gen_params.task == Parameter(TASK, None)
-    assert gen_params.takler_name == Parameter(TAKLER_NAME, None)
-    assert gen_params.takler_rid == Parameter(TAKLER_RID, None)
-    assert gen_params.takler_try_no == Parameter(TAKLER_TRY_NO, None)   
-    
+def test_task_add_parameter_error_type_value():
+    task1 = Task('task1')
+    with pytest.raises(TypeError):
+        task1.add_parameter('int_param', [1, 2, 3])
 
-def test_task_node_generated_parameters_update_parameters():
-    flow1 = Flow("flow1")
-    task_node = flow1.add_task("task1")
+    with pytest.raises(TypeError):
+        task1.add_parameter('int_param', {'a': 1, 'b': 2})
 
-    gen_params = task_node.generated_parameters
-    
-    assert task_node.node_path == "/flow1/task1"
-    assert task_node.task_id is None
-    assert task_node.try_no == 0
-    
-    gen_params.update_parameters()
-    assert gen_params.task == Parameter(TASK, "task1")
-    assert gen_params.takler_name == Parameter(TAKLER_NAME, "/flow1/task1")
-    assert gen_params.takler_rid == Parameter(TAKLER_RID, None)
-    assert gen_params.takler_try_no == Parameter(TAKLER_TRY_NO, 0)
-    
-    task_node.init(task_id="1001")
-    assert task_node.task_id == "1001"
-    assert task_node.try_no == 0
-
-    gen_params.update_parameters()
-    assert gen_params.task == Parameter(TASK, "task1")
-    assert gen_params.takler_name == Parameter(TAKLER_NAME, "/flow1/task1")
-    assert gen_params.takler_rid == Parameter(TAKLER_RID, "1001")
-    assert gen_params.takler_try_no == Parameter(TAKLER_TRY_NO, 0)
+    with pytest.raises(TypeError):
+        task1.add_parameter('int_param', None)
 
 
-def test_task_node_generated_parameters_find_parameter():
-    flow1 = Flow("flow1")
-    task_node = flow1.add_task("task1")
-    task_node.init(task_id="1001")
-
-    gen_params = task_node.generated_parameters
-    gen_params.update_parameters()
-
-    assert gen_params.find_parameter(TASK) == Parameter(TASK, "task1")
-    assert gen_params.find_parameter(TAKLER_NAME) == Parameter(TAKLER_NAME, "/flow1/task1")
-    assert gen_params.find_parameter(TAKLER_RID) == Parameter(TAKLER_RID, "1001")
-    assert gen_params.find_parameter(TAKLER_TRY_NO) == Parameter(TAKLER_TRY_NO, 0)
-    assert gen_params.find_parameter("NO_EXIST") is None
+def test_task_add_parameter_parameter():
+    task1 = Task('task1')
+    int_param = task1.add_parameter(Parameter("int_param", 1))
+    assert int_param is not None
+    assert int_param.value == 1
+    assert task1.user_parameters["int_param"] == int_param
 
 
-def test_task_node_generated_parameters_generated_parameters():
-    flow1 = Flow("flow1")
-    task_node = flow1.add_task("task1")
-    task_node.init(task_id="1001")
-    gen_params = task_node.generated_parameters
-    gen_params.update_parameters()
-
-    assert gen_params.generated_parameters() == {
-        TASK: Parameter(TASK, "task1"),
-        TAKLER_NAME: Parameter(TAKLER_NAME, "/flow1/task1"),
-        TAKLER_RID: Parameter(TAKLER_RID, "1001"),
-        TAKLER_TRY_NO: Parameter(TAKLER_TRY_NO, 0)
-    }
+def test_task_add_parameter_parameter_with_value():
+    task1 = Task('task1')
+    with pytest.raises(TypeError):
+        task1.add_parameter(Parameter("int_param", 1), value=100)
 
 
-#-----------------
-# Task
-#-----------------
+def test_task_add_parameters_list():
+    task1 = Task('task1')
+
+    task1.add_parameter([
+        Parameter('int_param', 1),
+        Parameter('float_param', -1.5),
+        Parameter('string_param', 'this is a param'),
+        Parameter('bool_param', True),
+    ])
+
+    assert len(task1.user_parameters) == 4
+
+
+def test_task_add_parameter_list_with_value():
+    task1 = Task('task1')
+    with pytest.raises(TypeError):
+        task1.add_parameter([
+            Parameter('int_param', 1),
+            Parameter('float_param', -1.5),
+            Parameter('string_param', 'this is a param'),
+            Parameter('bool_param', True),
+        ], value="some value")
+
+
+def test_task_add_parameter_list_with_other_type():
+    task1 = Task('task1')
+    with pytest.raises(TypeError):
+        task1.add_parameter([
+            Parameter('int_param', 1),
+            ('float_param', -1.5),
+        ])
+
+
+def test_task_add_parameter_dict():
+    task1 = Task('task1')
+    task1.add_parameter({
+        'int_param': 1,
+        'float_param': -1.5,
+        'string_param': 'this is a param',
+        'bool_param': True,
+    })
+    assert len(task1.user_parameters) == 4
+
+
+def test_task_add_parameter_dict_with_value():
+    task1 = Task('task1')
+    with pytest.raises(TypeError):
+        task1.add_parameter({
+            'int_param': 1,
+            'float_param': -1.5,
+            'string_param': 'this is a param',
+            'bool_param': True,
+        }, value="some value")
+
+
+def test_task_add_parameter_error_type_param():
+    task1 = Task('task1')
+    with pytest.raises(TypeError):
+        task1.add_parameter(('param1', 1))
+
+    with pytest.raises(TypeError):
+        task1.add_parameter(1, 1)
+
+    with pytest.raises(TypeError):
+        task1.add_parameter(None, 1)
+
+
+#-----------------------------
+# Task generated parameters
+#-----------------------------
 
 
 def test_task_update_and_find_generated_parameter(flow_with_parameter):

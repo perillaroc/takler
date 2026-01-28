@@ -70,7 +70,7 @@ def test_find_node(simple_flow):
         query: QueryOption
         expected_node_name: Optional[str]
 
-    def do_tests(cases):
+    def do_tests(cases: list[TestCase]):
         for test_case in cases:
             node = getattr(simple_flow, test_case.query.node_name)
             if test_case.expected_node_name is None:

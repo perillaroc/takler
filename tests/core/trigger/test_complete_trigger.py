@@ -1,7 +1,9 @@
+import pytest
+
 from takler.core import NodeStatus
 
 
-def test_complete_trigger_on_task(trigger_simple_flow):
+def test_task_add_complete_trigger(trigger_simple_flow):
     flow1 = trigger_simple_flow.flow1
     task1 = trigger_simple_flow.task1
     task2 = trigger_simple_flow.task2
@@ -20,7 +22,7 @@ def test_complete_trigger_on_task(trigger_simple_flow):
     assert task2.evaluate_complete_trigger()
 
 
-def test_complete_trigger_on_container(trigger_simple_flow):
+def test_container_add_complete_trigger(trigger_simple_flow):
     flow1 = trigger_simple_flow.flow1
     task1 = trigger_simple_flow.task1
     container1 = trigger_simple_flow.container1
@@ -37,7 +39,7 @@ def test_complete_trigger_on_container(trigger_simple_flow):
     assert not container1.evaluate_trigger()
 
 
-def test_complete_trigger_in_run_mode(trigger_simple_flow):
+def test_task_add_complete_trigger_run(trigger_simple_flow):
     flow1 = trigger_simple_flow.flow1
     task1 = trigger_simple_flow.task1
     task2 = trigger_simple_flow.task2
@@ -58,7 +60,7 @@ def test_complete_trigger_in_run_mode(trigger_simple_flow):
     assert task2.state.node_status == NodeStatus.complete
 
 
-def test_complete_trigger_and_trigger_in_run_mode(trigger_simple_flow):
+def test_task_add_complete_trigger_and_trigger_run(trigger_simple_flow):
     flow1 = trigger_simple_flow.flow1
     task1 = trigger_simple_flow.task1
     task2 = trigger_simple_flow.task2
@@ -88,3 +90,22 @@ def test_complete_trigger_and_trigger_in_run_mode(trigger_simple_flow):
 
     assert not task2.is_complete_triggered
     assert not task2.state.node_status == NodeStatus.complete
+
+
+def test_task_add_complete_trigger_error_type(trigger_simple_flow):
+    task2 = trigger_simple_flow.task2
+    with pytest.raises(TypeError):
+        task2.add_complete_trigger(111)
+
+
+def test_task_add_complete_trigger_parse(trigger_simple_flow):
+    task2 = trigger_simple_flow.task2
+    task3 = trigger_simple_flow.task3
+    task4 = trigger_simple_flow.task4
+
+    task2.add_complete_trigger('./task1 == complete')
+    assert task2.complete_trigger_expression.ast is None
+    task3.add_complete_trigger('../task2 == complete', parse=True)
+    assert task3.complete_trigger_expression.ast is not None
+    task4.add_complete_trigger('./task3 == complete', parse=False)
+    assert task4.complete_trigger_expression.ast is None

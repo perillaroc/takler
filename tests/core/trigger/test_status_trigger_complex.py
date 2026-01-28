@@ -1,5 +1,5 @@
 
-def test_status_trigger_complex(trigger_simple_flow):
+def test_task_add_trigger_status_complex(trigger_simple_flow):
     flow1 = trigger_simple_flow.flow1
     task1 = trigger_simple_flow.task1
     task2 = trigger_simple_flow.task2

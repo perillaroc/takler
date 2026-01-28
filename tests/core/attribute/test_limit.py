@@ -264,9 +264,15 @@ def test_in_limit_manager_decrement_in_limit():
 # Flow
 #-------------------------------
 
-class FlowWithLimit(SimpleFlow):
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+def test_add_limit_duplicate(simple_flow):
+    flow1 = simple_flow.flow1
+    flow1.add_limit('limit1', 10)
 
+    with pytest.raises(RuntimeError):
+        flow1.add_limit('limit1', 20)
+        
+
+class FlowWithLimit(SimpleFlow):
     total_limit: Limit
     section_limit: Limit
     total_limit_in_limit: InLimit

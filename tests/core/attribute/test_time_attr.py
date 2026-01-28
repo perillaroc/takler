@@ -142,3 +142,11 @@ def test_time_attr_free_dependencies(one_task_time_flow, patch_datetime_now):
     task1.free_dependencies(dep_type="time")
     assert task1.times[0].free
     assert task1.resolve_time_dependencies()
+
+
+def test_resolve_time_dependencies_on_single_task():
+    task = Task('task1')
+    task.add_time('12:00')
+
+    with pytest.raises(RuntimeError):
+        task.resolve_time_dependencies()
