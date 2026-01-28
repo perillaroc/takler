@@ -634,6 +634,7 @@ class Node(ABC):
             return False
 
         # check complete
+        # TODO: check complete before or after check time?
         if self.evaluate_complete_trigger():
             self.is_complete_triggered = True
             self.set_node_status(NodeStatus.complete)
@@ -689,7 +690,7 @@ class Node(ABC):
 
     def add_parameter(
             self,
-            param: Union[dict[str, Union[str, float, int, bool]], list[Parameter], str],
+            param: Union[dict[str, Union[str, float, int, bool]], list[Parameter], str, Parameter],
             value: Optional[Union[str, float, int, bool]] = None
     ) -> Optional[Parameter]:
         """
@@ -720,8 +721,13 @@ class Node(ABC):
             p = Parameter(name=name, value=value)
             self.user_parameters[name] = p
             return p
+        elif isinstance(param, Parameter):
+            if value is not None:
+                raise TypeError("value must be None if param is Parameter.")
+            self.user_parameters[param.name] = param
+            return param
         else:
-            raise ValueError(f"{param} is str or dict.")
+            raise TypeError(f"{param} is str, list, dict or Parameter.")
 
     def find_parameter(self, name: str) -> Optional[Parameter]:
         """
