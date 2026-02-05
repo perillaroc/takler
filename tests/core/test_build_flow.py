@@ -1,18 +1,36 @@
+import pytest
+from pydantic import BaseModel, ConfigDict
+
 from takler.core import Flow, NodeContainer, Task
 
 
-def verify_flow_structure(
-        flow1: Flow,
-        container1: NodeContainer,
-        task1: Task,
-        container2: NodeContainer,
-        task2: Task,
-        task3: Task,
-        task4: Task,
-        container3: NodeContainer,
-        task5: Task,
-        task6: Task,
-):
+class SomeFlow(BaseModel):
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    flow1: Flow
+    container1: NodeContainer
+    task1: Task
+    container2: NodeContainer
+    task2: Task
+    task3: Task
+    task4: Task
+    container3: NodeContainer
+    task5: Task
+    task6: Task
+
+
+def verify_flow_structure(some_flow: SomeFlow):
+    flow1 = some_flow.flow1
+    container1 = some_flow.container1
+    task1 = some_flow.task1
+    container2 = some_flow.container2
+    task2 = some_flow.task2
+    task3 = some_flow.task3
+    task4 = some_flow.task4
+    container3 = some_flow.container3
+    task5 = some_flow.task5
+    task6 = some_flow.task6
+
     assert flow1.name == "flow1"
     assert flow1.children == [container1, task4, container3, task6]
     assert isinstance(flow1, Flow)
@@ -81,15 +99,30 @@ def test_build_flow():
     flow1 = Flow("flow1")
     container1 = flow1.add_container("container1")
     task1 = container1.add_task("task1")
-    container2 = container1.add_container("container2")
+    container2 = NodeContainer("container2")
+    container1.add_container(container2)
     task2 = container2.add_task("task2")
-    task3 = container2.add_task("task3")
+    task3 = Task("task3")
+    task3 = container2.add_task(task3)
     task4 = flow1.add_task("task4")
     container3 = flow1.add_container("container3")
     task5 = container3.add_task("task5")
     task6 = flow1.add_task("task6")
 
-    verify_flow_structure(flow1, container1, task1, container2, task2, task3, task4, container3, task5, task6)
+    some_flow = SomeFlow(
+        flow1=flow1,
+        container1=container1,
+        task1=task1,
+        container2=container2,
+        task2=task2,
+        task3=task3,
+        task4=task4,
+        container3=container3,
+        task5=task5,
+        task6=task6,
+    )
+
+    verify_flow_structure(some_flow)
 
 
 def test_build_flow_using_with():
@@ -110,4 +143,33 @@ def test_build_flow_using_with():
         with flow1.add_task("task6") as task6:
             pass
 
-    verify_flow_structure(flow1, container1, task1, container2, task2, task3, task4, container3, task5, task6)
+    some_flow = SomeFlow(
+        flow1=flow1,
+        container1=container1,
+        task1=task1,
+        container2=container2,
+        task2=task2,
+        task3=task3,
+        task4=task4,
+        container3=container3,
+        task5=task5,
+        task6=task6,
+    )
+
+    verify_flow_structure(some_flow)
+
+#-----------------
+# NodeContainer
+#-----------------
+
+def test_node_container_add_container_error_type():
+    container1 = NodeContainer("container1")
+
+    with pytest.raises(TypeError):
+        container1.add_container(20)
+
+
+def test_node_container_add_task_error_type():
+    container1 = NodeContainer("container1")
+    with pytest.raises(TypeError):
+        container1.add_task(20)

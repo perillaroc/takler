@@ -3,7 +3,7 @@ import pytest
 from takler.core.node import Node, NodeStatus
 
 
-def test_is_suspended_single():
+def test_node_is_suspended_single():
     node1 = Node("node1")
     assert node1.is_suspended() is False
 
@@ -11,7 +11,7 @@ def test_is_suspended_single():
     assert node1.is_suspended() is True
 
 
-def test_is_suspended_tree():
+def test_node_is_suspended_tree():
     node1 = Node("node1")
     node2 = node1.append_child("node2")
     node2_1 = node2.append_child("node2_1")
@@ -58,7 +58,7 @@ def simple_flow_with_queued_status(simple_flow):
     return simple_flow
 
 
-def test_set_node_status_only(simple_flow_with_queued_status):
+def test_node_set_node_status_only(simple_flow_with_queued_status):
     task1 = simple_flow_with_queued_status.task1
 
     assert task1.state.node_status == NodeStatus.queued
@@ -69,7 +69,7 @@ def test_set_node_status_only(simple_flow_with_queued_status):
     assert task1.state.node_status == NodeStatus.complete
 
 
-def test_sink_status_change_only(simple_flow_with_queued_status):
+def test_node_container_sink_status_change_only(simple_flow_with_queued_status):
     container1 = simple_flow_with_queued_status.container1
     container1.sink_status_change_only(NodeStatus.complete)
 
@@ -86,7 +86,7 @@ def test_sink_status_change_only(simple_flow_with_queued_status):
     assert simple_flow_with_queued_status.task6.state.node_status == NodeStatus.queued
 
 
-def test_swim_status_change_only(simple_flow_with_queued_status):
+def test_task_swim_status_change_only(simple_flow_with_queued_status):
     task2 = simple_flow_with_queued_status.task2
 
     assert task2.state.node_status == NodeStatus.queued

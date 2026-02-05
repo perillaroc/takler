@@ -61,7 +61,7 @@ def test_event_reset():
 #----------------
 
 
-def test_add_event_in_task(simple_flow):
+def test_task_add_event(simple_flow):
     task1 = simple_flow.task1
     event = task1.add_event("arrived")
     assert task1.events == [Event("arrived")]
@@ -69,7 +69,7 @@ def test_add_event_in_task(simple_flow):
     assert event.value is False
 
 
-def test_add_event_duplicate(simple_flow):
+def test_task_add_event_duplicate(simple_flow):
     task1 = simple_flow.task1
     _ = task1.add_event("arrived")
 
@@ -77,7 +77,7 @@ def test_add_event_duplicate(simple_flow):
         task1.add_event("arrived")
 
 
-def test_set_event_in_task(simple_flow):
+def test_task_set_event(simple_flow):
     task1 = simple_flow.task1
     event1 = task1.add_event("event1")
     event2 = task1.add_event("event2")
@@ -93,12 +93,12 @@ def test_set_event_in_task(simple_flow):
     assert event2.value is False
 
 
-def test_set_event_on_non_exist_event_in_task(simple_flow):
+def test_task_set_event_on_non_exist_event(simple_flow):
     task1 = simple_flow.task1
     assert task1.set_event("not_exist_event", True) is False
 
 
-def test_find_event_in_task(simple_flow):
+def test_task_find_event(simple_flow):
     task1 = simple_flow.task1
     event1 = task1.add_event("event1")
 
@@ -107,7 +107,7 @@ def test_find_event_in_task(simple_flow):
     assert task1.find_event("not_exist_event") is None
 
 
-def test_reset_event_in_task(simple_flow):
+def test_task_reset_event(simple_flow):
     task1 = simple_flow.task1
     event1 = task1.add_event("event1")
     event2 = task1.add_event("event2", True)

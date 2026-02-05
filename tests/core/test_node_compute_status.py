@@ -204,3 +204,15 @@ def test_compute_status_complete_and_queued(status_flow_queued):
 
     assert compute_most_significant_status(container1.children, immediate=False) == NodeStatus.queued
     assert compute_most_significant_status(container2.children, immediate=False) == NodeStatus.complete
+
+
+def test_node_container_compute_status_empty_children():
+    container1 = NodeContainer("container1")
+    assert container1.state.node_status == NodeStatus.unknown
+    assert container1.computed_status(True) == NodeStatus.unknown
+    assert container1.computed_status(False) == NodeStatus.unknown
+
+    container1.set_node_status_only(NodeStatus.queued)
+    assert container1.state.node_status == NodeStatus.queued
+    assert container1.computed_status(True) == NodeStatus.queued
+    assert container1.computed_status(False) == NodeStatus.queued

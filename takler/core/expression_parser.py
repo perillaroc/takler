@@ -31,7 +31,7 @@ class ExpressionTransformer(Transformer):
 
     def pure_node_name(self, items) -> str:
         """
-        a "true" node name, excluding . and ..
+        a "true" node name, excluding ``.`` and ``..``.
         """
         return "".join(items)
 
@@ -72,11 +72,11 @@ class ExpressionTransformer(Transformer):
         return AstOpGe()
 
     def op_lt(self, _) -> AstOpLt:
-        """Operator: greater equal than (>=)"""
+        """Operator: less than (<)"""
         return AstOpLt()
 
     def op_le(self, _) -> AstOpLe:
-        """Operator: greater equal than (>=)"""
+        """Operator: less equal than (<=)"""
         return AstOpLe()
 
     def op_and(self, _) -> AstOpAnd:

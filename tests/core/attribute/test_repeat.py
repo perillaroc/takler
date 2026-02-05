@@ -165,13 +165,13 @@ def test_repeat_date_generated_params(start_date_int, end_date_int):
 # Flow
 #---------------
 
-def test_repeat_date_create_in_flow(start_date_int, end_date_int):
+def test_flow_add_repeat_repeat_date(start_date_int, end_date_int):
     flow1 = Flow("flow1")
     task1 = flow1.add_task("task1")
     task1.add_repeat(RepeatDate("YMD", start_date_int, end_date_int))
 
 
-def test_repeat_date_run_in_flow(start_date_int, end_date_int):
+def test_flow_repeat_date_run(start_date_int, end_date_int):
     # create flow
     flow1 = Flow("flow1")
     task1 = flow1.add_task("task1")

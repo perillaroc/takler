@@ -314,7 +314,7 @@ class Node(ABC):
 
         child_index = self.find_child_index(child)
         if child_index == -1:
-            raise Exception(f"child {child} is not found")
+            raise ValueError(f"child {child} is not found")
 
         old_child = self.children[child_index]
         new_child_node.parent = self
@@ -324,7 +324,7 @@ class Node(ABC):
     def delete_child(self, child: Union[str, Node]) -> Node:
         child_node_index = self.find_child_index(child)
         if child_node_index == -1:
-            raise Exception(f"{child} does not exist")
+            raise ValueError(f"{child} does not exist")
         child_node = self.children.pop(child_node_index)
         child_node.delete_children()
         return child_node

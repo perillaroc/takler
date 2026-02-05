@@ -53,7 +53,7 @@ def test_meter_reset():
 #-----------------------
 
 
-def test_create_meter_in_task(simple_flow):
+def test_task_add_meter(simple_flow):
     task1 = simple_flow.task1
     meter = task1.add_meter("forecast_hour", 0, 240)
     assert task1.meters == [Meter("forecast_hour", 0, 240)]
@@ -62,7 +62,7 @@ def test_create_meter_in_task(simple_flow):
     assert meter.value == 0
 
 
-def test_set_meter_in_task(simple_flow):
+def test_task_set_meter(simple_flow):
     task1 = simple_flow.task1
     meter1 = task1.add_meter("meter1", 0, 24)
     meter2 = task1.add_meter("meter2", 10, 100)
@@ -84,7 +84,7 @@ def test_set_meter_in_task(simple_flow):
     assert meter2.value == 100
 
 
-def test_set_meter_on_non_exist_meter_in_task(simple_flow):
+def test_task_set_meter_on_non_exist_meter(simple_flow):
     task1 = simple_flow.task1
     meter1 = task1.add_meter("meter1", 0, 24)
     meter2 = task1.add_meter("meter2", 10, 100)
@@ -92,7 +92,7 @@ def test_set_meter_on_non_exist_meter_in_task(simple_flow):
     assert not task1.set_meter("not_exist_meter", 10)
 
 
-def test_find_meter_in_task(simple_flow):
+def test_task_find_meter(simple_flow):
     task1 = simple_flow.task1
     meter1 = task1.add_meter("meter1", 0, 24)
     meter2 = task1.add_meter("meter2", 10, 100)
@@ -103,7 +103,7 @@ def test_find_meter_in_task(simple_flow):
     assert task1.find_meter("not_exist_meter") is None
 
 
-def test_reset_event_in_task(simple_flow):
+def test_task_reset_event(simple_flow):
     task1 = simple_flow.task1
     meter1 = task1.add_meter("meter1", 0, 24)
     meter2 = task1.add_meter("meter2", 10, 100)
@@ -119,7 +119,7 @@ def test_reset_event_in_task(simple_flow):
     assert meter2.value == 10
 
 
-def test_reset_event_on_non_exist_meter_in_task(simple_flow):
+def test_task_reset_event_on_non_exist_meter(simple_flow):
     task1 = simple_flow.task1
     meter1 = task1.add_meter("meter1", 0, 24)
     meter2 = task1.add_meter("meter2", 10, 100)

@@ -55,7 +55,14 @@ def test_node_check_dependencies_complete(simple_flow_queued):
     task2.add_complete_trigger('../task1:event_a == set')
     task2.add_trigger('../task1 == complete')
 
-    assert task2.check_dependencies()
+    assert not task2.check_dependencies()
+
+    task1.set_event('event_a', True)
+    assert not task2.check_dependencies()
+
+    assert task2.is_complete_triggered
+    assert task2.state.node_status == NodeStatus.complete
+
 
 
 def test_node_check_dependencies_trigger(simple_flow_queued):
@@ -69,10 +76,19 @@ def test_node_check_dependencies_trigger(simple_flow_queued):
     assert task2.check_dependencies()
 
 
+#----------------
+# Task
+#----------------
+
+
 def test_task_check_dependencies_node_status(simple_flow_queued):
+    task1 = simple_flow_queued.task1
     task2 = simple_flow_queued.task2
     task2.add_trigger('../task1 == complete')
     assert not task2.check_dependencies()
+
+    task1.complete()
+    assert task2.check_dependencies()
 
     task2.init('111')
     assert task2.state.node_status == NodeStatus.active
@@ -144,3 +160,24 @@ def test_node_check_dependencies_combine_complete(simple_flow_without_time, patc
 
     assert task2.state.node_status == NodeStatus.complete
     assert task2.is_complete_triggered
+
+
+@pytest.fixture
+def simple_flow_with_limit(simple_flow_queued):
+    container2 = simple_flow_queued.container2
+    container2.add_limit('limit1', 1)
+    container2.add_in_limit('limit1')
+
+    return simple_flow_queued
+
+
+def test_node_check_dependencies_limit(simple_flow_with_limit):
+    task2 = simple_flow_with_limit.task2
+    task3 = simple_flow_with_limit.task3
+
+    assert task2.check_dependencies()
+    assert task3.check_dependencies()
+
+    task2.run()
+    # WARNING: task2.init not affect limit.
+    assert not task3.check_dependencies()

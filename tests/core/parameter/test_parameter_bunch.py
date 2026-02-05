@@ -1,5 +1,5 @@
 import pytest
-from pydantic import BaseModel, ConfigDict, ValidationError
+from pydantic import ValidationError
 
 from takler.core import Parameter, parameter, Bunch
 from takler.constant import DEFAULT_HOST, DEFAULT_PORT

@@ -1,9 +1,9 @@
 import pytest
 
-from takler.core import NodeStatus, State, SerializationType
+from takler.core import NodeStatus, State
 
 
-def test_create_node_status():
+def test_node_status_create():
     node_status = NodeStatus.complete
     assert node_status == NodeStatus.complete
 
@@ -36,7 +36,7 @@ def test_node_status_order():
     assert NodeStatus.active < NodeStatus.aborted
 
 
-def test_create_state():
+def test_state_create():
     node_state = State()
     assert node_state.node_status == NodeStatus.unknown
     assert node_state.suspended is False

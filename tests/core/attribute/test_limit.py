@@ -264,7 +264,7 @@ def test_in_limit_manager_decrement_in_limit():
 # Flow
 #-------------------------------
 
-def test_add_limit_duplicate(simple_flow):
+def test_flow_add_limit_duplicate(simple_flow):
     flow1 = simple_flow.flow1
     flow1.add_limit('limit1', 10)
 
@@ -411,7 +411,7 @@ def test_node_decrement_in_limit(flow_with_limit):
     assert section_limit.value == 0
 
 
-def test_limit_for_flow(flow_with_limit):
+def test_flow_limit(flow_with_limit):
     flow1: Flow = flow_with_limit.flow1
     task1: Task = flow_with_limit.task1
     task2: Task = flow_with_limit.task2

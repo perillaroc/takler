@@ -3,31 +3,31 @@ import pytest
 from takler.core import Parameter
 
 
-def test_create_parameter_str():
+def test_parameter_create_str():
     p = Parameter("OBS_SOURCE", "CMADAAS")
     assert p.name == "OBS_SOURCE"
     assert p.value == "CMADAAS"
 
 
-def test_create_parameter_int():
+def test_parameter_create_parameter():
     p = Parameter("FORECAST_LENGTH", 24)
     assert p.name == "FORECAST_LENGTH"
     assert p.value == 24
 
 
-def test_create_parameter_float():
+def test_parameter_create__float():
     p = Parameter("FORECAST_DAY", 3.5)
     assert p.name == "FORECAST_DAY"
     assert p.value == 3.5
 
 
-def test_create_parameter_bool():
+def test_parameter_create_bool():
     p = Parameter("FLAG_UPLOAD", True)
     assert p.name == "FLAG_UPLOAD"
     assert p.value == True
     
 
-def test_create_parameter_none():
+def test_parameter_create_none():
     p = Parameter("TYPHOON_ID", None)
     assert p.name == "TYPHOON_ID"
     assert p.value is None

@@ -5,7 +5,7 @@ import pytest
 from takler.core import Bunch
 
 
-def test_node_path(simple_flow):
+def test_node_node_path(simple_flow):
     assert simple_flow.flow1.node_path == "/flow1"
     assert simple_flow.container1.node_path == "/flow1/container1"
     assert simple_flow.task1.node_path == "/flow1/container1/task1"
@@ -18,7 +18,7 @@ def test_node_path(simple_flow):
     assert simple_flow.task6.node_path == "/flow1/task6"
 
 
-def test_is_leaf_node(simple_flow):
+def test_node_is_leaf_node(simple_flow):
     assert not simple_flow.flow1.is_leaf_node()
     assert not simple_flow.container1.is_leaf_node()
     assert simple_flow.task1.is_leaf_node()
@@ -31,7 +31,7 @@ def test_is_leaf_node(simple_flow):
     assert simple_flow.task6.is_leaf_node()
 
 
-def test_get_root(simple_flow):
+def test_node_get_root(simple_flow):
     flow1 = simple_flow.flow1
 
     assert simple_flow.flow1.get_root() == flow1
@@ -46,7 +46,7 @@ def test_get_root(simple_flow):
     assert simple_flow.task6.get_root() == flow1
 
 
-def test_get_bunch(simple_flow):
+def test_node_get_bunch(simple_flow):
     flow1 = simple_flow.flow1
 
     bunch = flow1.get_bunch()
@@ -59,7 +59,7 @@ def test_get_bunch(simple_flow):
     assert simple_flow.task1.get_bunch() == bunch
 
 
-def test_find_node(simple_flow):
+def test_node_find_node(simple_flow):
     @dataclass
     class QueryOption:
         node_name: str
@@ -77,7 +77,10 @@ def test_find_node(simple_flow):
                 expected_node = None
             else:
                 expected_node = getattr(simple_flow, test_case.expected_node_name)
-            assert node.find_node(test_case.query.node_path) == expected_node
+            if expected_node is None:
+                assert node.find_node(test_case.query.node_path) is None
+            else:
+                assert node.find_node(test_case.query.node_path) == expected_node
 
     test_cases = [
         TestCase(
@@ -150,55 +153,88 @@ def test_find_node(simple_flow):
     do_tests(cases=test_cases)
 
 
-def test_check_absolute_node_path():
-    assert Bunch.check_absolute_node_path("/flow1") is True
-    assert Bunch.check_absolute_node_path("/flow1/") is True
-    assert Bunch.check_absolute_node_path("flow1") is False
-    assert Bunch.check_absolute_node_path("flow1/") is False
-
-    assert Bunch.check_absolute_node_path("/") is False
-    assert Bunch.check_absolute_node_path("") is False
-
-    assert Bunch.check_absolute_node_path("flow1/container1") is False
-    assert Bunch.check_absolute_node_path("flow1/container1/") is False
-    assert Bunch.check_absolute_node_path("/flow1/container1") is True
-    assert Bunch.check_absolute_node_path("/flow1/container1/") is True
-
-    assert Bunch.check_absolute_node_path("./container1") is False
-    assert Bunch.check_absolute_node_path("./container1/") is False
-    assert Bunch.check_absolute_node_path("./container1/task1") is False
-    assert Bunch.check_absolute_node_path("./container1/task1") is False
-    assert Bunch.check_absolute_node_path("../container1") is False
-    assert Bunch.check_absolute_node_path("../container1/") is False
-    assert Bunch.check_absolute_node_path("../container1/task1") is False
-    assert Bunch.check_absolute_node_path("./") is False
-    assert Bunch.check_absolute_node_path("../") is False
+#------------------------
+# Bunch
+#------------------------
 
 
-def test_check_node_path():
-    assert Bunch.check_node_path("/flow1") is True
-    assert Bunch.check_node_path("/flow1/") is True
-    assert Bunch.check_node_path("flow1/") is False
+def test_bunch_check_absolute_node_path():
+    @dataclass
+    class TestCase:
+        node_path: str
+        check_result: bool
 
-    assert Bunch.check_node_path("flow1") is False
+    test_cases = [
+        TestCase(node_path="/flow1", check_result=True),
+        TestCase(node_path="/flow1/", check_result=True),
+        TestCase(node_path="flow1", check_result=False),
+        TestCase(node_path="flow1/", check_result=False),
 
-    assert Bunch.check_node_path("/") is False
-    assert Bunch.check_node_path("") is False
+        TestCase(node_path="/", check_result=False),
+        TestCase(node_path="", check_result=False),
 
-    assert Bunch.check_node_path("flow1/container1") is False
-    assert Bunch.check_node_path("flow1/container1/") is False
-    assert Bunch.check_node_path("/flow1/container1") is True
-    assert Bunch.check_node_path("/flow1/container1/") is True
+        TestCase(node_path="flow1/container1", check_result=False),
+        TestCase(node_path="flow1/container1/", check_result=False),
+        TestCase(node_path="/flow1/container1", check_result=True),
+        TestCase(node_path="/flow1/container1/", check_result=True),
 
-    assert Bunch.check_node_path(".") is False
-    assert Bunch.check_node_path("./") is False
-    assert Bunch.check_node_path("..") is False
-    assert Bunch.check_node_path("../") is False
+        TestCase(node_path="./container1", check_result=False),
+        TestCase(node_path="./container1/", check_result=False),
+        TestCase(node_path="./container1/task1", check_result=False),
+        TestCase(node_path="./container1/task1/", check_result=False),
+        TestCase(node_path="../container1", check_result=False),
+        TestCase(node_path="../container1/", check_result=False),
+        TestCase(node_path="../container1/task1", check_result=False),
+        TestCase(node_path="../container1/task1/", check_result=False),
 
-    assert Bunch.check_node_path("./container1") is True
-    assert Bunch.check_node_path("./container1/") is True
-    assert Bunch.check_node_path("./container1/task1") is True
-    assert Bunch.check_node_path("./container1/task1/") is True
-    assert Bunch.check_node_path("../container1") is True
-    assert Bunch.check_node_path("../container1/") is True
-    assert Bunch.check_node_path("../container1/task1") is True
+        TestCase(node_path='./', check_result=False),
+        TestCase(node_path='../', check_result=False),
+    ]
+
+    for test_case in test_cases:
+        if test_case.check_result:
+            assert Bunch.check_absolute_node_path(test_case.node_path)
+        else:
+            assert not Bunch.check_absolute_node_path(test_case.node_path)
+
+
+def test_bunch_check_node_path():
+    @dataclass
+    class TestCase:
+        node_path: str
+        check_result: bool
+
+    test_cases = [
+        TestCase(node_path="/flow1", check_result=True),
+        TestCase(node_path="/flow1/", check_result=True),
+        TestCase(node_path="flow1", check_result=False),
+        TestCase(node_path="flow1/", check_result=False),
+
+        TestCase(node_path="/", check_result=False),
+        TestCase(node_path="", check_result=False),
+
+        TestCase(node_path="flow1/container1", check_result=False),
+        TestCase(node_path="flow1/container1/", check_result=False),
+        TestCase(node_path="/flow1/container1", check_result=True),
+        TestCase(node_path="/flow1/container1/", check_result=True),
+
+        TestCase(node_path='.', check_result=False),
+        TestCase(node_path='./', check_result=False),
+        TestCase(node_path='..', check_result=False),
+        TestCase(node_path='../', check_result=False),
+
+        TestCase(node_path='./container1', check_result=True),
+        TestCase(node_path='./container1/', check_result=True),
+        TestCase(node_path='./container1/task1', check_result=True),
+        TestCase(node_path='./container1/task1/', check_result=True),
+        TestCase(node_path='../container1', check_result=True),
+        TestCase(node_path='../container1/', check_result=True),
+        TestCase(node_path='../container1/task1', check_result=True),
+        TestCase(node_path='../container1/task1/', check_result=True),
+    ]
+
+    for test_case in test_cases:
+        if test_case.check_result:
+            assert Bunch.check_node_path(test_case.node_path)
+        else:
+            assert not Bunch.check_node_path(test_case.node_path)
